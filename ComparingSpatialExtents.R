@@ -6,4 +6,4 @@ devtools::install_github("cont-limno/LAGOS", update_dependencies = TRUE)
 
 library(LAGOS)
 lagos_get("1.087.1")
-
+data<-lagos_load(version="1.087.1")
