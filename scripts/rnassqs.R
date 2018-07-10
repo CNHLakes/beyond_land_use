@@ -32,8 +32,21 @@ mi_corn_tidy <- mutate(mi_corn,
   mutate(total = sum(value, na.rm = TRUE)) %>%
   left_join(county) 
 
+# rm empty geometries and calculate areas
+mi_corn_tidy <- mi_corn_tidy[unlist(lapply(st_geometry(mi_corn_tidy$geometry), "length")) == 1,]
+
+mi_corn_tidy$area <- units::set_units(
+  st_area(st_cast(mi_corn_tidy$geometry, "POLYGON")), "acres")
+
+mi_corn_tidy <- mutate(mi_corn_tidy, percent_corn = total / area)
+
 # str_detect(short_desc, "IRRIGATED"))
 
 ggplot() + 
   geom_sf(data = mi_corn_tidy, aes(fill = total)) +
   labs(fill = "2012 USDA Census \n Total corn (acres)")
+
+ggplot() + 
+  geom_sf(data = mi_corn_tidy, aes(fill = percent_corn)) +
+  labs(fill = "2012 USDA Census \n % corn")
+
