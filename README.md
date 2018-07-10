@@ -4,15 +4,18 @@ Use more detailed Ag data to improve predictive models of lake TP and TN
 
 ## Data sources
 
-* USDA census
+* [USDA census](https://agcensus.usda.gov/Publications/)
+  * crops
+  * animal products
+  * economics
 
-* USDA crops
+This data can be pulled manually via [NASS Statistics by Subject](https://www.nass.usda.gov/Statistics_by_Subject/index.php) or automated from [NASS Quick Stats](https://www.nass.usda.gov/Quick_Stats/) using the [rnassqs](https://github.com/potterzot/rnassqs) package.
 
-* USDA animal products
+* ~~USDA survey data~~
 
-* USGS fertilizer and manure application data
-
-Some of this data can be pulled using the [rnassqs](https://github.com/potterzot/rnassqs) package.
+* [USGS](https://water.usgs.gov/nawqa/nutrients/)
+  * County-level esitmates of nitrogen and phosphorus from fertilizer, 1987-2006
+  * County-level estimates of nutrient inputs to the land surface 1982-2001
 
 ## References
 
