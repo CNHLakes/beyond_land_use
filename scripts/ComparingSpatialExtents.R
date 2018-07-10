@@ -54,10 +54,10 @@ hu4.ag               <- lagos_select(table = "hu4.lulc",
 names(hu4.ag)        <- c("hu4_zoneid", "hu4_pasturehay06", "hu4_rowcrop06")
 hu4.ag$hu4_totalag06 <- hu4.ag$hu4_pasturehay06 + hu4.ag$hu4_rowcrop06
 
-ag.county.iws.hu12 <- merge(ag.county.iws, hu12.ag, by = "hu12_zoneid", all.x = T, 
-                            all.y = T)
-ag.county.iws.hu12.hu4 <- merge(ag.county.iws.hu12, hu4.ag, by = "hu4_zoneid", all.x = T, 
-                                all.y = T)
+ag.county.iws.hu12     <- merge(ag.county.iws, hu12.ag, by = "hu12_zoneid", 
+                            all.x = T, all.y = T)
+ag.county.iws.hu12.hu4 <- merge(ag.county.iws.hu12, hu4.ag, by = "hu4_zoneid", 
+                                all.x = T, all.y = T)
 ag.county.iws.hu12.hu4 <- na.omit(ag.county.iws.hu12.hu4)
 
 # plot all combos of total ag vs each other
