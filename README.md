@@ -9,7 +9,10 @@ Use more detailed Ag data to improve predictive models of lake TP and TN
   * animal products
   * economics
 
-This data can be pulled manually via [NASS Statistics by Subject](https://www.nass.usda.gov/Statistics_by_Subject/index.php) or automated from [NASS Quick Stats](https://www.nass.usda.gov/Quick_Stats/) using the [rnassqs](https://github.com/potterzot/rnassqs) package.
+This data can be pulled:
+  * manually via [NASS Statistics by Subject](https://www.nass.usda.gov/Statistics_by_Subject/index.php)
+  * automated from [NASS Quick Stats](https://www.nass.usda.gov/Quick_Stats/) using the [rnassqs](https://github.com/potterzot/rnassqs) package
+  * automated from [Cropscape](https://nassgeodata.gmu.edu/CropScape/) using the [cdlTools](https://github.com/jlisic/cdlTools) package
 
 * ~~USDA survey data~~
 
