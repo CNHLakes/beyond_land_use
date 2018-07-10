@@ -1,8 +1,13 @@
+library(ggplot2)
 library(rnassqs)
 library(dplyr)
 library(maps)
 library(sf)
 library(tidyr)
+library(stringr)
+
+county <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
+county <- tidyr::separate(county, ID, c("state", "county"))
 
 key <- "E44D2FCF-E267-3DE1-950A-E6C54EEA7058"
 
@@ -19,12 +24,16 @@ mi_corn      <- nassqs(params)
 
 mi_corn_tidy <- mutate(mi_corn, 
                        state = tolower(state_name), 
-                       county = tolower(county_name)) %>% 
+                       county = tolower(county_name),
+                       value = as.numeric(gsub(",", "", .data$Value))) %>% 
   filter(!is.na(county) & nchar(county) > 0) %>%
-  dplyr::select(state, county, Value, short_desc, domain_desc)
+  dplyr::select(state, county, value, short_desc, domain_desc) %>%
+  group_by(county) %>%
+  mutate(total = sum(value, na.rm = TRUE)) %>%
+  left_join(county) 
 
-county <- st_as_sf(maps::map("county", fill = TRUE))
-county <- tidyr::separate(county, ID, c("state", "county"))
+# str_detect(short_desc, "IRRIGATED"))
 
-county <- filter(county, ID %in% 
-                   filter(county.fips, fips %in% test2$county_code)[,"polyname"])
+ggplot() + 
+  geom_sf(data = mi_corn_tidy, aes(fill = total)) +
+  labs(fill = "2012 USDA Census \n Total corn (acres)")
