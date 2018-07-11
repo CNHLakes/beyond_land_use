@@ -9,9 +9,9 @@ library(stringr)
 county <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
 county <- tidyr::separate(county, ID, c("state", "county"))
 
-
-
 key <- "E44D2FCF-E267-3DE1-950A-E6C54EEA7058"
+
+# ---- county_level_data ----
 
 # See https://quickstats.nass.usda.gov/api#param_define for param descriptions
 params <- list("source_desc" = "CENSUS", 
@@ -53,27 +53,29 @@ ggplot() +
   geom_sf(data = mi_corn_tidy, aes(fill = percent_corn)) +
   labs(fill = "2012 USDA Census \n % corn")
 
-# ---- HU6_queries ----
+# ---- HU6_level_data ----
 
 gdb_path <- path.expand("~/.local/share/LAGOS-GIS/lagos-ne_gis.gpkg")
 hu8         <- st_read(gdb_path, "HU8")
 hu8 <- filter(hu8, str_detect(States, "MI"))
-hu6 <- paste0(sapply(as.character(hu8$HUC8), function(x) substring(x, 0, 6)), "00")
+hu8$HUC6 <- paste0(sapply(as.character(hu8$HUC8), 
+                          function(x) substring(x, 0, 6)), "00")
 
 # See https://quickstats.nass.usda.gov/api#param_define for param descriptions
 params <- list("source_desc" = "CENSUS",
-  "watershed_code" = "04030100", # huc code must be passed as a character
-  "commodity_desc" = "CORN",
-  "unit_desc" = "ACRES",
-  "year" = 2012,
-               key = key)
-nassqs(params)
-
-params <- list("source_desc" = "CENSUS",
-               # huc code must be passed as a character
-               "watershed_code" = unique(hu6)[2], 
+               "watershed_code" = hu8$HUC6, 
                "commodity_desc" = "CORN",
                "unit_desc" = "ACRES",
                "year" = 2012,
                key = key)
 test <- nassqs(params)
+test <- left_join(test, hu8, by = c("location_desc" = "HUC6"))
+test$Value <- as.numeric(gsub(",", "", test$Value))
+test2 <- test %>% 
+  st_sf() %>%
+  group_by(location_desc) %>%
+  summarize(Value = mean(Value), short_desc = unique(short_desc))
+
+ggplot() + 
+  geom_sf(data = st_sf(test2), aes(fill = Value)) +
+  labs(fill = "2012 USDA Census \n Corn (acres)")
