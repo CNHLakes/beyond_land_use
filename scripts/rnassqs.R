@@ -76,6 +76,8 @@ test2 <- test %>%
   group_by(location_desc) %>%
   summarize(Value = mean(Value), short_desc = unique(short_desc))
 
+saveRDS(test2, "data/mi_hu6_corn.rds")
+
 ggplot() + 
   geom_sf(data = st_sf(test2), aes(fill = Value)) +
   labs(fill = "2012 USDA Census \n Corn (acres)")
