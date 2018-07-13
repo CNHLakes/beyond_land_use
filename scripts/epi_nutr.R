@@ -3,6 +3,9 @@ library(dplyr)
 library(magrittr)
 
 lg <- lagosne_load("1.087.1")
+
+# ---- get_tp ----
+
 ep <- lg$epi_nutr %>% 
   select(lagoslakeid, sampledate, tp, tn) %>%
   filter(!is.na(tp) | !is.na(tn)) %>%
@@ -24,11 +27,20 @@ mi_ep <- ep %>%
   data.frame() %>%
   coordinatize()
 
-saveRDS(mi_ep, "data/mi_ep.rds")
-
 # mapview::mapview(st_sf(test2), zcol  = "Value") + 
 #   mapview::mapview(mi_ep, zcol = "tp")
 
 # hist(ep$sampledate, "weeks")
 # hist(ep$count, xlim = c(0, 100), n = 100)
 # hist(ep$tn)
+
+# ---- get_covariates ----
+
+mi_ep <- left_join(mi_ep, select(lg$hu8.lulc, 
+                        hu8_nlcd2006_ha_81, hu8_nlcd2006_ha_82, hu8_zoneid)) %>% 
+  group_by(hu6) %>%
+  mutate(hu6_ag_2006 = sum(hu8_nlcd2006_ha_81, hu8_nlcd2006_ha_82, na.rm = TRUE)) %>%
+  data.frame() %>%
+  identity()
+
+saveRDS(mi_ep, "data/mi_ep.rds")
