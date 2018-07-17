@@ -10,6 +10,7 @@ county <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
 county <- tidyr::separate(county, ID, c("state", "county"))
 
 key <- "E44D2FCF-E267-3DE1-950A-E6C54EEA7058"
+Sys.setenv(NASSQS_TOKEN = key)
 
 # ---- county_level_data ----
 
@@ -66,7 +67,7 @@ params <- list("source_desc" = "CENSUS",
                "watershed_code" = hu8$HUC6, 
                "commodity_desc" = "CORN",
                "unit_desc" = "ACRES",
-               "year" = 2012,
+               "year" = 2007,
                key = key)
 test <- nassqs(params)
 test <- left_join(test, hu8, by = c("location_desc" = "HUC6"))
@@ -74,7 +75,7 @@ test$Value <- as.numeric(gsub(",", "", test$Value))
 test2 <- test %>% 
   st_sf() %>%
   group_by(location_desc) %>%
-  summarize(Value = mean(Value), short_desc = unique(short_desc))
+  summarize(hu6_corn_acres = mean(Value), short_desc = unique(short_desc))
 
 saveRDS(test2, "data/mi_hu6_corn.rds")
 
