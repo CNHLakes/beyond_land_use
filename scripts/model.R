@@ -1,0 +1,28 @@
+library(magrittr)
+library(dplyr)
+library(lme4)
+library(sf)
+library(units)
+library(merTools)
+
+crops <- readRDS("data/mi_hu6_corn.rds")
+ep    <- readRDS("data/mi_ep.rds") %>%
+  left_join(data.frame(crops), by = c("hu6" = "location_desc"))
+ep$hu6_corn_acres <- set_units(as_units(ep$hu6_corn_acres, "acres"), "m2")
+ep <- mutate(ep, hu6_corn_pcent = hu6_corn_acres / hu6_area)
+
+plot(ep$hu6_corn_pcent, ep$tp)
+plot(ep$iws_ag_2006_pcent, ep$tp)
+plot(ep$iws_ag_2006_pcent, ep$hu6_corn_pcent)
+abline(0, 1)
+
+#### Fit unconditional model
+fit <- lmer(tp ~ 1 + (1|hu6), data=ep, na.action=na.omit)
+
+#### Fit random intercept model with covariate model
+fit <- lmer(tp ~ 1 + iws_ag_2006_pcent + (1|hu6), data=ep, na.action=na.omit)
+
+#### Fit random intercept and slope with covariate
+fit <- lmer(tp ~ 1 + iws_ag_2006_pcent + (1+iws_ag_2006_pcent|hu6), data=ep, na.action=na.omit)
+
+shinyMer(fit)
