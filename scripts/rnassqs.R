@@ -16,43 +16,40 @@ Sys.setenv(NASSQS_TOKEN = key)
 
 # See https://quickstats.nass.usda.gov/api#param_define for param descriptions
 params <- list("source_desc" = "CENSUS", 
-               "commodity_desc"="CORN", 
-               "year__GE"=2012, 
+               "commodity_desc"="WHEAT", 
+               "year"=2007, 
                "state_alpha"="MI", 
-               "domain_desc" = "TOTAL",
-               "util_practice_desc" = "GRAIN",
+               "domain_des" = "TOTAL",
                "agg_level_desc" = "COUNTY",
                "unit_desc" = "ACRES",
                key = key)
-mi_corn      <- nassqs(params)
+mi_rye      <- nassqs(params)
 
-mi_corn_tidy <- mutate(mi_corn, 
-                       state = tolower(state_name), 
-                       county = tolower(county_name),
-                       value = as.numeric(gsub(",", "", .data$Value))) %>% 
-  filter(!is.na(county) & nchar(county) > 0) %>%
+mi_rye_tidy <- mi_rye %>% 
+  mutate(state = tolower(state_name), 
+         county = tolower(county_name),
+         value = as.numeric(gsub(",", "", .data$Value))) %>% 
+  filter(!is.na(county) & nchar(county) > 0 & year %in% params$year) %>%
   dplyr::select(state, county, value, short_desc, domain_desc) %>%
   group_by(county) %>%
   mutate(total = sum(value, na.rm = TRUE)) %>%
   left_join(county) 
 
 # rm empty geometries and calculate areas
-mi_corn_tidy <- mi_corn_tidy[unlist(lapply(st_geometry(mi_corn_tidy$geometry), "length")) == 1,]
-
-mi_corn_tidy$area <- units::set_units(
-  st_area(st_cast(mi_corn_tidy$geometry, "POLYGON")), "acres")
-
-mi_corn_tidy <- mutate(mi_corn_tidy, percent_corn = total / area)
+mi_rye_tidy <- mi_rye_tidy[unlist(lapply(st_geometry(mi_rye_tidy$geometry), "length")) == 1,]
+mi_rye_tidy$area <- units::set_units(
+  st_area(st_cast(mi_rye_tidy$geometry, "POLYGON")), "acres")
+mi_rye_tidy <- mutate(mi_rye_tidy, percent_rye = total / area)
 
 # str_detect(short_desc, "IRRIGATED"))
 
 ggplot() + 
-  geom_sf(data = mi_corn_tidy, aes(fill = total)) +
-  labs(fill = "2012 USDA Census \n Total corn (acres)")
+  geom_sf(data = mi_rye_tidy, aes(fill = total)) +
+  labs(fill = "2012 USDA Census \n Total rye (acres)")
 
 ggplot() + 
-  geom_sf(data = mi_corn_tidy, aes(fill = percent_corn)) +
-  labs(fill = "2012 USDA Census \n % corn")
+  geom_sf(data = mi_rye_tidy, aes(fill = percent_rye)) +
+  labs(fill = "2012 USDA Census \n % rye")
 
 # ---- HU6_level_data ----
 

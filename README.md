@@ -10,7 +10,7 @@ Use more detailed Ag data to improve predictive models of lake TP and TN
   * economics
 
 This data can be pulled:
-  * manually via [NASS Statistics by Subject](https://www.nass.usda.gov/Statistics_by_Subject/index.php)
+  * manually from [NASS Quick Stats](https://www.nass.usda.gov/Quick_Stats/)
   * automated from [NASS Quick Stats](https://www.nass.usda.gov/Quick_Stats/) using the [rnassqs](https://github.com/potterzot/rnassqs) package
   * automated from [Cropscape](https://nassgeodata.gmu.edu/CropScape/) using the [cdlTools](https://github.com/jlisic/cdlTools) package
 
@@ -19,6 +19,29 @@ This data can be pulled:
 * [USGS](https://water.usgs.gov/nawqa/nutrients/)
   * County-level esitmates of nitrogen and phosphorus from fertilizer, 1987-2006
   * County-level estimates of nutrient inputs to the land surface 1982-2001
+
+## Notes
+
+### Capel et al. 2018
+
+ * P fertilizer applications have been constant since the 80s.
+ 
+ * Top crops are silage corn, wheat, soybeans, and oats.
+ 
+ * The top ag conservation program is the `Conservation Reserve Program`.
+ 
+ * Former grasslands are the most common landuse converted to ag.
+ 
+ ## Potential predictor variables
+ 
+ * fertilizer_density
+ * manure_density
+ * drainage_type_percent
+ * hazard class
+ * suitability class
+ * ~~stream_density~~
+ * ~~percent_ag~~
+ * ag_practices (percent cover crops)
 
 ## References
 

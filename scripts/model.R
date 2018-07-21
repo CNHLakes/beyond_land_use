@@ -26,3 +26,9 @@ fit <- lmer(tp ~ 1 + iws_ag_2006_pcent + (1|hu6), data=ep, na.action=na.omit)
 fit <- lmer(tp ~ 1 + iws_ag_2006_pcent + (1+iws_ag_2006_pcent|hu6), data=ep, na.action=na.omit)
 
 shinyMer(fit)
+
+fit_ranef <- left_join(data.frame(ranef(fit)), 
+                       dplyr::select(crops, location_desc, geom), 
+                       by = c("grp" = "location_desc"))
+
+mapview(st_sf(fit_ranef), zcol = "condval")
