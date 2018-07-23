@@ -22,6 +22,29 @@ This data can be pulled:
 
 ## Notes
 
+## Potential predictor variables
+ 
+ * fertilizer_density
+ * manure_density
+ * drainage_type_percent
+ * hazard class
+ * suitability class
+ * ~~stream_density~~
+ * ~~percent_ag~~
+ * ag_practices (percent cover crops)
+ 
+### Nummer 2017
+
+* Conservation practices have the most effect on TP export from fields (over P fraction or any N species)
+
+* N fertilizer not applied to soybeans
+
+* Conservation practices are implemented more often for fields with high fertilizer applications
+
+* Fields with conservation practices export more nutrients (P + N)
+
+* No data for Michigan or New England!
+
 ### Capel et al. 2018
 
  * P fertilizer applications have been constant since the 80s.
@@ -32,17 +55,6 @@ This data can be pulled:
  
  * Former grasslands are the most common landuse converted to ag.
  
- ## Potential predictor variables
- 
- * fertilizer_density
- * manure_density
- * drainage_type_percent
- * hazard class
- * suitability class
- * ~~stream_density~~
- * ~~percent_ag~~
- * ag_practices (percent cover crops)
-
 ## References
 
 * Alexander, R. B., R. A. Smith, G. E. Schwarz, E. W. Boyer, J. V. Nolan, and J. W. Brakebill. 2008. Differences in Phosphorus and Nitrogen Delivery to The Gulf of Mexico from the Mississippi River Basin. Environmental Science & Technology 42: 822–830. doi:10.1021/es0716103
