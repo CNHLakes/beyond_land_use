@@ -8,7 +8,7 @@ library(mapview)
 # prep lagos
 lg <- lagosne_load("1.087.1")
 
-ep <- lg$epi_nutr %>% 
+ep <- lg$epi_nutr %>%
   select(lagoslakeid, sampledate, tp, tn) %>%
   filter(!is.na(tp) | !is.na(tn)) %>%
   group_by(lagoslakeid) %>%
@@ -18,11 +18,13 @@ ep <- lg$epi_nutr %>%
   summarize(tp = log(median(tp, na.rm = TRUE)), tn = log(median(tn, na.rm = TRUE))) %>%
   identity()
 
+saveRDS(ep, "data/ep.rds")
+
 # pull hu8 polygons, spatial merge by hu6
 gdb_path    <- path.expand("~/.local/share/LAGOS-GIS/lagos-ne_gis.gpkg")
 hu8         <- st_read(gdb_path, "HU8")
 hu8         <- filter(hu8, str_detect(States, "MI"))
-hu8$HUC6    <- paste0(sapply(as.character(hu8$HUC8), 
+hu8$HUC6    <- paste0(sapply(as.character(hu8$HUC8),
                              function(x) substring(x, 0, 6)), "00")
 hu6 <- hu8 %>%
   st_simplify() %>%
@@ -32,35 +34,37 @@ hu6 <- hu8 %>%
 
 # ---- get_hu6_landcover ----
 
-hu6_lulc <- select(lg$hu8.lulc, contains("nlcd2006_ha"), hu8_zoneid) %>% 
+hu6_lulc <- select(lg$hu8.lulc, contains("nlcd2006_ha"), hu8_zoneid) %>%
             left_join(select(lg$hu8, hu8, hu8_zoneid)) %>%
             mutate(hu8 = sprintf("%08d", hu8)) %>%
             mutate(hu6 = paste0(substring(hu8, 0, 6), "00")) %>%
             group_by(hu6) %>%
-            mutate(hu6_ag_2006 = sum(hu8_nlcd2006_ha_81, 
+            mutate(hu6_ag_2006 = sum(hu8_nlcd2006_ha_81,
                                      hu8_nlcd2006_ha_82, na.rm = TRUE)) %>%
             ungroup() %>% data.frame() %>%
-            mutate(hu8_area = select(., hu8_nlcd2006_ha_0:hu8_nlcd2006_ha_95) %>% 
+            mutate(hu8_area = select(., hu8_nlcd2006_ha_0:hu8_nlcd2006_ha_95) %>%
                    rowSums(na.rm = TRUE)) %>%
             group_by(hu6) %>%
-            mutate(hu6_area = sum(hu8_area, na.rm = TRUE), 
-                   hu6_ag_2006_pcent = hu6_ag_2006 / hu6_area) %>% 
+            mutate(hu6_area = sum(hu8_area, na.rm = TRUE),
+                   hu6_ag_2006_pcent = hu6_ag_2006 / hu6_area) %>%
             data.frame()
 
 # ---- get_iws_landcover ----
 
-iws_lulc <- select(lg$iws.lulc, contains("nlcd2006_ha"), lagoslakeid) %>% 
+iws_lulc <- select(lg$iws.lulc, contains("nlcd2006_ha"), lagoslakeid) %>%
   group_by(lagoslakeid) %>%
-  mutate(iws_ag_2006 = sum(iws_nlcd2006_ha_81, 
+  mutate(iws_ag_2006 = sum(iws_nlcd2006_ha_81,
                            iws_nlcd2006_ha_82, na.rm = TRUE)) %>%
   left_join(select(lg$iws, iws_ha, lagoslakeid)) %>%
-  mutate(iws_ag_2006_pcent = iws_ag_2006 / iws_ha) %>% 
+  mutate(iws_ag_2006_pcent = iws_ag_2006 / iws_ha) %>%
   data.frame()
+
+saveRDS(iws_lulc, "data/iws_lulc.rds")
 
 # ---- get_tp ----
 
 mi_ep <- ep %>%
-  left_join(select(lg$locus, 
+  left_join(select(lg$locus,
                    nhd_long, nhd_lat, state_zoneid, hu8_zoneid, lagoslakeid)) %>%
   left_join(select(lg$state, state_zoneid, state_name)) %>%
   left_join(select(lg$hu8, hu8_zoneid, hu8)) %>%
