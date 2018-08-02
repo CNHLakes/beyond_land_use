@@ -7,12 +7,14 @@ library(mapview)
 
 # prep lagos
 lg <- lagosne_load("1.087.1")
+date_start <- as.Date("1995-01-01")
+date_end <- as.Date("2002-01-01")
 
 ep <- lg$epi_nutr %>%
   select(lagoslakeid, sampledate, tp, tn) %>%
   filter(!is.na(tp) | !is.na(tn)) %>%
   group_by(lagoslakeid) %>%
-  filter(sampledate > as.Date("1999-01-01") & sampledate < as.Date("2013-01-01")) %>%
+  filter(sampledate > date_start & sampledate < date_end) %>%
   mutate(count = n(), min_date = min(sampledate), max_date = max(sampledate)) %>%
   filter(count >= 7) %>%
   summarize(tp = log(median(tp, na.rm = TRUE)), tn = log(median(tn, na.rm = TRUE))) %>%
@@ -60,6 +62,18 @@ iws_lulc <- select(lg$iws.lulc, contains("nlcd2006_ha"), lagoslakeid) %>%
   data.frame()
 
 saveRDS(iws_lulc, "data/iws_lulc.rds")
+
+# ---- get_county_landcover ----
+
+county_lulc <- dplyr::select(lg$county.lulc, contains("nlcd2006_ha"), county_zoneid) %>%
+  group_by(county_zoneid) %>%
+  mutate(county_ag_2006 = sum(county_nlcd2006_ha_81,
+                              county_nlcd2006_ha_82, na.rm = TRUE)) %>%
+  left_join(dplyr::select(lg$county, county_ha, county_zoneid)) %>%
+  mutate(county_ag_2006_pcent = county_ag_2006 / county_ha) %>%
+  data.frame()
+
+saveRDS(county_lulc, "data/county_lulc.rds")
 
 # ---- get_tp ----
 
