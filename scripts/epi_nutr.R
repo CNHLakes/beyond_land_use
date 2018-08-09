@@ -9,6 +9,8 @@ library(mapview)
 lg         <- lagosne_load("1.087.1")
 date_start <- as.Date("1995-01-01")
 date_end   <- as.Date("2002-01-01")
+ag_cutoff  <-
+min_state_n <- 
 
 ep <- lg$epi_nutr %>%
   select(lagoslakeid, sampledate, tp, tn) %>%

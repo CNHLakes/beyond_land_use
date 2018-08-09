@@ -1,13 +1,29 @@
-all: rdss
+include config.mk
 
-rdss: data/ep.rds data/iws_lulc.rds data/county_lulc.rds
+test_config:
+	ls $(gssurgo_path)
+	ls $(cdl_path)
+	ls $(usgs_path)
+	@echo $(STATES)
 
-data/ep.rds: scripts/epi_nutr.R
+.PHONY: data all
+
+all: data
+
+data: data/ep.rds data/usgs.rds
+
+data/ep.rds: scripts/00_get_ep.R data/iws_lulc.rds data/county_lulc.rds
 	Rscript $<
-	
-data/iws_lulc.rds: scripts/epi_nutr.R
+
+data/iws_lulc.rds: scripts/00_get_lulc.R
 	Rscript $<
 
-data/county_lulc: scripts/epi_nutr.R
+data/county_lulc.rds: scripts/00_get_lulc.R
+	Rscript $<
+
+data/cdl_data.tif: scripts/00_get_cdl.R
+	Rscript $< $(cdl_path) $(STATES)
+
+data/usgs.rds: scripts/00_get_usgs.R
 	Rscript $<
 	

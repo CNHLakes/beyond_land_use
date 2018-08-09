@@ -50,21 +50,6 @@ pull_ag_polygons <- function(hi_ag_iws, county){
        iws_intersects = hi_ag_iws_intersects)
 }
 
-get_ag_cutoff <- function(cutoff){
-  hi_ag_counties <- dplyr::filter(iws_vs_county_ag,
-                                  county_ag_2006_pcent >= cutoff &
-                                    iws_ag_2006_pcent >= cutoff) %>%
-    group_by(county_zoneid) %>%
-    summarize(n_lakes = n()) %>%
-    dplyr::filter(n_lakes >= 1) %>%
-    left_join(dplyr::select(lg$county, county_zoneid, county_state, county_name))
-
-  hi_ag_iws <- dplyr::filter(iws_vs_county_ag, iws_ag_2006_pcent >= cutoff) %>%
-    distinct(lagoslakeid)
-
-  list(hi_ag_counties = hi_ag_counties, hi_ag_iws = hi_ag_iws)
-}
-
 get_iws_polygon <- function(lagoslakeid, crs){
   layer_name <- "IWS"
   # system(paste("ogrinfo -so", gdb_path, layer_name))

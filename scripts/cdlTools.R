@@ -1,3 +1,5 @@
+
+ 
 # ---- cdl_setup ----
 library(cdlTools)
 library(raster)
@@ -14,15 +16,15 @@ library(LAGOSextra)
 # ---- cdl_get_mi ----
 
 cdl_mi <- cdlTools::getCDL("MI", 2012, ssl.verifypeer = FALSE)
-writeRaster(cdl_mi$MI2012, "_episodes_rmd/lagos_ag/data/cdl_mi.tif")
+writeRaster(cdl_mi$MI2012, paste0(cdl_path, "cdl_mi.tif"))
 
-system(paste("gdalwarp -tr 120 120 -r average",
-             "_episodes_rmd/lagos_ag/data/cdl_mi.tif",
-             "_episodes_rmd/lagos_ag/data/cdl_mi_aggregate.tif"))
+system(paste("gdalwarp -tr 120 120 -r average", 
+             paste0(cdl_path, "cdl_mi.tif"),
+             paste0(cdl_path, "cdl_mi_aggregate.tif")))
 
 # ---- cdl_waffle ----
 # setwd("_episodes_rmd")
-cdl_mi <- raster("lagos_ag/data/cdl_mi_aggregate.tif")
+cdl_mi <- raster(paste0(cdl_path, "cdl_mi_aggregate.tif"))
 
 cdl_table <- as_data_frame(table(values(cdl_mi)), stringsAsFactors = FALSE) %>%
               mutate(Var1 = as.integer(Var1))
