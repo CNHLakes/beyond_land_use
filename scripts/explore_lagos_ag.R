@@ -79,9 +79,6 @@ get_iws_polygon <- function(lagoslakeid, crs){
   st_cast(iws, "MULTIPOLYGON") # solves error: Unknown WKB type 12
 }
 
-# ---- iws_vs_county_scatter ----
-# iws vs county ag scatter plot
-# setwd("_episodes_rmd")
 lg          <- lagosne_load("1.087.1")
 iws_lulc    <- readRDS("lagos_ag/data/iws_lulc.rds")
 county_lulc <- readRDS("lagos_ag/data/county_lulc.rds")
@@ -91,6 +88,9 @@ iws_vs_county_ag <- dplyr::select(iws_lulc, lagoslakeid,
   left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid))  %>%
   left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2006_pcent))
 
+# ---- iws_vs_county_scatter ----
+# iws vs county ag scatter plot
+# setwd("_episodes_rmd")
 gg <- ggplot(data = iws_vs_county_ag) +
   geom_point(aes(x = county_ag_2006_pcent, y = iws_ag_2006_pcent), alpha = 0.5) +
   xlab("NLCD 2006 County Ag (%)") + ylab("NLCD 2006 IWS Ag (%)") + ylim(0, 1) +
@@ -172,16 +172,19 @@ plot_grid(
 
 # ---- hi_ag_iws_w_ep ----
 # counties that overlap hi ag iws with ep data
+# setwd("_episodes_rmd")
 ep <- readRDS("lagos_ag/data/ep.rds")
 
-cutoff <- 0.7
+cutoff <- 0.4
 hi_ag_iws_w_ep <- get_ag_cutoff(cutoff = cutoff)$hi_ag_iws %>%
   filter(lagoslakeid %in% ep$lagoslakeid)
 
 hi_ag_iws_w_ep <- pull_ag_polygons(hi_ag_iws_w_ep, county)
+
 n_iws <- unlist(lapply(
   st_intersects(hi_ag_iws_w_ep$county, hi_ag_iws_w_ep$iws),
   function(x) length(x)))
+
 hi_ag_iws_w_ep$county$n_iws <- n_iws
 
 states <- st_transform(states, st_crs(hi_ag_iws_w_ep$county))
@@ -190,13 +193,18 @@ state_intersects <- states[unlist(lapply(
   state_intersects,
   function(x) length(x) > 3)),]
 
+hi_ag_iws_w_ep$county <- hi_ag_iws_w_ep$county[
+  unlist(lapply(st_intersects(hi_ag_iws_w_ep$county, state_intersects), function(x) length(x) > 0)),]
+
 # color by number of iws intersections
 ggplot() +
   geom_sf(data = state_intersects) +
   geom_sf(data = hi_ag_iws_w_ep$county, aes(fill = n_iws)) +
   ggtitle(paste0("# of overlappling IWS with > ",
                  100 * cutoff, "% ag & epi nutrient data \n
-          where > 7 measurements between 1999 and 2013")) +
+          where > 4 measurements between 1995 and 2002")) +
   theme(title = element_text(size = 10))
 
 # mapview::mapview(hi_ag_iws_w_ep$county, zcol = "n_iws")
+
+cat(paste0(sum(hi_ag_iws_w_ep$county$n_iws), " total lakes"))

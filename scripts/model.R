@@ -1,12 +1,15 @@
+# ---- placeholder ----
+
+cat("predictors:
+lake: depth
+iws: area, ws:lk,
+      pasture, wheat, corn, soybean, non-ag, other ag,
+      org c, hydro conduc, runoff pot, erod,
+      N fert, P fert, manure, N dep
+reponse:
+  tn, tp")
 
 # ---- exploratory_models ----
-
-# predictors:
-  # lake: depth
-  # iws: area, ws:lk,
-  #      pasture, wheat, corn, soybean, non-ag, other ag,
-  #      org c, hydro conduc, runoff pot, erod,
-  #      N fert, P fert, manure, N dep
 
 #### Fit unconditional model
 fit <- lmer(tp ~ 1 + (1|hu6), data=ep, na.action=na.omit)

@@ -6,9 +6,9 @@ library(stringr)
 library(mapview)
 
 # prep lagos
-lg <- lagosne_load("1.087.1")
+lg         <- lagosne_load("1.087.1")
 date_start <- as.Date("1995-01-01")
-date_end <- as.Date("2002-01-01")
+date_end   <- as.Date("2002-01-01")
 
 ep <- lg$epi_nutr %>%
   select(lagoslakeid, sampledate, tp, tn) %>%
@@ -16,7 +16,7 @@ ep <- lg$epi_nutr %>%
   group_by(lagoslakeid) %>%
   filter(sampledate > date_start & sampledate < date_end) %>%
   mutate(count = n(), min_date = min(sampledate), max_date = max(sampledate)) %>%
-  filter(count >= 7) %>%
+  filter(count > 3) %>%
   summarize(tp = log(median(tp, na.rm = TRUE)), tn = log(median(tn, na.rm = TRUE))) %>%
   identity()
 
