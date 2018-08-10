@@ -1,6 +1,90 @@
 cmdargs <- commandArgs(trailingOnly = TRUE)
 cdl_path <- cmdargs[1]
-states <- cmdargs[2:length(cmdargs)]
+# cdl_path <- "data/cdl/"
+
+library(LAGOSextra)
+library(sf)
+library(cdlTools)
+library(raster)
+library(dplyr)
+
+ep     <- readRDS("data/ep.rds")
+# mapview::mapview(LAGOSNE::coordinatize(ep))
+ep     <- distinct(ep, lagoslakeid)
+rstack <- list()
+# initialize raster stack
+
+# get a vertical data.frame of iws bboxes
+
+get_iws <- function(lagoslakeid){
+  query_wbd(lagoslakeid, utm = FALSE)
+}
+
+get_bbox <- function(boundary_iws){
+  st_bbox(boundary_iws)
+}
+
+get_states <- function(bbox){
+  state_sf <- st_as_sf(maps::map("state", fill = TRUE, plot = FALSE))
+  key <- data.frame(ID = tolower(state.name), 
+                    ABB = state.abb, stringsAsFactors = FALSE)
+  state_sf <- left_join(state_sf, key, by = "ID")
+  bbox <- st_transform(st_as_sfc(bbox), st_crs(state_sf))
+  
+  state_sf <- state_sf[unlist(lapply(
+    st_intersects(state_sf, bbox), 
+    function(x) length(x) > 0)),]
+  
+  state_sf$ABB
+}
+
+clip_to_iws <- function(iws, r){
+  raster::mask(r, as_Spatial(iws))
+}
+
+get_raster_name <- function(r){
+  paste0(cdl_path, r@data@names)
+}
+
+# ep <- filter(ep, lagoslakeid %in% c(23670, 5724))
+for(i in seq_len(length(ep$lagoslakeid))){
+  llid <- ep$lagoslakeid[i]
+  print(llid)
+  # i <- 1
+  # llid <- 23670
+  boundary_iws <- get_iws(llid)
+  bbox         <- get_bbox(boundary_iws)
+  states       <- get_states(bbox)
+    
+  # pull each cdl
+  # 2006 might by minimum year with all states?
+  cdl <- cdlTools::getCDL(x = states, year = 2006, 
+                           ssl.verifypeer = FALSE, 
+                           location = cdl_path)
+  
+  # mosaic cdls
+  mosaic_path <- paste0(cdl_path, paste0(states, collapse = "_"), ".tif")
+  if(!file.exists(mosaic_path)){
+    system(paste0("gdal_merge.py -o " , mosaic_path, " -n 0.0 ", 
+                  paste0(
+                    unlist(lapply(cdl, get_raster_name)), ".tif", collapse = " ")))
+  }
+
+  iws_raster_path <- paste0(cdl_path, paste0(llid, ".tif"))
+  
+  if(!file.exists(iws_raster_path)){
+    system(paste0("gdal_translate -projwin ", 
+                  paste0(
+                    as.vector(bbox)[c(1, 4, 3, 2)], collapse = " "), 
+                  " -of GTiff ", 
+                  mosaic_path, " ", 
+                  iws_raster_path))
+    
+    iws_raster <- raster(iws_raster_path)
+    iws_raster <- mask(iws_raster, boundary_iws)
+    writeRaster(iws_raster, iws_raster_path, overwrite = TRUE)
+  }
+}
 
 library(cdlTools)
 library(LAGOSNE)
@@ -21,9 +105,9 @@ albers_conic_usgs <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +
 # read ep data
 lg <- lagosne_load("1.087.1")
 ep <- readRDS("data/ep.rds")
-ep <- left_join(ep, 
-                dplyr::select(lg$locus, 
-                              nhd_long, nhd_lat, lagoslakeid), 
+ep <- left_join(ep,
+                dplyr::select(lg$locus,
+                              nhd_long, nhd_lat, lagoslakeid),
                 by = "lagoslakeid")
 ep <- coordinatize(ep)
 ep <- st_transform(ep, albers_conic_usgs)
@@ -33,7 +117,7 @@ cdl <- getCDL(year = 2012, bbox = ep_bbox)
 
 # make sf states object
 # state_sf <- st_as_sf(maps::map("state", fill = TRUE, plot = FALSE))
-# key <- data.frame(ID = tolower(state.name), 
+# key <- data.frame(ID = tolower(state.name),
 #                   ABB = state.abb, stringsAsFactors = FALSE)
 # state_sf <- left_join(state_sf, key, by = "ID")
 # state_sf <- st_transform(state_sf, albers_conic_usgs)
