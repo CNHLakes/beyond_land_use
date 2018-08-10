@@ -160,11 +160,7 @@ plot_grid(
 # setwd("_episodes_rmd")
 ep <- readRDS("lagos_ag/data/ep.rds")
 
-cutoff <- 0.4
-hi_ag_iws_w_ep <- get_ag_cutoff(cutoff = cutoff)$hi_ag_iws %>%
-  filter(lagoslakeid %in% ep$lagoslakeid)
-
-hi_ag_iws_w_ep <- pull_ag_polygons(hi_ag_iws_w_ep, county)
+hi_ag_iws_w_ep <- pull_ag_polygons(ep, county)
 
 n_iws <- unlist(lapply(
   st_intersects(hi_ag_iws_w_ep$county, hi_ag_iws_w_ep$iws),
@@ -185,11 +181,10 @@ hi_ag_iws_w_ep$county <- hi_ag_iws_w_ep$county[
 ggplot() +
   geom_sf(data = state_intersects) +
   geom_sf(data = hi_ag_iws_w_ep$county, aes(fill = n_iws)) +
-  ggtitle(paste0("# of overlappling IWS with > ",
-                 100 * cutoff, "% ag & epi nutrient data \n
+  ggtitle(paste0("# of overlappling IWS with > 40% ag & epi nutrient data \n
           where > 4 measurements between 1995 and 2002")) +
   theme(title = element_text(size = 10))
 
 # mapview::mapview(hi_ag_iws_w_ep$county, zcol = "n_iws")
 
-cat(paste0(sum(hi_ag_iws_w_ep$county$n_iws), " total lakes"))
+cat(paste0(nrow(ep), " total lakes"))
