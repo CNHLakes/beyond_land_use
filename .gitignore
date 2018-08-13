@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+data/cdl/*.tif
+data/cdl/*.tif*
+data/*.zip
+data/cdl/*.zip
