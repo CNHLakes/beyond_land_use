@@ -11,7 +11,7 @@ ag_cutoff    <- 0.4
 min_state_n  <- 4
 
 # filter ep with tn/tp data meeting date and n constraints  
-ep <- lg$epi_nutr %>%
+ep_nutr <- lg$epi_nutr %>%
   select(lagoslakeid, sampledate, tp, tn) %>%
   filter(!is.na(tp) | !is.na(tn)) %>%
   group_by(lagoslakeid) %>%
@@ -44,7 +44,7 @@ get_ag_cutoff <- function(cutoff){
 }
 
 ep <- get_ag_cutoff(cutoff = ag_cutoff)$hi_ag_iws %>%
-  filter(lagoslakeid %in% ep$lagoslakeid)
+  filter(lagoslakeid %in% ep_nutr$lagoslakeid)
 
 # filter ep concentrated by state
 ep <- left_join(ep, dplyr::select(lg$locus, 
@@ -55,6 +55,7 @@ ep <- ep %>%
   summarize(n_count = n()) %>%
   right_join(ep) %>%
   filter(n_count >= min_state_n) %>%
-  select(lagoslakeid:nhd_lat)
+  select(lagoslakeid:nhd_lat) %>%
+  left_join(ep_nutr)
 
 saveRDS(ep, "data/ep.rds")
