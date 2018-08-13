@@ -92,3 +92,5 @@ for(i in seq_len(length(ep$lagoslakeid))){
     writeRaster(iws_raster, iws_raster_path, overwrite = TRUE)
   }
 }
+
+write.csv(ep, file.path(cdl_path, "cdl.csv"), row.names = FALSE)

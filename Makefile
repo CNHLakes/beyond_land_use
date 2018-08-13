@@ -21,9 +21,8 @@ data/iws_lulc.rds: scripts/00_get_lulc.R
 data/county_lulc.rds: scripts/00_get_lulc.R
 	Rscript $<
 
-data/cdl_data.tif: scripts/00_get_cdl.R
-	Rscript $< $(cdl_path) $(STATES)
-
-data/usgs.rds: scripts/00_get_usgs.R
+data/usgs/usgs.rds: scripts/00_get_usgs.R
 	Rscript $<
-	
+
+data/cdl/cdl.csv: scripts/00_get_cdl.R
+	Rscript $< 'data/cdl/'
