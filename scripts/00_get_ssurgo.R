@@ -19,12 +19,13 @@ for(i in seq_len(length(ep$lagoslakeid))){
                         full.names = TRUE, include.dirs = TRUE)
   in_tifs <- in_tifs[grep(paste(states, collapse = "|"), in_tifs)] 
     
-  # mosaic gssurgo
+  # mosaic gssurgo # https://gis.stackexchange.com/a/44739/32531
   mosaic_path <- paste0(gssurgo_path, paste0(states, collapse = "_"), ".tif")
   if(!file.exists(mosaic_path)){
     system(
-      paste0("gdal_merge.py -o " , mosaic_path, " ",
-                  paste0(in_tifs, collapse = " "))
+      paste0("gdalwarp ",
+                  paste0(in_tifs, collapse = " "), 
+             " ", mosaic_path)
       )
   }
   
