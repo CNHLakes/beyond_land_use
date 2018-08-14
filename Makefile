@@ -10,7 +10,7 @@ test_config:
 
 all: data
 
-data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv
+data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.csv
 
 data/ep.rds: scripts/00_get_ep.R data/iws_lulc.rds data/county_lulc.rds
 	Rscript $<
@@ -29,4 +29,7 @@ data/cdl/cdl.csv: scripts/00_get_cdl.R
 	
 data/cdl/cdl_summary.csv: scripts/01_process_cdl.R data/cdl/cdl.csv
 	Rscript $< 
+	
+data/gssurgo/gssurgo.csv: scripts/00_get_ssurgo.R
+	Rscript $< 'data/gssurgo/'
 	
