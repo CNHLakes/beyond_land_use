@@ -21,7 +21,7 @@ data/iws_lulc.rds: scripts/00_get_lulc.R
 data/county_lulc.rds: scripts/00_get_lulc.R
 	Rscript $<
 
-data/usgs/usgs.rds: scripts/00_get_usgs.R data/ep.rds
+data/usgs/usgs.rds: scripts/00_get_usgs.R
 	Rscript $<
 
 data/cdl/cdl.csv: scripts/00_get_cdl.R
