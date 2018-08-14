@@ -23,7 +23,7 @@ for(i in seq_len(length(ep$lagoslakeid))){
                         full.names = TRUE, include.dirs = TRUE)
   in_tifs <- in_tifs[grep(paste(states, collapse = "|"), in_tifs)] 
   
-  iws_raster_path <- paste0(gssurgo_path, paste0(llid, ".tif"))
+  iws_raster_path <- paste0(gssurgo_path, paste0(llid, "_", length(in_tifs), ".tif"))
   
   if(!file.exists(iws_raster_path) & length(in_tifs) > 0){
     if(length(in_tifs) > 1){ # clip from each and merge
