@@ -3,7 +3,6 @@ library(cdlTools)
 library(magrittr)
 library(dplyr)
 cdl_path <- "data/cdl/"
-llid <- 100479
 
 # cdl_key <- data.frame(code = 0:255, description = cdlTools::updateNamesCDL(0:255),
 #                       stringsAsFactors = FALSE)
@@ -47,7 +46,8 @@ r_list <- list.files(cdl_path, pattern = "^\\d*.tif$",
                      include.dirs = TRUE, full.names = TRUE)
 
 cdl_summary <- function(llid){
-  r <- raster(r_list[grep(llid, r_list)])
+  # llid <- 126
+  r <- raster(r_list[grep(llid, r_list)[1]])
   
   cdl_table <- as_data_frame(table(values(r)), stringsAsFactors = FALSE) %>%
     mutate(code = as.integer(Var1)) %>%
@@ -85,6 +85,10 @@ cdl_summary <- function(llid){
 
 res <- list()
 for(i in seq_len(length(r_list))){
-  llid <- as.numeric(stringr::str_extract(r_list[1], "\\d*(?=(.tif))"))
+  llid <- as.numeric(stringr::str_extract(r_list, "\\d*(?=(.tif))"))[i]
+  print(i); print(llid)
   res[[i]] <- cdl_summary(llid)
 }
+
+res <- bind_rows(res)
+write.csv(res, "data/cdl/cdl_summary.csv", row.names = FALSE)
