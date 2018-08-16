@@ -6,7 +6,7 @@ lg           <- lagosne_load("1.087.1")
 iws_lulc     <- readRDS("data/iws_lulc.rds")
 county_lulc  <- readRDS("data/county_lulc.rds")
 date_start   <- as.Date("1995-01-01")
-date_end     <- as.Date("2002-01-01")
+date_end     <- as.Date("2005-01-01")
 min_sample_n <- 3
 ag_cutoff    <- 0.4
 min_state_n  <- 4
@@ -60,3 +60,5 @@ ep <- ep %>%
   left_join(ep_nutr)
 
 saveRDS(ep, "data/ep.rds")
+
+# mapview::mapview(coordinatize(ep))
