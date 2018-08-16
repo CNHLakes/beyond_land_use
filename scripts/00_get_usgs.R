@@ -15,7 +15,7 @@ library(lwgeom)
 # Surface of the Conterminous United States, 1982–2001
 
 ep <- readRDS("data/ep.rds")
-iws <- LAGOSextra::query_wbd(ep$lagoslakeid)
+iws <- LAGOSextra::query_wbd(ep$lagoslakeid, utm = FALSE)
 iws <- st_make_valid(iws)
 
 sfile <- "data/usgs/usgs_nutrient_inputs.xls"
