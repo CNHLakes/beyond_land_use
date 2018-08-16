@@ -1,4 +1,5 @@
 # ---- lagos_setup ----
+# setwd("_episodes_rmd")
 library(vapour)
 library(LAGOSNE)
 library(magrittr)
@@ -182,7 +183,7 @@ ggplot() +
   geom_sf(data = state_intersects) +
   geom_sf(data = hi_ag_iws_w_ep$county, aes(fill = n_iws)) +
   ggtitle(paste0("# of overlappling IWS with > 40% ag & epi nutrient data \n
-          where > 4 measurements between 1995 and 2002")) +
+          where > 4 measurements between 1995 and 2005")) +
   theme(title = element_text(size = 10))
 
 # mapview::mapview(hi_ag_iws_w_ep$county, zcol = "n_iws")
