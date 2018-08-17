@@ -75,8 +75,8 @@ cdl_summary <- read.csv("data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
 usgs        <- readRDS("data/usgs/usgs.rds")
 
 lg_ep <- mutate(lg$iws.lulc, 
-                lg_ag = rowSums(cbind(iws_nlcd2011_pct_81, 
-                                      iws_nlcd2011_pct_82), na.rm = TRUE)) %>%
+                lg_ag = rowSums(cbind(iws_nlcd2006_pct_81, 
+                                      iws_nlcd2006_pct_82), na.rm = TRUE)) %>%
   select(lagoslakeid, lg_ag) %>%
   left_join(ep, by = "lagoslakeid") %>%
   filter(!is.na(tp))
@@ -93,7 +93,7 @@ usgs_ep <- filter(usgs, !is.na(tp))
 plot_grid(
 ggplot() +
   geom_point(data = lg_ep, aes(x = lg_ag, y = tp)) +
-  xlab("LAGOS (NLCD 2011) Ag (%)"),
+  xlab("LAGOS (NLCD 2006) Ag (%)"),
 ggplot() +
   geom_point(data = cdl_ep, aes(x = cdl_ag, y = tp)) +
   xlab("CDL Ag (%)"),
