@@ -40,6 +40,6 @@ Issues
 
 -   Availability of data products through time is highly variable. How to align or decide to treat properties as constant?
 
-<img src="../../fig/rmd-hi_ag_iws_w_ep-1.png" width="504" />
+<img src="figures/rmd-hi_ag_iws_w_ep-1.png" width="504" />
 
 ![](figures/lagos_v_cdl_v_usgs-1.png)

@@ -50,7 +50,7 @@ Use more detailed Ag and soils data to improve predictive models of lake TP, TN,
 * Availability of data products through time is highly variable. How to align or decide to treat properties as constant?
 
 ```{r maps, echo=FALSE}
-knitr::include_graphics("../../fig/rmd-hi_ag_iws_w_ep-1.png")
+knitr::include_graphics("figures/rmd-hi_ag_iws_w_ep-1.png")
 ```
 
 ```{r echo=FALSE}
