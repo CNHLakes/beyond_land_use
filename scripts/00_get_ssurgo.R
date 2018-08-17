@@ -2,7 +2,7 @@ cmdargs <- commandArgs(trailingOnly = TRUE)
 gssurgo_path <- cmdargs[1]
 # gssurgo_path <- "data/gssurgo/"
 ep      <- readRDS("data/ep.rds")
-in_path <- path.expand("~/Documents/Science/Data/gSSURGO/tifs")
+in_path <- path.expand("~/Documents/Science/Data/gssurgo_data/tifs")
 
 source("scripts/utils.R")
 
