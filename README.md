@@ -1,42 +1,45 @@
-## Vision
 
-Use more detailed Ag data to improve predictive models of lake TP and TN
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+Vision
+------
 
-## Data sources
+Use more detailed Ag and soils data to improve predictive models of lake TP, TN, and Nitrate.
 
-* [USDA census](https://agcensus.usda.gov/Publications/)
-  * crops
-  * animal products
-  * economics
+Potential predictor variables
+-----------------------------
 
-This data can be pulled:
-  * manually from [NASS Quick Stats](https://www.nass.usda.gov/Quick_Stats/)
-  * automated from [NASS Quick Stats](https://www.nass.usda.gov/Quick_Stats/) using the [rnassqs](https://github.com/potterzot/rnassqs) package
-  * automated from [Cropscape](https://nassgeodata.gmu.edu/CropScape/) using the [cdlTools](https://github.com/jlisic/cdlTools) package
+-   LAGOS
+    -   Lake depth
+    -   IWS area
+    -   IWS/Lake area
+-   Cropland Data Layer
+    -   IWS pasture types (forage or not)
+    -   IWS specific crops (corn, wheat, etc.)
+    -   IWS crop frequency/rotation
+-   gSSURGO
+    -   IWS wetland potential (as a proxy for tile drainage)
+    -   IWS soil organic carbon
+    -   IWS root zone depth
+    -   IWS lithology (sand %, clay %, etc.)
+-   USGS
+    -   IWS from county - manure, fertilizer, and deposition of N,P
 
-* ~~USDA survey data~~
+Research questions
+------------------
 
-* [USGS](https://water.usgs.gov/nawqa/nutrients/)
-  * County-level esitmates of nitrogen and phosphorus from fertilizer, 1987-2006
-  * County-level estimates of nutrient inputs to the land surface 1982-2001
+-   Is ag intensification related to changes in lake water quality?
+    -   Maybe areas with reduced intensification have been improving?
+-   Do ag conservation practices affect lake water quality?
+-   Others?
 
-## Notes
+Timeline
+--------
 
-## Potential predictor variables
- 
- * fertilizer_density
- * manure_density
- * drainage_type_percent
- * hazard class
- * suitability class
- * ~~stream_density~~
- * ~~percent_ag~~
- * ag_practices (percent cover crops)
+Issues
+------
 
-## References
+-   Availability of data products through time is highly variable. How to align or decide to treat properties as constant?
 
-* Alexander, R. B., R. A. Smith, G. E. Schwarz, E. W. Boyer, J. V. Nolan, and J. W. Brakebill. 2008. Differences in Phosphorus and Nitrogen Delivery to The Gulf of Mexico from the Mississippi River Basin. Environmental Science & Technology 42: 822–830. doi:10.1021/es0716103
+<img src="../../fig/rmd-hi_ag_iws_w_ep-1.png" width="504" />
 
-* Powers, S. M., J. L. Tank, and D. M. Robertson. 2015. Control of nitrogen and phosphorus transport by reservoirs in agricultural landscapes. Biogeochemistry 124: 417–439. doi:10.1007/s10533-015-0106-3
-
-* Soranno, P. A., K. S. Cheruvelil, T. Wagner, K. E. Webster, and M. T. Bremigan. 2015. Effects of Land Use on Lake Nutrients: The Importance of Scale, Hydrologic Connectivity, and Region. PLOS ONE 10: e0135454. doi:10.1371/journal.pone.0135454
+![](figures/lagos_v_cdl_v_usgs-1.png)

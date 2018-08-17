@@ -1,0 +1,105 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "figures/",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+## Vision
+
+Use more detailed Ag and soils data to improve predictive models of lake TP, TN, and Nitrate.
+
+## Potential predictor variables
+
+* LAGOS
+    * Lake depth
+    * IWS area
+    * IWS/Lake area
+* Cropland Data Layer
+    * IWS pasture types (forage or not)
+    * IWS specific crops (corn, wheat, etc.)
+    * IWS crop frequency/rotation
+* gSSURGO
+    * IWS wetland potential (as a proxy for tile drainage)
+    * IWS soil organic carbon
+    * IWS root zone depth
+    * IWS lithology (sand %, clay %, etc.)
+* USGS
+    * IWS from county - manure, fertilizer, and deposition of N,P
+
+## Research questions
+
+* Is ag intensification related to changes in lake water quality?
+    * Maybe areas with reduced intensification have been improving?
+* Do ag conservation practices affect lake water quality?
+* Others?
+
+## Timeline
+
+## Issues
+
+* Availability of data products through time is highly variable. How to align or decide to treat properties as constant?
+
+```{r maps, echo=FALSE}
+knitr::include_graphics("../../fig/rmd-hi_ag_iws_w_ep-1.png")
+```
+
+```{r echo=FALSE}
+cdl_key <- read.csv("data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
+```
+
+```{r lagos_v_cdl_v_usgs, echo=FALSE}
+# tp vs lagos ag, cdl ag, usgs P inputs
+
+# ---- setup ----
+
+library(dplyr)
+library(ggplot2)
+library(magrittr)
+library(LAGOSNE)
+library(cowplot)
+library(sf)
+
+lg          <- lagosne_load("1.087.1")
+ep          <- readRDS("data/ep.rds")
+cdl_summary <- read.csv("data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
+usgs        <- readRDS("data/usgs/usgs.rds")
+
+lg_ep <- mutate(lg$iws.lulc, 
+                lg_ag = rowSums(cbind(iws_nlcd2011_pct_81, 
+                                      iws_nlcd2011_pct_82), na.rm = TRUE)) %>%
+  select(lagoslakeid, lg_ag) %>%
+  left_join(ep, by = "lagoslakeid") %>%
+  filter(!is.na(tp))
+
+cdl_ep <- filter(cdl_summary, variable == "ag") %>%
+  left_join(
+    filter(ep, !is.na(tp)), by = c("llid" = "lagoslakeid")) %>%
+  mutate(cdl_ag = value)
+
+usgs_ep <- filter(usgs, !is.na(tp))
+
+# ---- plotting ----
+  
+plot_grid(
+ggplot() +
+  geom_point(data = lg_ep, aes(x = lg_ag, y = tp)) +
+  xlab("LAGOS (NLCD 2011) Ag (%)"),
+ggplot() +
+  geom_point(data = cdl_ep, aes(x = cdl_ag, y = tp)) +
+  xlab("CDL Ag (%)"),
+ggplot() + 
+  geom_point(data = usgs_ep, aes(x = phosphorus_input, y = tp)) + 
+  scale_x_log10() + 
+  xlab("log(P Input)"))
+
+```
