@@ -12,9 +12,6 @@ ssurgo_path <- "data/gssurgo/"
 
 source("scripts/utils.R")
 
-r_list <- list.files(ssurgo_path, pattern = "^\\d*_\\d.tif$", 
-                     include.dirs = TRUE, full.names = TRUE)
-
 # ---- construct query ----
 in_gpkg <- list.files(gpkg_path, pattern = ".gpkg", 
                       full.names = TRUE, include.dirs = TRUE)[1]
@@ -30,9 +27,13 @@ qry <- tbl(con, "Valu1") %>%
 
 # ---- execute ---- 
 
-# llid     <- 6874
-# llid     <- 23670
-# llid     <- 34377
+r_list <- list.files(ssurgo_path, pattern = "^\\d*_\\d.tif$", 
+                     include.dirs = TRUE, full.names = TRUE)
+
+# drop strange iws
+r_list <- r_list[!(seq_len(length(r_list)) %in% grep(6198, r_list))]
+llids  <- stringr::str_extract(r_list, "(\\d*)(?=_)")
+
 res <- list()
 
 for(i in seq_len(length(r_list))){
@@ -53,4 +54,7 @@ for(i in seq_len(length(r_list))){
   res[[i]]       <- wetland_pct
 }
 
-hist(unlist(res))
+res <- data.frame(llid = llids, wetland_pct = unlist(res), 
+                  stringsAsFactors = FALSE)
+
+saveRDS(res, "data/gssurgo/gssurgo.rds")

@@ -33,3 +33,6 @@ data/cdl/cdl_summary.csv: scripts/01_process_cdl.R data/cdl/cdl.csv
 data/gssurgo/gssurgo.csv: scripts/00_get_ssurgo.R
 	Rscript $< 'data/gssurgo/'
 	
+data/gssurgo/gssurgo.rds: scripts/01_process_ssurgo.R data/gssurgo/gssurgo.csv
+	Rscript $<
+	
