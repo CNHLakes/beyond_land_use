@@ -60,6 +60,12 @@ ep <- ep %>%
   select(lagoslakeid:nhd_lat) %>%
   left_join(ep_nutr)
 
+# add focal predictors
+ep <- ep %>%
+  left_join(dplyr::select(lg$iws, lagoslakeid, iws_ha)) %>%
+  left_join(dplyr::select(lg$locus, lagoslakeid, lake_area_ha)) %>%
+  mutate(iws_la = iws_ha / lake_area_ha)
+
 saveRDS(ep, "data/ep.rds")
 
 # mapview::mapview(coordinatize(ep))

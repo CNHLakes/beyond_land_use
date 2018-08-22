@@ -8,7 +8,7 @@ test_config:
 
 .PHONY: data all
 
-all: data
+all: data data/dt.rds
 
 data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv 
 
@@ -35,4 +35,6 @@ data/gssurgo/gssurgo.csv: scripts/00_get_ssurgo.R
 	
 data/gssurgo/gssurgo.rds: scripts/01_process_ssurgo.R data/gssurgo/gssurgo.csv
 	Rscript $<
-	
+
+data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds
+	Rscript $<
