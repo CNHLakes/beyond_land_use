@@ -13,32 +13,33 @@ min_state_n  <- 4
 
 # filter ep with tn/tp data meeting date and n constraints
 ep_nutr <- lg$epi_nutr %>%
-  select(lagoslakeid, sampledate, tp, tn) %>%
-  filter(!is.na(tp) | !is.na(tn)) %>%
+  select(lagoslakeid, sampledate, tp, tn, no2no3) %>%
+  filter(!is.na(tp) | !is.na(tn) | !is.na(no2no3)) %>%
   group_by(lagoslakeid) %>%
   filter(sampledate > date_start & sampledate < date_end) %>%
   mutate(count = n(), min_date = min(sampledate), max_date = max(sampledate)) %>%
   filter(count > min_sample_n) %>%
-  summarize(tp = median(tp, na.rm = TRUE), tn = median(tn, na.rm = TRUE)) %>%
+  summarize(tp = median(tp, na.rm = TRUE), 
+            tn = median(tn, na.rm = TRUE),
+            no2no3 = median(no2no3, na.rm = TRUE)) %>%
   identity()
 
 # filter ep with ag above cutoff
-iws_vs_county_ag <- dplyr::select(iws_lulc, lagoslakeid,
-                                  iws_ag_2006:iws_ag_2006_pcent) %>%
+iws_vs_county_ag <- iws_lulc %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid))  %>%
-  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2006_pcent))
+  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2001_pcent))
 
 get_ag_cutoff <- function(cutoff){
   hi_ag_counties <- dplyr::filter(iws_vs_county_ag,
-                                  county_ag_2006_pcent >= cutoff &
-                                    iws_ag_2006_pcent >= cutoff) %>%
+                                  county_ag_2001_pcent >= cutoff &
+                                    iws_ag_2001_pcent >= cutoff) %>%
     group_by(county_zoneid) %>%
     summarize(n_lakes = n()) %>%
     dplyr::filter(n_lakes >= 1) %>%
     left_join(dplyr::select(lg$county, county_zoneid, county_state, county_name))
 
   hi_ag_iws <- dplyr::filter(iws_vs_county_ag,
-                             iws_ag_2006_pcent >= cutoff) %>%
+                             iws_ag_2001_pcent >= cutoff) %>%
     distinct(lagoslakeid)
 
   list(hi_ag_counties = hi_ag_counties, hi_ag_iws = hi_ag_iws)

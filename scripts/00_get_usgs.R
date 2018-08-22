@@ -8,13 +8,14 @@ library(dplyr)
 library(snakecase)
 library(janitor)
 library(lwgeom)
+library(magrittr)
 
 # ---- usgs_get ----
 
 # County-Level Estimates of Nutrient Inputs to the Land
 # Surface of the Conterminous United States, 1982–2001
 
-ep <- readRDS("data/ep.rds")
+ep  <- readRDS("data/ep.rds")
 iws <- LAGOSextra::query_wbd(ep$lagoslakeid, utm = FALSE)
 iws <- st_make_valid(iws)
 
@@ -33,38 +34,40 @@ if(!file.exists(ofile)){
 }
 
 # setwd("../")
-sfile <- "data/usgs/usgs_nutrient_inputs.xls"
-ofile <- paste0(sfile, "x")
+if(!file.exists("data/usgs/usgs_raw.rds")){
+  sfile <- "data/usgs/usgs_nutrient_inputs.xls"
+  ofile <- paste0(sfile, "x")
 
-datasheet <- xlsx_cells(ofile) %>%
-  select(row, col, data_type, numeric, character) %>%
-  filter(col > 4) %>%
-  mutate(character = if_else(grepl("X_", character), NA_character_, character),
-         character = if_else(nchar(character) == 0, NA_character_, character)) %>%
-  behead("N", variable) %>%
-  behead("N", year) %>%
-  behead("N", farm_nofarm) %>%
-  fill(variable, year) %>%
-  mutate(character = coalesce(character, as.character(numeric))) %>%
-  select(-col, -numeric, -data_type) %>%
-  mutate(variable = snakecase::to_any_case(variable),
-         variable = gsub("_input_from", "", variable),
-         variable = gsub("_kilograms", "", variable))
+  datasheet <- xlsx_cells(ofile) %>%
+    select(row, col, data_type, numeric, character) %>%
+    filter(col > 4) %>%
+    mutate(character = if_else(grepl("X_", character), NA_character_, character),
+           character = if_else(nchar(character) == 0, NA_character_, character)) %>%
+    behead("N", variable) %>%
+    behead("N", year) %>%
+    behead("N", farm_nofarm) %>%
+    fill(variable, year) %>%
+    mutate(character = coalesce(character, as.character(numeric))) %>%
+    select(-col, -numeric, -data_type) %>%
+    mutate(variable = snakecase::to_any_case(variable),
+           variable = gsub("_input_from", "", variable),
+           variable = gsub("_kilograms", "", variable))
 
-county_info <- xlsx_cells(ofile) %>%
-  select(row, col, data_type, numeric, character) %>%
-  filter(col <= 4, col ) %>%
-  behead("N", key) %>%
-  filter(row > 4) %>%
-  mutate(character = coalesce(character, as.character(numeric))) %>%
-  select(row, value = character, key) %>%
-  spread(key, value) %>%
-  clean_names()
+  county_info <- xlsx_cells(ofile) %>%
+    select(row, col, data_type, numeric, character) %>%
+    filter(col <= 4, col ) %>%
+    behead("N", key) %>%
+    filter(row > 4) %>%
+    mutate(character = coalesce(character, as.character(numeric))) %>%
+    select(row, value = character, key) %>%
+    spread(key, value) %>%
+    clean_names()
 
-usgs_raw <- left_join(county_info, datasheet, by = "row") %>%
-  rename(value = character)
+  usgs_raw <- left_join(county_info, datasheet, by = "row") %>%
+    rename(value = character)
 
-# saveRDS(usgs_raw, "data/usgs/usgs_raw.rds")
+  saveRDS(usgs_raw, "data/usgs/usgs_raw.rds")
+}
 
 # select counties intersected by ep iws
 county_sf <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
@@ -77,50 +80,49 @@ county_sf <- county_sf[
     function(x) length(x) > 0)),]
 
 # join usgs data
-# usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
-usgs <- filter(usgs_raw, stringr::str_detect(variable, "phosphorus")) %>%
-  group_by(county, state) %>%
-  summarize(value = sum(as.numeric(value), na.rm = TRUE))
+usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
 
-state_key <- data.frame(state = datasets::state.abb, state_name = datasets::state.name)
-usgs <- ungroup(usgs) %>%
-  mutate(county = tolower(county)) %>%
-  left_join(state_key) %>%
-  mutate(state = tolower(state_name))
+interp_to_iws <- function(usgs_raw, varname, outname){
+  usgs <- filter(usgs_raw, stringr::str_detect(variable, varname)) %>%
+    group_by(county, state, year) %>%
+    summarize(value = sum(as.numeric(value), na.rm = TRUE)) %>%
+    ungroup() %>%
+    group_by(county, state) %>%
+    summarize(value = mean(as.numeric(value), na.rm = TRUE))
 
-county_usgs <- left_join(county_sf, usgs)
+  state_key <- data.frame(state = datasets::state.abb,
+                          state_name = datasets::state.name)
 
-# st_interpolate_aw
-iws_interp <- st_interpolate_aw(county_usgs["value"], iws,
-                                extensive = TRUE)
-iws_interp <- data.frame(phosphorus_input = iws_interp$value,
-                         lagoslakeid = iws$lagoslakeid,
-                         stringsAsFactors = FALSE)
+    usgs <- ungroup(usgs) %>%
+    mutate(county = tolower(county)) %>%
+    left_join(state_key) %>%
+    mutate(state = tolower(state_name))
 
-res <- left_join(ep, iws_interp, by = "lagoslakeid")
+  county_usgs <- left_join(county_sf, usgs)
 
-# ---- nitrogen ----
-usgs <- filter(usgs_raw, stringr::str_detect(variable, "nitrogen")) %>%
-  group_by(county, state) %>%
-  summarize(value = sum(as.numeric(value), na.rm = TRUE))
+  # st_interpolate_aw
+  iws_interp <- st_interpolate_aw(county_usgs["value"], iws,
+                                  extensive = TRUE)
 
-state_key <- data.frame(state = datasets::state.abb, state_name = datasets::state.name)
-usgs <- ungroup(usgs) %>%
-  mutate(county = tolower(county)) %>%
-  left_join(state_key) %>%
-  mutate(state = tolower(state_name))
+  iws_interp <- data.frame(outname = iws_interp$value,
+                           lagoslakeid = iws$lagoslakeid,
+                           stringsAsFactors = FALSE)
+  names(iws_interp)[1] <- outname
 
-county_usgs <- left_join(county_sf, usgs)
+  left_join(ep, iws_interp, by = "lagoslakeid")
+}
 
-iws_interp <- st_interpolate_aw(county_usgs["value"], iws,
-                                extensive = TRUE)
-iws_interp <- data.frame(nitrogen_input = iws_interp$value,
-                         lagoslakeid = iws$lagoslakeid,
-                         stringsAsFactors = FALSE)
+# unique(usgs_raw$variable)
+usgs <- interp_to_iws(usgs_raw, "phosphorus", "phosphorus_input") %>%
+  left_join(
+    select(interp_to_iws(usgs_raw, "nitrogen", "nitrogen_input"),
+           lagoslakeid, nitrogen_input),
+    by = "lagoslakeid") %>%
+  left_join(
+  select(interp_to_iws(usgs_raw, "nitrogen_atmospheric", "n_dep"), lagoslakeid, n_dep),
+    by = "lagoslakeid")
 
-res <- left_join(res, iws_interp, by = "lagoslakeid")
-
-saveRDS(res, "data/usgs/usgs.rds")
+saveRDS(usgs, "data/usgs/usgs.rds")
 
 # ---- viz ----
 # res <- readRDS("data/usgs/usgs.rds")

@@ -14,6 +14,7 @@ library(ggridges)
 library(tidyr)
 library(ggExtra)
 
+ep <- readRDS("lagos_ag/data/ep.rds")
 gdb_path <- path.expand("~/.local/share/LAGOS-GIS/lagos-ne_gis.gpkg")
 # st_layers(gdb_path)
 layer_name <- "COUNTY"
@@ -69,17 +70,16 @@ lg          <- lagosne_load("1.087.1")
 iws_lulc    <- readRDS("lagos_ag/data/iws_lulc.rds")
 county_lulc <- readRDS("lagos_ag/data/county_lulc.rds")
 
-iws_vs_county_ag <- dplyr::select(iws_lulc, lagoslakeid,
-                                  iws_ag_2006:iws_ag_2006_pcent) %>%
+iws_vs_county_ag <- iws_lulc %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid))  %>%
-  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2006_pcent))
+  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2001_pcent))
 
 # ---- iws_vs_county_scatter ----
 # iws vs county ag scatter plot
 # setwd("_episodes_rmd")
 gg <- ggplot(data = iws_vs_county_ag) +
-  geom_point(aes(x = county_ag_2006_pcent, y = iws_ag_2006_pcent), alpha = 0.5) +
-  xlab("NLCD 2006 County Ag (%)") + ylab("NLCD 2006 IWS Ag (%)") + ylim(0, 1) +
+  geom_point(aes(x = county_ag_2001_pcent, y = iws_ag_2001_pcent), alpha = 0.5) +
+  xlab("NLCD 2001 County Ag (%)") + ylab("NLCD 2001 IWS Ag (%)") + ylim(0, 1) +
   ggtitle("Distribution of county and iws ag")
 
 ggMarginal(gg, fill = "gray")
@@ -159,7 +159,6 @@ plot_grid(
 # ---- hi_ag_iws_w_ep ----
 # counties that overlap hi ag iws with ep data
 # setwd("_episodes_rmd")
-ep <- readRDS("lagos_ag/data/ep.rds")
 
 hi_ag_iws_w_ep <- pull_ag_polygons(ep, county)
 
