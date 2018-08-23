@@ -17,6 +17,7 @@ library(magrittr)
 
 ep  <- readRDS("data/ep.rds")
 iws <- LAGOSextra::query_wbd(ep$lagoslakeid, utm = FALSE)
+# mapview::mapview(dplyr::filter(iws, lagoslakeid == 34352))
 iws <- st_make_valid(iws)
 
 sfile <- "data/usgs/usgs_nutrient_inputs.xls"
@@ -83,6 +84,7 @@ county_sf <- county_sf[
 usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
 
 interp_to_iws <- function(usgs_raw, varname, outname){
+  # varname = "nitrogen"
   usgs <- filter(usgs_raw, stringr::str_detect(variable, varname)) %>%
     group_by(county, state, year) %>%
     summarize(value = sum(as.numeric(value), na.rm = TRUE)) %>%
@@ -98,7 +100,10 @@ interp_to_iws <- function(usgs_raw, varname, outname){
     left_join(state_key) %>%
     mutate(state = tolower(state_name))
 
-  county_usgs <- left_join(county_sf, usgs)
+  county_usgs <- left_join(county_sf, usgs) %>%
+    mutate(value_per_ha = value / units::set_units(st_area(geometry), "ha"))
+  
+  # hist(county_usgs$value_per_ha)
 
   # st_interpolate_aw
   iws_interp <- st_interpolate_aw(county_usgs["value"], iws,
