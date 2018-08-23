@@ -8,6 +8,12 @@ source("scripts/utils.R")
 
 library(raster)
 
+existing_rasters <- list.files(gssurgo_path, pattern = "\\d*_\\d.tif", include.dirs = TRUE, full.names = TRUE)
+existing_llids <- stringr::str_extract(existing_rasters, "(\\d*)(?=_\\d.tif)")
+
+# unlink(existing_rasters[!(existing_llids %in% ep$lagoslakeid)])
+ep <- dplyr::filter(ep, !(lagoslakeid %in% as.numeric(existing_llids)))
+
 for(i in seq_len(length(ep$lagoslakeid))){
   llid <- ep$lagoslakeid[i]
   print(llid)
@@ -15,9 +21,10 @@ for(i in seq_len(length(ep$lagoslakeid))){
   # i <- 1
   # llid <- 23670
   # llid <- 1935
+  # llid <- 5331
   boundary_iws <- get_iws(llid)
   bbox         <- get_bbox(boundary_iws)
-  states       <- get_states(bbox)
+  states       <- suppressMessages(get_states(bbox))
 
   in_tifs <- list.files(in_path, pattern = "*.tif$", 
                         full.names = TRUE, include.dirs = TRUE)
@@ -27,7 +34,7 @@ for(i in seq_len(length(ep$lagoslakeid))){
   
   if(!file.exists(iws_raster_path) & length(in_tifs) > 0){
     if(length(in_tifs) > 1){ # clip from each and merge
-      # clip from first
+      print("clip from first")
       system(paste0("gdal_translate -projwin ",
                     paste0(
                       as.vector(bbox)[c(1, 4, 3, 2)], collapse = " "),
@@ -35,7 +42,7 @@ for(i in seq_len(length(ep$lagoslakeid))){
                     in_tifs[1], " ",
                     "data/gssurgo/temp1.tif"))
       
-      # clip from second
+      print("clip from second")
       system(paste0("gdal_translate -projwin ",
                     paste0(
                       as.vector(bbox)[c(1, 4, 3, 2)], collapse = " "),
@@ -43,7 +50,7 @@ for(i in seq_len(length(ep$lagoslakeid))){
                     in_tifs[2], " ",
                     "data/gssurgo/temp2.tif"))
       
-      # mosaic
+      print("mosaic")
       system(paste0("gdal_merge.py -o " , iws_raster_path, " -n 0.0 ",
                     paste0(c("data/gssurgo/temp1.tif", 
                              "data/gssurgo/temp2.tif"), collapse = " ")))
