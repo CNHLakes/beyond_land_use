@@ -96,19 +96,21 @@ interp_to_iws <- function(usgs_raw, varname, outname){
                           state_name = datasets::state.name)
 
     usgs <- ungroup(usgs) %>%
-    mutate(county = tolower(county)) %>%
-    left_join(state_key) %>%
-    mutate(state = tolower(state_name))
+              mutate(county = tolower(county)) %>%
+              left_join(state_key) %>%
+              mutate(state = tolower(state_name))
 
   county_usgs <- left_join(county_sf, usgs) %>%
-    mutate(value_per_ha = value / units::set_units(st_area(geometry), "ha"))
+    mutate(value_per_ha = value / units::set_units(st_area(geometry), "ha")) %>% 
+    dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
   
-  # hist(county_usgs$value_per_ha)
-
+  iws <- iws[sapply(st_intersects(iws, county_usgs), length) != 0,]
+  
   # st_interpolate_aw
   iws_interp <- st_interpolate_aw(county_usgs["value"], iws,
                                   extensive = TRUE)
-
+  # kg per ha is false, kg is true
+  
   iws_interp <- data.frame(outname = iws_interp$value,
                            lagoslakeid = iws$lagoslakeid,
                            stringsAsFactors = FALSE)
