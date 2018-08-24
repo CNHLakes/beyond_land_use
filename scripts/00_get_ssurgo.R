@@ -1,14 +1,13 @@
-cmdargs <- commandArgs(trailingOnly = TRUE)
-gssurgo_path <- cmdargs[1]
-# gssurgo_path <- "data/gssurgo/"
-ep      <- readRDS("data/ep.rds")
-in_path <- path.expand("~/Documents/Science/Data/gssurgo_data/tifs")
+library(raster)
 
 source("scripts/utils.R")
 
-library(raster)
+ep       <- readRDS("data/ep.rds")
+in_path  <- path.expand("~/Documents/Science/Data/gssurgo_data/tifs")
+out_path <- path.expand("~/Documents/Science/Data/gssurgo_data/aois/")
 
-existing_rasters <- list.files(gssurgo_path, pattern = "\\d*_\\d.tif", include.dirs = TRUE, full.names = TRUE)
+existing_rasters <- list.files(out_path, pattern = "\\d*_\\d.tif", 
+                               include.dirs = TRUE, full.names = TRUE)
 existing_llids <- stringr::str_extract(existing_rasters, "(\\d*)(?=_\\d.tif)")
 
 # unlink(existing_rasters[!(existing_llids %in% ep$lagoslakeid)])
@@ -30,7 +29,7 @@ for(i in seq_len(length(ep$lagoslakeid))){
                         full.names = TRUE, include.dirs = TRUE)
   in_tifs <- in_tifs[grep(paste(states, collapse = "|"), in_tifs)] 
   
-  iws_raster_path <- paste0(gssurgo_path, paste0(llid, "_", length(in_tifs), ".tif"))
+  iws_raster_path <- paste0(out_path, paste0(llid, "_", length(in_tifs), ".tif"))
   
   if(!file.exists(iws_raster_path) & length(in_tifs) > 0){
     if(length(in_tifs) > 1){ # clip from each and merge
@@ -71,4 +70,4 @@ for(i in seq_len(length(ep$lagoslakeid))){
   }
 }
 
-write.csv(ep, file.path(gssurgo_path, "gssurgo.csv"), row.names = FALSE)
+write.csv(ep, file.path(out_path, "gssurgo.csv"), row.names = FALSE)
