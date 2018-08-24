@@ -10,7 +10,8 @@ date_end     <- as.Date("2005-01-01")
 min_sample_n <- 3
 ag_cutoff    <- 0.4
 min_state_n  <- 4
-max_iws_ha   <- 500000 
+max_iws_ha   <- 500000
+max_lake_area_ha <- 40000
 
 # filter ep with tn/tp data meeting date and n constraints
 ep_nutr <- lg$epi_nutr %>%
@@ -68,7 +69,8 @@ ep <- ep %>%
   mutate(iws_la = iws_ha / lake_area_ha)
 
 # filter focal predictors
-ep <- dplyr::filter(ep, iws_ha <= max_iws_ha)
+ep <- dplyr::filter(ep, iws_ha <= max_iws_ha & 
+                      lake_area_ha <= max_lake_area_ha)
 
 saveRDS(ep, "data/ep.rds")
 
