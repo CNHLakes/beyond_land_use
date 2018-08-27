@@ -35,6 +35,9 @@ data/cdl/cdl_summary.csv: scripts/01_process_cdl.R data/cdl/cdl.csv data/cdl/cdl
 data/cdl/cdl_key.csv: scripts/99_make_cdl_key.R
 	Rscript $<
 	
+data/gssurgo/gssurgo_key.csv: scripts/99_make_ssurgo_key.R
+	Rscript $<
+	
 data/gssurgo/gssurgo.csv: scripts/00_get_ssurgo.R
 	Rscript $< 'data/gssurgo/'
 	
