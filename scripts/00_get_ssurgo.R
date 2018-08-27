@@ -21,6 +21,7 @@ for(i in seq_len(length(ep$lagoslakeid))){
   # llid <- 23670
   # llid <- 1935
   # llid <- 5331
+  # llid <- 7483
   boundary_iws <- get_iws(llid)
   bbox         <- get_bbox(boundary_iws)
   states       <- suppressMessages(get_states(bbox))
@@ -70,4 +71,4 @@ for(i in seq_len(length(ep$lagoslakeid))){
   }
 }
 
-write.csv(ep, file.path(out_path, "gssurgo.csv"), row.names = FALSE)
+write.csv(ep, "data/gssurgo/gssurgo.csv", row.names = FALSE)

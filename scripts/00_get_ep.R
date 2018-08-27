@@ -10,7 +10,7 @@ date_end     <- as.Date("2005-01-01")
 min_sample_n <- 3
 ag_cutoff    <- 0.4
 min_state_n  <- 4
-max_iws_ha   <- 500000
+max_iws_ha   <- 190000
 max_lake_area_ha <- 40000
 
 # filter ep with tn/tp data meeting date and n constraints

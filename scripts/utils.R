@@ -1,5 +1,5 @@
-library(sf)
-library(dplyr)
+suppressMessages(library(sf))
+suppressMessages(library(dplyr))
 
 county_sf <- function(){
   county_sf <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
