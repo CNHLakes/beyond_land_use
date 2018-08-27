@@ -2,6 +2,7 @@ library(raster)
 library(cdlTools)
 library(magrittr)
 library(dplyr)
+library(progress)
 cdl_path <- "data/cdl/"
 
 cdl_key <- read.csv("data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
@@ -47,10 +48,13 @@ cdl_summary <- function(llid){
             select(llid, variable, value))
 }
 
+pb <- progress_bar$new(format = "  pulling stats for :llid [:bar]", 
+                       total = length(r_list), 
+                       clear = FALSE)
 res <- list()
 for(i in seq_len(length(r_list))){
   llid <- as.numeric(stringr::str_extract(r_list, "\\d*(?=(.tif))"))[i]
-  print(i); print(llid)
+  pb$tick(tokens = list(llid = llid))
   res[[i]] <- cdl_summary(llid)
 }
 
