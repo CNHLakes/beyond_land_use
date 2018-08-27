@@ -22,6 +22,7 @@ aggregate_categories <- function(cdl_key){
     grepl("grassland", tolower(description)) ~ "other non ag",
     grepl("shrubland", tolower(description)) ~ "other non ag",
     grepl("forest", tolower(description)) ~ "forest",
+    grepl("snow", tolower(description)) ~ "other non ag",
     grepl("nonag", tolower(description)) ~ "other non ag",
     grepl("water$", tolower(description)) ~ "water",
     grepl("aqua", tolower(description)) ~ "other non ag",
