@@ -62,6 +62,6 @@ for(i in seq_len(length(r_list))){
 
 saveRDS(res, "temp.rds")
 
-res <- data.frame(llid = as.integer(llids), wetland_pct = unlist(res), stringsAsFactors = FALSE)
+res <- data.frame(llid = as.integer(llids), wetland_pot = unlist(res), stringsAsFactors = FALSE)
 
 saveRDS(res, "data/gssurgo/gssurgo.rds")

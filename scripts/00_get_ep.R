@@ -2,6 +2,8 @@ library(LAGOSNE)
 library(dplyr)
 library(magrittr)
 
+source("scripts/utils.R")
+
 lg           <- lagosne_load("1.087.1")
 iws_lulc     <- readRDS("data/iws_lulc.rds")
 county_lulc  <- readRDS("data/county_lulc.rds")
@@ -71,6 +73,11 @@ ep <- ep %>%
 # filter focal predictors
 ep <- dplyr::filter(ep, iws_ha <= max_iws_ha & 
                       lake_area_ha <= max_lake_area_ha)
+
+# filter geographic extent
+states <- dplyr::filter(state_sf(), ABB != "ME")
+ep <- ep[unlist(
+  lapply(st_intersects(coordinatize(ep), states), function(x) length(x) != 0)),]
 
 saveRDS(ep, "data/ep.rds")
 

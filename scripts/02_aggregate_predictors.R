@@ -11,8 +11,12 @@ lg_lulc <- readRDS("data/iws_lulc.rds") %>%
 usgs <- readRDS("data/usgs/usgs.rds") %>%
   select(lagoslakeid, phosphorus_input, nitrogen_input, n_dep)
 
+gssurgo <- readRDS("data/gssurgo/gssurgo.rds")
+
 dt <- ep %>%
   left_join(lg_lulc) %>%
-  left_join(usgs)
+  left_join(usgs) %>%
+  left_join(mutate(gssurgo, llid = as.integer(llid)), 
+            by = c("lagoslakeid" = "llid"))
 
 saveRDS(dt, "data/dt.rds")
