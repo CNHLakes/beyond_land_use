@@ -28,6 +28,8 @@ res <- apply(gssurgo_key, 1, function(x)
 
 pull_metric <- function(col_name, qry, r_list, llids, res_disk){
   
+  print(paste("in r_list length", length(r_list)))
+  
   if(col_name %in% names(res_disk)){
     missing_llids <- !(llids %in% res_disk[,!is.na(col_name)][,"llid"])
     llids         <- llids[missing_llids]
@@ -62,6 +64,7 @@ pull_metric <- function(col_name, qry, r_list, llids, res_disk){
     (wetland_pct   <- (total_wetland / iws_cell_n) * 100)
     res[[i]]       <- wetland_pct
   }
+  print(paste("out r_list length", length(r_list)))
   unlist(res)
 }
 
