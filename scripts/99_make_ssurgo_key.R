@@ -26,7 +26,7 @@ qry <- tbl(con, "Valu1") %>%
 res <- bind_rows(res,
                  c(metric = "soil_org_carbon", query = qry))
 
-write.csv(res, "data/gssurgo/gssurgo_key.csv", row.names = TRUE)
+write.csv(res, "data/gssurgo/gssurgo_key.csv", row.names = FALSE)
 
 # validate queries ####
 con <- DBI::dbConnect(RSQLite::SQLite(), in_gpkg)
