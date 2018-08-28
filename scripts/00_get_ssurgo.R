@@ -1,5 +1,6 @@
 library(sf)
 library(raster)
+library(progress)
 
 source("scripts/utils.R")
 
@@ -24,9 +25,13 @@ ep <- dplyr::filter(ep, !(lagoslakeid %in% as.numeric(existing_llids)))
 # ep <- dplyr::filter(ep, lagoslakeid %in% as.numeric(llid))
 
 # pre-compute states and bboxes before conda corrupts rgdal
+pb <- progress_bar$new(format = "  pulling bbox for :llid [:bar]", 
+                       total = nrow(ep), 
+                       clear = FALSE)
 states_bbox <- list()
 for(i in seq_len(length(ep$lagoslakeid))){
   llid <- ep$lagoslakeid[i]
+  pb$tick(tokens = list(llid = llid))
   boundary_iws <- get_iws(llid)
   bbox         <- get_bbox(boundary_iws)
   states       <- suppressMessages(get_states(bbox))
@@ -41,9 +46,12 @@ library(reticulate)
 use_condaenv("gSSURGO")
 gssurgo <- import("gssurgo")
 
+pb <- progress_bar$new(format = "  pulling aoi tif for :llid [:bar]", 
+                       total = nrow(ep), 
+                       clear = FALSE)
 for(i in seq_len(length(ep$lagoslakeid))){
   llid <- ep$lagoslakeid[i]
-  print(llid)
+  pb$tick(tokens = list(llid = llid))
   
   # i <- 1
   # states_bbox[[i]]$states
@@ -56,12 +64,14 @@ for(i in seq_len(length(ep$lagoslakeid))){
   
   if(!file.exists(iws_raster_path) & length(in_tifs) > 0){
     
-    # use gssurgo python package
-    gssurgo$aoi(in_path, iws_raster_path, xmin = bbox_latlon[1], 
-                ymin = bbox_latlon[2], xmax = bbox_latlon[3], ymax = bbox_latlon[4])
+    gssurgo$aoi(in_path, iws_raster_path, 
+                xmin = states_bbox[[i]]$bbox_latlon[1], 
+                ymin = states_bbox[[i]]$bbox_latlon[2], 
+                xmax = states_bbox[[i]]$bbox_latlon[3], 
+                ymax = states_bbox[[i]]$bbox_latlon[4])
     
     iws_raster <- raster(iws_raster_path)
-    iws_raster <- mask(iws_raster, boundary_iws)
+    iws_raster <- mask(iws_raster, states_bbox[[i]]$boundary_iws)
     writeRaster(iws_raster, iws_raster_path, overwrite = TRUE)
   }
 }
