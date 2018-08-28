@@ -4,7 +4,7 @@ library(sf)
 library(progress)
 
 library(reticulate)
-use_condaenv("gssurgo")
+use_condaenv("gSSURGO")
 gssurgo <- import("gssurgo")
 
 gpkg_path   <- path.expand("~/Documents/Science/Data/gssurgo_data/gpkgs/")
@@ -12,7 +12,6 @@ aoi_path    <- path.expand("~/Documents/Science/Data/gssurgo_data/aois/")
 gssurgo_key <- read.csv("data/gssurgo/gssurgo_key.csv")
 out_path    <- "data/gssurgo/gssurgo.rds"
 res_disk    <- readRDS(out_path)
-
 
 source("scripts/utils.R")
 
@@ -24,11 +23,12 @@ r_list <- list.files(aoi_path, pattern = "^\\d*_\\d.tif$",
 llids  <- stringr::str_extract(r_list, "(\\d*)(?=_\\d.tif)")
 
 res <- apply(gssurgo_key, 1, function(x) 
-  pull_metric(x[1], x[2], r_list, llids, res_disk))
+  pull_metric(x[1], x[2], x[3], r_list[1], llids[1], res_disk[1,]))
 
-pull_metric <- function(col_name, qry, r_list, llids, res_disk){
-  
-  print(paste("in r_list length", length(r_list)))
+pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
+  raw_r_list <- r_list
+  raw_llids  <- llids
+  # print(paste("in r_list length", length(r_list)))
   
   if(col_name %in% names(res_disk)){
     missing_llids <- !(llids %in% res_disk[,!is.na(col_name)][,"llid"])
@@ -36,7 +36,9 @@ pull_metric <- function(col_name, qry, r_list, llids, res_disk){
     r_list        <- r_list[missing_llids]
     
     if(sum(missing_llids) == 0){
-      return(res_disk[,col_name])
+      return(setNames(data.frame(llid = raw_llids, 
+                                 value = res_disk[,col_name]), 
+                      c("llid", col_name)))
     }
   }
   
@@ -59,13 +61,21 @@ pull_metric <- function(col_name, qry, r_list, llids, res_disk){
     res_values     <- data_r[]
     # print(head(res_values))
     iws_cell_n     <- sum(!is.na(base_r[])) - sum(res_values == 999, na.rm = TRUE)
-    res_values     <- res_values[!is.na(res_values) & res_values != 999] / 100
-    total_wetland  <- sum(res_values)
-    (wetland_pct   <- (total_wetland / iws_cell_n) * 100)
-    res[[i]]       <- wetland_pct
+    res_values     <- res_values[!is.na(res_values) & res_values != 999]
+    if(agg_type == "pct"){ 
+      res_values <- res_values / 100
+      total    <- sum(res_values)
+      pct      <- (total / iws_cell_n) * 100
+    }else{
+      total    <- sum(res_values, na.rm = TRUE)
+      pct      <- (total / iws_cell_n)
+    }
+    res[[i]] <- pct
   }
   print(paste("out r_list length", length(r_list)))
-  unlist(res)
+  setNames(data.frame(llid = llids, 
+             value = unlist(res)), c("llid", col_name))
+  
 }
 
 saveRDS(res, out_path)

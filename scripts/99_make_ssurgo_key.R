@@ -28,6 +28,18 @@ res <- bind_rows(res,
 
 write.csv(res, "data/gssurgo/gssurgo_key.csv", row.names = FALSE)
 
+# clay_pct ####
+qry <- tbl(con, "Valu1") %>%
+  head()
+  
+  select(mukey, soc0_999) %>%
+  dbplyr::sql_render() %>%
+  stringr::str_replace_all(c("`" = "", "\n" = " "))
+
+res <- bind_rows(res,
+                 c(metric = "clay_pct", query = qry))
+
+
 # validate queries ####
 con <- DBI::dbConnect(RSQLite::SQLite(), in_gpkg)
 test <- data.frame(t(sapply(res[,"query"], function(x) 
