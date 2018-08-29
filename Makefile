@@ -10,7 +10,7 @@ test_config:
 
 all: data data/dt.rds
 
-data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv 
+data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo_key.csv
 
 gssurgo: data/gssurgo/gssurgo.rds
 

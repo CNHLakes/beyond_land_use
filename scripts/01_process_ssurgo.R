@@ -9,7 +9,7 @@ gssurgo <- import("gssurgo")
 
 gpkg_path   <- path.expand("~/Documents/Science/Data/gssurgo_data/gpkgs/")
 aoi_path    <- path.expand("~/Documents/Science/Data/gssurgo_data/aois/")
-gssurgo_key <- read.csv("data/gssurgo/gssurgo_key.csv")
+gssurgo_key <- read.csv("data/gssurgo/gssurgo_key.csv", stringsAsFactors = FALSE)
 out_path    <- "data/gssurgo/gssurgo.rds"
 res_disk    <- readRDS(out_path)
 
@@ -21,9 +21,6 @@ ep <- readRDS("data/ep.rds")
 r_list <- list.files(aoi_path, pattern = "^\\d*_\\d.tif$", 
                      include.dirs = TRUE, full.names = TRUE)
 llids  <- stringr::str_extract(r_list, "(\\d*)(?=_\\d.tif)")
-
-res <- apply(gssurgo_key, 1, function(x) 
-  pull_metric(x[1], x[2], x[3], r_list[1], llids[1], res_disk[1,]))
 
 pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
   raw_r_list <- r_list
@@ -54,10 +51,15 @@ pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
     # print(src_tif)
     base_r        <- suppressMessages(raster(src_tif))
   
+    # # echo python command
+    # paste0("gssurog.query_gpkg(", src_tif, 
+    #        " ", gpkg_path, 
+    #        " ", qry,
+    #        " ", file.path(aoi_path, "temp.tif"))
     gssurgo$query_gpkg(src_tif, gpkg_path, qry, file.path(aoi_path, "temp.tif"))
                        
     data_r           <- suppressMessages(raster(file.path(aoi_path, "temp.tif")))
-    # suppressMessages(mapview::mapview(r) + mapview::mapview(res))
+    # suppressMessages(mapview::mapview(base_r) + mapview::mapview(data_r))
     res_values     <- data_r[]
     # print(head(res_values))
     iws_cell_n     <- sum(!is.na(base_r[])) - sum(res_values == 999, na.rm = TRUE)
@@ -72,10 +74,12 @@ pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
     }
     res[[i]] <- pct
   }
-  print(paste("out r_list length", length(r_list)))
+  
   setNames(data.frame(llid = llids, 
              value = unlist(res)), c("llid", col_name))
-  
 }
+
+res <- apply(gssurgo_key[3,], 1, function(x) 
+  pull_metric(x[1], x[2], x[3], r_list[1], llids[1], res_disk[1,]))
 
 saveRDS(res, out_path)
