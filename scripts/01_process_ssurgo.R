@@ -11,7 +11,10 @@ gpkg_path   <- path.expand("~/Documents/Science/Data/gssurgo_data/gpkgs/")
 aoi_path    <- path.expand("~/Documents/Science/Data/gssurgo_data/aois/")
 gssurgo_key <- read.csv("data/gssurgo/gssurgo_key.csv", stringsAsFactors = FALSE)
 out_path    <- "data/gssurgo/gssurgo.rds"
-res_disk    <- readRDS(out_path)
+if(file.exists(out_path)){
+  res_disk    <- readRDS(out_path)
+}
+
 
 source("scripts/utils.R")
 
@@ -22,20 +25,23 @@ r_list <- list.files(aoi_path, pattern = "^\\d*_\\d.tif$",
                      include.dirs = TRUE, full.names = TRUE)
 llids  <- stringr::str_extract(r_list, "(\\d*)(?=_\\d.tif)")
 
-pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
+pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk, 
+                        overwrite = FALSE){
   raw_r_list <- r_list
   raw_llids  <- llids
   # print(paste("in r_list length", length(r_list)))
   
-  if(col_name %in% names(res_disk)){
-    missing_llids <- !(llids %in% res_disk[,!is.na(col_name)][,"llid"])
-    llids         <- llids[missing_llids]
-    r_list        <- r_list[missing_llids]
+  if(file.exists(out_path) & !overwrite){
+    if(col_name %in% names(res_disk)){
+      missing_llids <- !(llids %in% res_disk[,!is.na(col_name)][,"llid"])
+      llids         <- llids[missing_llids]
+      r_list        <- r_list[missing_llids]
     
-    if(sum(missing_llids) == 0){
-      return(setNames(data.frame(llid = raw_llids, 
+      if(sum(missing_llids) == 0){
+        return(setNames(data.frame(llid = raw_llids, 
                                  value = res_disk[,col_name]), 
                       c("llid", col_name)))
+      }
     }
   }
   
@@ -64,14 +70,8 @@ pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
     # print(head(res_values))
     iws_cell_n     <- sum(!is.na(base_r[])) - sum(res_values == 999, na.rm = TRUE)
     res_values     <- res_values[!is.na(res_values) & res_values != 999]
-    if(agg_type == "pct"){ 
-      res_values <- res_values / 100
-      total    <- sum(res_values)
-      pct      <- (total / iws_cell_n) * 100
-    }else{
-      total    <- sum(res_values, na.rm = TRUE)
-      pct      <- (total / iws_cell_n)
-    }
+    total    <- sum(res_values, na.rm = TRUE)
+    pct      <- (total / iws_cell_n)
     res[[i]] <- pct
   }
   
@@ -81,6 +81,9 @@ pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
 
 res <- apply(gssurgo_key, 1, function(x) 
   pull_metric(x[1], x[2], x[3], r_list, llids, res_disk))
+
+# res <- apply(gssurgo_key[3,], 1, function(x) 
+#   pull_metric(x[1], x[2], x[3], r_list[1:100], llids[1:100], res_disk[1:100,], overwrite = FALSE))
 
 res <- dplyr::bind_rows(res) %>% 
   group_by(llid) %>%
