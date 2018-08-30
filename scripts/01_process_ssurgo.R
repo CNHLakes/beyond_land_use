@@ -40,12 +40,12 @@ pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
   }
   
   res <- list()
-  pb <- progress_bar$new(format = "  pulling stats for :llid [:bar]", 
+  pb <- progress_bar$new(format = "  pulling :stat for :llid [:bar]", 
                          total = length(r_list), 
                          clear = FALSE)
   for(i in seq_len(length(r_list))){
     # i <- 5
-    pb$tick(tokens = list(llid = llids[i]))
+    pb$tick(tokens = list(stat = col_name, llid = llids[i]))
     # llid <- 6198; src_tif  <- r_list[grep(llid, r_list)[1]]; i <- 1
     src_tif       <- r_list[i]
     # print(src_tif)
@@ -79,7 +79,13 @@ pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk){
              value = unlist(res)), c("llid", col_name))
 }
 
-res <- apply(gssurgo_key[3,], 1, function(x) 
-  pull_metric(x[1], x[2], x[3], r_list[1], llids[1], res_disk[1,]))
+res <- apply(gssurgo_key, 1, function(x) 
+  pull_metric(x[1], x[2], x[3], r_list, llids, res_disk))
+
+res <- dplyr::bind_rows(res) %>% 
+  group_by(llid) %>%
+  arrange(llid) %>%
+  tidyr::fill(wetland_potential:clay_pct) %>%
+  na.omit
 
 saveRDS(res, out_path)
