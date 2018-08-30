@@ -1,10 +1,3 @@
-include config.mk
-
-test_config:
-	ls $(gssurgo_path)
-	ls $(cdl_path)
-	ls $(usgs_path)
-	@echo $(STATES)
 
 .PHONY: data all
 
