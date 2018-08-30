@@ -1,6 +1,7 @@
 suppressMessages(library(sf))
 suppressMessages(library(dplyr))
 
+# ---- basic_gis ----
 county_sf <- function(){
   county_sf <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
   tidyr::separate(county_sf, ID, c("state", "county"))
@@ -8,7 +9,7 @@ county_sf <- function(){
 
 state_sf <- function(){
   state_sf <- st_as_sf(maps::map("state", fill = TRUE, plot = FALSE))
-  key <- data.frame(ID = tolower(state.name), 
+  key <- data.frame(ID = tolower(state.name),
                     ABB = state.abb, stringsAsFactors = FALSE)
   left_join(state_sf, key, by = "ID")
 }
@@ -19,11 +20,11 @@ get_states <- function(bbox){
                     ABB = state.abb, stringsAsFactors = FALSE)
   state_sf <- left_join(state_sf, key, by = "ID")
   bbox <- st_transform(st_as_sfc(bbox), st_crs(state_sf))
-  
+
   state_sf <- state_sf[unlist(lapply(
     st_intersects(state_sf, bbox),
     function(x) length(x) > 0)),]
-  
+
   state_sf$ABB
 }
 
