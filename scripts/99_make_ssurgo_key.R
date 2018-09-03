@@ -79,10 +79,16 @@ res <- bind_rows(res,
                    query = qry, 
                    agg_type = "percent"))
 
-# sql_query = "SELECT mukey, AVG(kwfact) AS kwfact FROM (SELECT * FROM (SELECT TBL_LEFT.mukey AS mukey, TBL_LEFT.cokey AS cokey, TBL_LEFT.majcompflag AS majcompflag, TBL_RIGHT.hzname AS hzname, TBL_RIGHT.kwfact AS kwfact   FROM (SELECT mukey, cokey, majcompflag FROM component) AS TBL_LEFT   LEFT JOIN (SELECT hzname, kwfact, cokey FROM chorizon) AS TBL_RIGHT   ON (TBL_LEFT.cokey = TBL_RIGHT.cokey) ) WHERE ((hzname = 'A') AND (majcompflag = 'Yes'))) GROUP BY mukey"
+res$fname <- file.path("data/gssurgo/", paste0(res$metric, ".sql"))
 
 # save key ####
 write.csv(res, "data/gssurgo/gssurgo_key.csv", row.names = FALSE)
+
+write_query <- function(metric, query){
+  fname <- file.path("data/gssurgo/", paste0(metric, ".sql"))
+  writeLines(as.character(query), con = fname)
+}
+invisible(apply(res, 1, function(x) write_query(x[1], x[2])))
 
 # validate queries ####
 con <- DBI::dbConnect(RSQLite::SQLite(), in_gpkg)
