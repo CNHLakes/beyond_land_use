@@ -7,6 +7,8 @@ data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv d
 
 gssurgo: data/gssurgo/gssurgo.rds
 
+cdl: data/cdl/cdl_summary.csv
+
 data/ep.rds: scripts/00_get_ep.R data/iws_lulc.rds data/county_lulc.rds
 	Rscript $<
 

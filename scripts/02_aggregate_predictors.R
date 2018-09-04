@@ -11,12 +11,15 @@ lg_lulc <- readRDS("data/iws_lulc.rds") %>%
 usgs <- readRDS("data/usgs/usgs.rds") %>%
   select(lagoslakeid, phosphorus_input, nitrogen_input, n_dep)
 
-gssurgo <- ungroup(readRDS("data/gssurgo/gssurgo.rds"))
+gssurgo <- ungroup(readRDS("data/gssurgo/gssurgo.rds")$res)
+
+cdl <- read.csv("data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
 
 dt <- ep %>%
   left_join(lg_lulc) %>%
   left_join(usgs) %>%
   left_join(mutate(gssurgo, llid = as.integer(as.character(llid))), 
-            by = c("lagoslakeid" = "llid"))
+            by = c("lagoslakeid" = "llid")) %>%
+  left_join(cdl, by = c("lagoslakeid" = "llid"))
 
 saveRDS(dt, "data/dt.rds")
