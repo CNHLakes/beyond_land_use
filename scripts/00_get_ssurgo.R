@@ -25,6 +25,9 @@ ep <- dplyr::filter(ep, !(lagoslakeid %in% as.numeric(existing_llids)))
 # ep <- dplyr::filter(ep, lagoslakeid %in% as.numeric(llid))
 
 # pre-compute states and bboxes before conda corrupts rgdal
+if(nrow(ep) == 0){
+  quit("yes")
+}
 pb <- progress_bar$new(format = "  pulling bbox for :llid [:bar]", 
                        total = nrow(ep), 
                        clear = FALSE)
