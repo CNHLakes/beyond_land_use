@@ -9,6 +9,8 @@ gssurgo: data/gssurgo/gssurgo.rds
 
 cdl: data/cdl/cdl_summary.csv
 
+usgs: data/usgs/usgs.rds
+
 data/ep.rds: scripts/00_get_ep.R data/iws_lulc.rds data/county_lulc.rds
 	Rscript $<
 
