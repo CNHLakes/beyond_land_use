@@ -2,13 +2,13 @@ library(LAGOSNE)
 library(LAGOSextra)
 library(sf)
 library(unpivotr)
-library(tidyr)
+suppressMessages(library(tidyr))
 library(tidyxl)
-library(dplyr)
+suppressMessages(library(dplyr))
 library(snakecase)
 library(janitor)
 library(lwgeom)
-library(magrittr)
+suppressMessages(library(magrittr))
 
 # ---- usgs_get ----
 
@@ -107,16 +107,20 @@ interp_to_iws <- function(usgs_raw, varname, outname){
   iws <- iws[sapply(st_intersects(iws, county_usgs), length) != 0,]
   
   # st_interpolate_aw
-  iws_interp <- st_interpolate_aw(county_usgs["value"], iws,
-                                  extensive = TRUE)
+  iws_interp <- suppressWarnings(
+    st_interpolate_aw(county_usgs["value_per_ha"], iws,
+                                  extensive = FALSE))
   # kg per ha is false, kg is true
   
-  iws_interp <- data.frame(outname = iws_interp$value,
+  iws_interp <- data.frame(outname = iws_interp$value_per_ha,
                            lagoslakeid = iws$lagoslakeid,
                            stringsAsFactors = FALSE)
   names(iws_interp)[1] <- outname
 
-  left_join(ep, iws_interp, by = "lagoslakeid")
+  # iws_interp <- left_join(dplyr::select(ep, lagoslakeid, iws_ha), 
+  #                         iws_interp, by = "lagoslakeid")
+  
+  dplyr::select(iws_interp, lagoslakeid, everything())
 }
 
 # unique(usgs_raw$variable)
