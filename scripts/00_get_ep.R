@@ -1,6 +1,6 @@
 library(LAGOSNE)
-library(dplyr)
-library(magrittr)
+suppressMessages(library(dplyr))
+suppressMessages(library(magrittr))
 
 source("scripts/utils.R")
 
@@ -51,13 +51,15 @@ ep_nutr <- lg$epi_nutr %>%
 
 # filter ep with ag above cutoff
 iws_vs_county_ag <- iws_lulc %>%
-  left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid))  %>%
-  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2001_pcent))
+  left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid), 
+            by = "lagoslakeid")  %>%
+  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2001_pcent), 
+            by = "county_zoneid")
 
 get_ag_cutoff <- function(cutoff){
   hi_ag_counties <- dplyr::filter(iws_vs_county_ag,
                                   county_ag_2001_pcent >= cutoff &
-                                    iws_ag_2001_pcent >= cutoff) %>%
+                                  iws_ag_2001_pcent >= cutoff) %>%
     group_by(county_zoneid) %>%
     summarize(n_lakes = n()) %>%
     dplyr::filter(n_lakes >= 1) %>%
@@ -89,7 +91,7 @@ ep <- ep %>%
 ep <- ep %>%
   left_join(dplyr::select(lg$iws, lagoslakeid, iws_ha)) %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, lake_area_ha)) %>%
-  mutate(iws_la = iws_ha / lake_area_ha)
+  mutate(iwsla_ratio = iws_ha / lake_area_ha)
 
 # filter focal predictors
 ep <- dplyr::filter(ep, iws_ha <= max_iws_ha & 
