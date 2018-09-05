@@ -12,7 +12,7 @@ library(concaveman)
 
 source("scripts/utils.R")
 
-lg <- lagosne_load("1.087.1")
+lg     <- lagosne_load("1.087.1")
 ep     <- readRDS("data/ep.rds")
 ep_bbox <- st_bbox(concaveman(coordinatize(ep)))
 # mapview::mapview(LAGOSNE::coordinatize(ep))
@@ -23,7 +23,7 @@ for(i in seq_len(length(ep$lagoslakeid))){
   llid <- ep$lagoslakeid[i]
   print(llid)
   # i <- 1
-  # llid <- 23670
+  # llid <- 4393
   boundary_iws <- get_iws(llid)
   bbox         <- get_bbox(boundary_iws)
   states       <- get_states(bbox)

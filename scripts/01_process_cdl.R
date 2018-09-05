@@ -11,8 +11,8 @@ r_list <- list.files(cdl_path, pattern = "^\\d*.tif$",
                      include.dirs = TRUE, full.names = TRUE)
 
 cdl_summary <- function(llid){
-  # llid <- 126
-  r <- raster(r_list[grep(llid, r_list)[1]])
+  # llid <- 4393
+  r <- raster(r_list[grep(paste0(llid, ".tif"), r_list)[1]])
   
   cdl_table <- as_data_frame(table(values(r)), stringsAsFactors = FALSE) %>%
     mutate(code = as.integer(Var1)) %>%
