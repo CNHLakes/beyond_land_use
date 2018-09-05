@@ -80,12 +80,13 @@ county_sf <- county_sf[
     st_intersects(county_sf, iws),
     function(x) length(x) > 0)),]
 
-# join usgs data
-usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
-
 interp_to_iws <- function(usgs_raw, varname, outname){
-  # varname = "nitrogen"
+  # varname = "nitrogen_livestock_manure"
   usgs <- filter(usgs_raw, stringr::str_detect(variable, varname)) %>%
+    mutate(value = as.numeric(value)) %>%
+    group_by(county, state, year, variable) %>%
+    summarize(value = sum(as.numeric(value), na.rm = TRUE)) %>%
+    ungroup() %>%
     group_by(county, state, year) %>%
     summarize(value = sum(as.numeric(value), na.rm = TRUE)) %>%
     ungroup() %>%
@@ -123,15 +124,19 @@ interp_to_iws <- function(usgs_raw, varname, outname){
   dplyr::select(iws_interp, lagoslakeid, everything())
 }
 
+
+usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
+
 # unique(usgs_raw$variable)
-usgs <- interp_to_iws(usgs_raw, "phosphorus", "phosphorus_input") %>%
-  left_join(
-    select(interp_to_iws(usgs_raw, "nitrogen", "nitrogen_input"),
-           lagoslakeid, nitrogen_input),
-    by = "lagoslakeid") %>%
-  left_join(
-  select(interp_to_iws(usgs_raw, "nitrogen_atmospheric", "n_dep"), lagoslakeid, n_dep),
-    by = "lagoslakeid")
+
+usgs_key <- data.frame(variable = unique(usgs_raw$variable), 
+                       pretty_name = unique(usgs_raw$variable), 
+                       stringsAsFactors = FALSE)
+
+usgs <- apply(usgs_key, 1, function(x) interp_to_iws(usgs_raw, x[1], x[2]))
+
+usgs <- bind_cols(usgs) %>%
+  dplyr::select(lagoslakeid, usgs_key$pretty_name)
 
 saveRDS(usgs, "data/usgs/usgs.rds")
 
