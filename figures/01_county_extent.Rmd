@@ -1,0 +1,32 @@
+---
+title: "Figures"
+output:
+  pdf_document:
+    fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
+```
+
+```{r read_explore_chunk, echo=FALSE, eval=TRUE}
+knitr::read_chunk("../scripts/explore_lagos_ag.R")
+```
+
+```{r lagos_setup, echo=FALSE, message=FALSE, eval=TRUE, warning=FALSE}
+
+```
+
+```{r mendota_oneida, echo=FALSE, message=TRUE, eval=FALSE}
+llids <- lake_info(lg, 
+                   name = c("Lake Mendota", "Oneida Lake"), 
+                   state = c("Wisconsin", "New York"))$lagoslakeid
+
+cat(paste(c("Lake Mendota", "Oneida Lake")[which(llids %in% ep$lagoslakeid)], "is included in the hi ag sites."))
+```
+
+<!-- * Find counties that intersect large numbers of hi ag iws with tp + tn data -->
+
+```{r county_extent, eval=TRUE, echo=FALSE, fig.cap = "Number of lake watersheds per county where lakes are limited to those with high agricultural land-use cover (> 40%) and water quality data in LAGOS measured at > 3 sampling events between 1995 and 2005.", warning=FALSE, fig.width = 5.5, fig.height = 3}
+
+```

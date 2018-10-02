@@ -14,7 +14,7 @@ library(ggridges)
 library(tidyr)
 library(ggExtra)
 
-ep <- readRDS("lagos_ag/data/ep.rds")
+ep <- readRDS("../data/ep.rds")
 gdb_path <- path.expand("~/.local/share/LAGOS-GIS/lagos-ne_gis.gpkg")
 # st_layers(gdb_path)
 layer_name <- "COUNTY"
@@ -67,8 +67,8 @@ get_iws_polygon <- function(lagoslakeid, crs){
 }
 
 lg          <- lagosne_load("1.087.1")
-iws_lulc    <- readRDS("lagos_ag/data/iws_lulc.rds")
-county_lulc <- readRDS("lagos_ag/data/county_lulc.rds")
+iws_lulc    <- readRDS("../data/iws_lulc.rds")
+county_lulc <- readRDS("../data/county_lulc.rds")
 
 iws_vs_county_ag <- iws_lulc %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid))  %>%
@@ -156,7 +156,7 @@ plot_grid(
     NULL,
   ncol = 1)
 
-# ---- hi_ag_iws_w_ep ----
+# ---- county_extent ----
 # counties that overlap hi ag iws with ep data
 # setwd("_episodes_rmd")
 
@@ -181,10 +181,11 @@ hi_ag_iws_w_ep$county <- hi_ag_iws_w_ep$county[
 ggplot() +
   geom_sf(data = state_intersects) +
   geom_sf(data = hi_ag_iws_w_ep$county, aes(fill = n_iws)) +
-  ggtitle(paste0("# of overlappling IWS with > 40% ag & epi nutrient data \n
-          where > 4 measurements between 1995 and 2005")) +
-  theme(title = element_text(size = 10))
+  # ggtitle(paste0("# of overlappling IWS with > 40% ag & epi nutrient data \n
+          # where > 4 measurements between 1995 and 2005")) +
+  theme(title = element_text(size = 10)) +
+  labs(fill = paste0("# lakes \n (", nrow(ep), " total)"))
 
 # mapview::mapview(hi_ag_iws_w_ep$county, zcol = "n_iws")
 
-cat(paste0(nrow(ep), " total lakes"))
+# cat(paste0(nrow(ep), " total lakes"))

@@ -1,0 +1,15 @@
+---
+title: "Figures"
+output:
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 6, dev = c("pdf"))
+```
+
+```{r fig.cap="Figure 1: Counties that overlap lake watersheds with high agricultural land-use cover that have water quality data in LAGOS.", echo = FALSE, fig.width = 1, out.height = "4in"}
+knitr::include_graphics("../figures/01_county_extent.pdf")
+```
