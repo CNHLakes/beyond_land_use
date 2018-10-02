@@ -10,6 +10,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 6, dev = c("pdf"))
 ```
 
-```{r fig.cap="Figure 1: Counties that overlap lake watersheds with high agricultural land-use cover that have water quality data in LAGOS.", echo = FALSE, fig.width = 1, out.height = "4in"}
-knitr::include_graphics("../figures/01_county_extent.pdf")
+```{r county_extent, fig.cap = "Number of lake watersheds per county where lakes are limited to those with high agricultural land-use cover (greater than 40 percent) and water quality data in LAGOS from at least 3 sampling events between 1995 and 2005.", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/01_county_extent-1.pdf")
 ```
