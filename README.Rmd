@@ -14,9 +14,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Vision
+Code and data for:
 
-Use more detailed Ag and soils data to improve predictive models of lake TP, TN, and Nitrate.
+## The effect of crop type, fertilizer, and manure applications on lake nutrients in agriculture watersheds at regional scales
+
+> Journal Target: Ecosystems
+
+### Products
+
+Figures: [manuscript/figures.pdf](manuscript/figures.pdf)
+
+Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
 ## Potential predictor variables
 
@@ -57,7 +65,7 @@ knitr::include_graphics("figures/rmd-hi_ag_iws_w_ep-1.png")
 cdl_key <- read.csv("data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
 ```
 
-```{r lagos_v_cdl_v_usgs, echo=FALSE}
+```{r lagos_v_cdl_v_usgs, echo=FALSE, eval=FALSE}
 # tp vs lagos ag, cdl ag, usgs P inputs
 
 # ---- setup ----

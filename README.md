@@ -1,45 +1,49 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-Vision
-------
 
-Use more detailed Ag and soils data to improve predictive models of lake TP, TN, and Nitrate.
+Code and data
+for:
 
-Potential predictor variables
------------------------------
+## The effect of crop type, fertilizer, and manure applications on lake nutrients in agriculture watersheds at regional scales
 
--   LAGOS
-    -   Lake depth
-    -   IWS area
-    -   IWS/Lake area
--   Cropland Data Layer
-    -   IWS pasture types (forage or not)
-    -   IWS specific crops (corn, wheat, etc.)
-    -   IWS crop frequency/rotation
--   gSSURGO
-    -   IWS wetland potential (as a proxy for tile drainage)
-    -   IWS soil organic carbon
-    -   IWS root zone depth
-    -   IWS lithology (sand %, clay %, etc.)
--   USGS
-    -   IWS from county - manure, fertilizer, and deposition of N,P
+> Journal Target: Ecosystems
 
-Research questions
-------------------
+### Products
 
--   Is ag intensification related to changes in lake water quality?
-    -   Maybe areas with reduced intensification have been improving?
--   Do ag conservation practices affect lake water quality?
--   Others?
+Figures: [manuscript/figures.pdf](manuscript/figures.pdf)
 
-Timeline
---------
+Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
-Issues
-------
+## Potential predictor variables
 
--   Availability of data products through time is highly variable. How to align or decide to treat properties as constant?
+  - LAGOS
+      - Lake depth
+      - IWS area
+      - IWS/Lake area
+  - Cropland Data Layer
+      - IWS pasture types (forage or not)
+      - IWS specific crops (corn, wheat, etc.)
+      - IWS crop frequency/rotation
+  - gSSURGO
+      - IWS wetland potential (as a proxy for tile drainage)
+      - IWS soil organic carbon
+      - IWS root zone depth
+      - IWS lithology (sand %, clay %, etc.)
+  - USGS
+      - IWS from county - manure, fertilizer, and deposition of N,P
 
-<img src="figures/rmd-hi_ag_iws_w_ep-1.png" width="504" />
+## Research questions
 
-![](figures/lagos_v_cdl_v_usgs-1.png)
+  - Is ag intensification related to changes in lake water quality?
+      - Maybe areas with reduced intensification have been improving?
+  - Do ag conservation practices affect lake water quality?
+  - Others?
+
+## Timeline
+
+## Issues
+
+  - Availability of data products through time is highly variable. How
+    to align or decide to treat properties as constant?
+
+![](figures/rmd-hi_ag_iws_w_ep-1.png)<!-- -->
