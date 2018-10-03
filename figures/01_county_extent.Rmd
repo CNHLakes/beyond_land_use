@@ -1,15 +1,15 @@
 ---
-title: "Figures"
-output:
-  pdf_document:
-    fig_caption: yes
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
 ```
 
 ```{r read_explore_chunk, echo=FALSE, eval=TRUE}
+# setwd("figures")
 knitr::read_chunk("../scripts/explore_lagos_ag.R")
 ```
 
@@ -27,6 +27,6 @@ cat(paste(c("Lake Mendota", "Oneida Lake")[which(llids %in% ep$lagoslakeid)], "i
 
 <!-- * Find counties that intersect large numbers of hi ag iws with tp + tn data -->
 
-```{r county_extent, eval=TRUE, echo=FALSE, fig.cap = "Number of lake watersheds per county where lakes are limited to those with high agricultural land-use cover (> 40%) and water quality data in LAGOS measured at > 3 sampling events between 1995 and 2005.", warning=FALSE, fig.width = 5.5, fig.height = 3}
+```{r 01_county_extent, eval=TRUE, echo=FALSE, fig.width = 5.5, fig.height = 3}
 
 ```
