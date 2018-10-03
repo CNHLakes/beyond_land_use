@@ -138,7 +138,12 @@ usgs <- apply(usgs_key, 1, function(x) interp_to_iws(usgs_raw, x[1], x[2]))
 usgs <- bind_cols(usgs) %>%
   dplyr::select(lagoslakeid, usgs_key$pretty_name)
 
+usgs <- usgs %>% 
+  mutate(n_input = rowSums(select(., starts_with("nitrogen")), na.rm = TRUE),
+         p_input = rowSums(select(., starts_with("phosphorus")), na.rm = TRUE))
+
 saveRDS(usgs, "data/usgs/usgs.rds")
+# usgs <- readRDS("data/usgs/usgs.rds")
 
 # ---- viz ----
 # res <- readRDS("data/usgs/usgs.rds")

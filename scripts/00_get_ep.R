@@ -90,7 +90,7 @@ ep <- ep %>%
 # add focal predictors
 ep <- ep %>%
   left_join(dplyr::select(lg$iws, lagoslakeid, iws_ha)) %>%
-  left_join(dplyr::select(lg$locus, lagoslakeid, lake_area_ha)) %>%
+  left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid, lake_area_ha)) %>%
   mutate(iwsla_ratio = iws_ha / lake_area_ha)
 
 # filter focal predictors

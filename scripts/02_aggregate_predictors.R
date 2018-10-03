@@ -8,8 +8,7 @@ ep <- readRDS("data/ep.rds")
 lg_lulc <- readRDS("data/iws_lulc.rds") %>%
   select(-iws_ag_2001_pcent)
 
-usgs <- readRDS("data/usgs/usgs.rds") %>%
-  select(lagoslakeid, phosphorus_input, nitrogen_input, n_dep)
+usgs <- readRDS("data/usgs/usgs.rds")
 
 gssurgo <- ungroup(readRDS("data/gssurgo/gssurgo.rds")$res)
 gssurgo_key <- readRDS("data/gssurgo/gssurgo.rds")$gssurgo_key
@@ -24,6 +23,7 @@ dt <- ep %>%
   left_join(cdl, by = c("lagoslakeid" = "llid"))
 
 saveRDS(dt, "data/dt.rds")
+# dt <- readRDS("data/dt.rds")
 
 dt_units <- data.frame(variable = names(dt), stringsAsFactors = FALSE) %>%
   mutate(units = case_when(
