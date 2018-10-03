@@ -9,3 +9,4 @@ data/cdl/*.zip
 data/gssurgo/*.tif
 data/*.tif
 manuscript/figures.tex
+tables/*.tex

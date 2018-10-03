@@ -53,3 +53,11 @@ manuscript/figures.pdf: manuscript/figures.Rmd figures/01_county_extent-1.pdf
 	
 figures/01_county_extent-1.pdf: figures/01_county_extent.Rmd scripts/explore_lagos_ag.R
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+
+tables: manuscript/tables.pdf
+
+manuscript/tables.pdf: tables/01_predictors.pdf
+	pdftk $^ cat output manuscript/tables.pdf
+	
+tables/01_predictors.pdf: tables/01_predictors.Rmd
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
