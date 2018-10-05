@@ -10,3 +10,4 @@ data/gssurgo/*.tif
 data/*.tif
 manuscript/figures.tex
 tables/*.tex
+tables/*.png
