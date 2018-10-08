@@ -1,0 +1,40 @@
+---
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+```
+
+```{r hu4_n, echo=FALSE, message=TRUE, eval=FALSE}
+library(kableExtra)
+library(dplyr)
+library(magrittr)
+
+library(LAGOSextra)
+library(sf)
+library(ggplot2)
+
+# setwd("tables")
+ids <- test <- readRDS("../data/dt.rds") %>%
+  group_by(hu4_zoneid) %>% 
+  tally()
+
+hu4 <-  LAGOSextra::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
+  st_cast(to = "MULTIPOLYGON") %>%
+  left_join(ids, by = c("ZoneID" = "hu4_zoneid"))
+
+ggplot() +
+  geom_sf(data = hu4, aes(fill = n)) +
+  theme_minimal()
+
+# hist(hu4$n, n = 20)
+# table(as.character(dt$hu4_zoneid))
+```
+
+```{r }
+
+
+```
