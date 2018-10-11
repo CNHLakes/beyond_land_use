@@ -1,0 +1,61 @@
+---
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+```
+
+```{r 03_wetland_potential, fig.height=3, echo=FALSE}
+library(kableExtra)
+library(dplyr)
+library(tidyr)
+library(magrittr)
+
+library(LAGOSNE)
+library(sf)
+library(ggplot2)
+library(cowplot)
+library(concaveman)
+
+states <- st_as_sf(maps::map("state", fill = TRUE, plot = FALSE))
+ep      <- coordinatize(readRDS("../data/ep.rds"))
+ep_bbox <- concaveman(ep)$polygons
+states  <- states[unlist(lapply(st_intersects(states, ep_bbox), 
+                               function(x) length(x) > 0)),]
+
+# setwd("figures")
+gssurgo_raw <- readRDS("../data/gssurgo/gssurgo.rds")$res
+gssurgo_raw$llid <- as.integer(gssurgo_raw$llid)
+lg <- lagosne_load("1.087.1")
+
+gssurgo <- left_join(gssurgo_raw, 
+                         dplyr::select(lg$locus, 
+                         lagoslakeid, nhd_long, nhd_lat), 
+                         by = c("llid" = "lagoslakeid"))
+gssurgo <- left_join(gssurgo, 
+            dplyr::select(lg$iws.conn, 
+              wl_dissolved = iws_wl_allwetlandsdissolved_overlapping_area_pct, 
+              wl_undissolved = iws_wl_allwetlandsundissolved_overlapping_area_pct,
+              lagoslakeid), by = c("llid" = "lagoslakeid")) %>% 
+          mutate(diff = wetland_potential - wl_dissolved) 
+gssurgo <- coordinatize(gssurgo)
+
+plot_grid(
+  ggplot(data = gssurgo) +
+    geom_point(aes(x = wetland_potential, 
+                   y = wl_dissolved, color = diff > 30)) + 
+    xlab("gssurgo wetland potential (%)") + ylab("lagos nwi wetland pct (%)") + 
+    labs(color = "difference (%)") +
+    geom_abline(slope = 1, intercept = 0) + 
+    theme(legend.position = "none"),
+  ggplot() + 
+    geom_sf(data = states, fill = "white") +
+    geom_sf(data = gssurgo, aes(color = diff > 30), size = 0.8) +
+    theme_minimal() +
+    theme(legend.position = "none"), labels = "AUTO"
+)
+
+```

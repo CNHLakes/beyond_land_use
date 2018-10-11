@@ -17,3 +17,7 @@ knitr::include_graphics("../figures/01_county_extent-1.pdf")
 ```{r hierarchical_demo, fig.cap = "A) Global (dashed line) and regional (solid lines) fits to the relationship between lake chlorophyll and lake phosphorus. B) Number of lakes per region.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/02_hierarchical_demo-1.pdf")
 ```
+
+```{r wetland_potential, fig.cap = "A) gSSURGO wetland potential versus National Wetlands Inventory cover. B) Locations of lakes where these number differ by more than 30 percent.", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/03_wetland_potential-1.pdf")
+```

@@ -33,7 +33,7 @@ hu4 <-  LAGOSextra::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
 # table(as.character(dt$hu4_zoneid))
 ```
 
-```{r 02_hierarchical_demo, fig.height=3}
+```{r 02_hierarchical_demo, fig.height=3, echo=FALSE}
 lg <- lagosne_load("1.087.1")
 
 dt <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 

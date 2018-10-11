@@ -11,3 +11,6 @@ data/*.tif
 manuscript/figures.tex
 tables/*.tex
 tables/*.png
+figures/*.png
+figures/*.tex
+figures/*.pdf
