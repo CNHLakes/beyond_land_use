@@ -13,3 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 ```{r county_extent, fig.cap = "Number of lake watersheds per county where lakes are limited to those with high agricultural land-use cover (greater than 40 percent) and water quality data in LAGOS from at least 3 sampling events between 1995 and 2005.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/01_county_extent-1.pdf")
 ```
+
+```{r hierarchical_demo, fig.cap = "A) Global (dashed line) and regional (solid lines) fits to the relationship between lake chlorophyll and lake phosphorus. B) Number of lakes per region.", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/02_hierarchical_demo-1.pdf")
+```

@@ -46,12 +46,15 @@ data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds dat
 
 figures: manuscript/figures.pdf
 
-manuscript/figures.pdf: manuscript/figures.Rmd figures/01_county_extent-1.pdf
+manuscript/figures.pdf: manuscript/figures.Rmd figures/01_county_extent-1.pdf figures/02_hierarchical_demo-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
 	-mv manuscript/figures2.pdf manuscript/figures.pdf
 	
 figures/01_county_extent-1.pdf: figures/01_county_extent.Rmd scripts/explore_lagos_ag.R
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	
+figures/02_hierarchical_demo-1.pdf: figures/02_hierarchical_demo.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 tables: manuscript/tables.pdf

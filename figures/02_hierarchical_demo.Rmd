@@ -8,16 +8,19 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
 ```
 
-```{r hu4_n, echo=FALSE, message=TRUE, eval=FALSE}
+```{r hu4_n, echo=FALSE, message=TRUE, eval=TRUE}
 library(kableExtra)
 library(dplyr)
+library(tidyr)
 library(magrittr)
 
+library(LAGOSNE)
 library(LAGOSextra)
 library(sf)
 library(ggplot2)
+library(cowplot)
 
-# setwd("tables")
+# setwd("figures")
 ids <- test <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
   tally()
@@ -26,15 +29,41 @@ hu4 <-  LAGOSextra::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
   st_cast(to = "MULTIPOLYGON") %>%
   left_join(ids, by = c("ZoneID" = "hu4_zoneid"))
 
-ggplot() +
-  geom_sf(data = hu4, aes(fill = n)) +
-  theme_minimal()
-
 # hist(hu4$n, n = 20)
 # table(as.character(dt$hu4_zoneid))
 ```
 
-```{r }
+```{r 02_hierarchical_demo, fig.height=3}
+lg <- lagosne_load("1.087.1")
 
+dt <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 
+                summarize(
+                  group_by(dplyr::select(lg$epi_nutr, lagoslakeid, tp, chla), 
+                           lagoslakeid), 
+                  tp = median(tp, na.rm = TRUE), 
+                  chla = median(chla, na.rm = TRUE))
+                ) %>%
+  tidyr::drop_na() 
 
-```
+# hist(as.vector(table(dt$hu4_zoneid)))  
+good_hu4s <- group_by(dt, hu4_zoneid) %>% 
+  tally() %>%
+  dplyr::filter(n > 220)  
+dt <- dplyr::filter(dt, hu4_zoneid %in% good_hu4s$hu4_zoneid)
+dt <- dplyr::filter(dt, tp < 500 & chla < 150)
+
+plot_grid(
+  ggplot(data = dt, aes(x = tp, y = chla, color = hu4_zoneid)) + 
+    geom_point(alpha = 0.5) +
+    geom_smooth(method = lm, se = FALSE) +
+    geom_smooth(aes(group = 1), method = lm, se = FALSE, 
+                color = "black", linetype = "dashed") +
+    # scale_y_log10() + scale_x_log10() +
+    theme(legend.position = ""),
+  ggplot() +
+    geom_sf(data = hu4, aes(fill = n)) +
+    theme_minimal() + 
+    theme(legend.position = "bottom"), 
+  rel_heights = c(0.6, 1), labels = "AUTO"
+)
+``` 
