@@ -34,11 +34,6 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
 ## Research questions
 
-  - Is ag intensification related to changes in lake water quality?
-      - Maybe areas with reduced intensification have been improving?
-  - Do ag conservation practices affect lake water quality?
-  - Others?
-
 ## Timeline
 
 ## Issues
