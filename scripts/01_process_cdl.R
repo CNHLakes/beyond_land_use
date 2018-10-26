@@ -16,7 +16,7 @@ cdl_summary <- function(llid){
   
   cdl_table <- as_data_frame(table(values(r)), stringsAsFactors = FALSE) %>%
     mutate(code = as.integer(Var1)) %>%
-    select(-Var1) %>%
+    dplyr::select(-Var1) %>%
     left_join(cdl_key, by = "code") 
   
   cdl_cat <- cdl_table %>%

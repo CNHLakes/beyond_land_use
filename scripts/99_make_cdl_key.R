@@ -1,7 +1,7 @@
 library(cdlTools)
 library(tidyr)
-library(dplyr)
-library(magrittr)
+suppressMessages(library(dplyr))
+suppressMessages(library(magrittr))
 
 cdl_key <- data.frame(code = 0:255, description = cdlTools::updateNamesCDL(0:255),
                       stringsAsFactors = FALSE)
@@ -35,7 +35,7 @@ aggregate_categories <- function(cdl_key){
 
   res <- mutate(res,
                 is_ag = if_else(category %in% c("corn", "wheat", "other ag",
-                                          "soybeans", "mixed crop", "forage"), "ag", 
+                                          "soybeans", "mixed crop", "forage", "pasture"), "ag", 
                                 "nonag"))
   
   res <- mutate(res, is_forage = case_when(

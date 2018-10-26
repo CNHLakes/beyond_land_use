@@ -14,7 +14,7 @@ library(ggplot2)
 library(HydroData)
 library(dplyr)
 library(tidyr)
-
+# setwd("data")
 cdl <- read.csv("../data/cdl/cdl_summary.csv", stringsAsFactors = FALSE) %>%
   dplyr::select(lagoslakeid = llid, cdl_ag_99 = ag, cdl_pasture_81 = pasture)
 
@@ -36,5 +36,6 @@ res <- dplyr::left_join(cdl, lg, by = c("lagoslakeid")) %>%
 ggplot(data = res, aes(x = nlcd, y = cdl)) + 
   geom_point() +
   geom_abline(intercept = 0, slope = 1) +
-  facet_wrap(~variable)
+  facet_wrap(~variable) +
+  theme_minimal()
 ```
