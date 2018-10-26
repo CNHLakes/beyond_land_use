@@ -1,0 +1,40 @@
+---
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+```
+
+```{r 04_nlcd-versus-cdl, fig.height=3, echo=FALSE}
+library(LAGOSNE)
+library(ggplot2)
+library(HydroData)
+library(dplyr)
+library(tidyr)
+
+cdl <- read.csv("../data/cdl/cdl_summary.csv", stringsAsFactors = FALSE) %>%
+  dplyr::select(lagoslakeid = llid, cdl_ag_99 = ag, cdl_pasture_81 = pasture)
+
+lg  <- lagosne_load("1.087.1")$iws.lulc %>%
+  dplyr::filter(lagoslakeid %in% cdl$lagoslakeid) %>%
+  dplyr::select(lagoslakeid, matches(".*nlcd2011.*")) %>%
+  dplyr::select(lagoslakeid, 
+                nlcd_pasture_81 = iws_nlcd2011_pct_81, 
+                nlcd_rowcrop_82 = iws_nlcd2011_pct_82) %>% 
+  dplyr::mutate(nlcd_ag_99 = nlcd_pasture_81 + nlcd_rowcrop_82)
+
+res <- dplyr::left_join(cdl, lg, by = c("lagoslakeid")) %>%
+  tidyr::gather(key = "variable", value = "value", -lagoslakeid) %>%
+  separate(variable, c("source", "variable", "code")) %>%
+  group_by(lagoslakeid) %>%
+  tidyr::spread(source, value) %>%
+  dplyr::filter(variable != "rowcrop")
+
+ggplot(data = res, aes(x = nlcd, y = cdl)) + 
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) +
+  facet_wrap(~variable)
+```
