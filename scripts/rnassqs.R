@@ -51,6 +51,44 @@ ggplot() +
   geom_sf(data = mi_rye_tidy, aes(fill = percent_rye)) +
   labs(fill = "2012 USDA Census \n % rye")
 
+# total animal counts
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="CATTLE",
+               "year" = 2007,
+               "state_alpha" = "MI",
+               "domain_des" = "TOTAL",
+               "agg_level_desc" = "COUNTY",
+               # "unit_desc" = "ACRES",
+               key = key)
+mi_animals      <- nassqs(params)
+
+mi_animals_tidy <- mi_animals %>%
+  mutate(state = tolower(state_name),
+         county = tolower(county_name),
+         value = as.numeric(gsub(",", "", .data$Value))) %>%
+  filter(!is.na(county) & nchar(county) > 0 & year %in% params$year) %>%
+  dplyr::select(state, county, value, short_desc, domain_desc) %>%
+  group_by(county) %>%
+  mutate(total = sum(value, na.rm = TRUE)) %>%
+  left_join(county)
+
+# rm empty geometries and calculate areas
+mi_animals_tidy <- mi_animals_tidy[unlist(lapply(st_geometry(mi_animals_tidy$geometry), 
+                                                 "length")) == 1,]
+mi_animals_tidy$area <- units::set_units(
+  st_area(st_cast(mi_animals_tidy$geometry, "POLYGON")), "acres")
+mi_animals_tidy <- mutate(mi_animals_tidy, animal_density = total / area)
+
+# str_detect(short_desc, "IRRIGATED"))
+
+ggplot() +
+  geom_sf(data = mi_animals_tidy, aes(fill = total)) +
+  labs(fill = "2007 USDA Census \n Total animals")
+
+ggplot() +
+  geom_sf(data = mi_animals_tidy, aes(fill = animal_density)) +
+  labs(fill = "2007 USDA Census \n animal # per acre")
+
 # ---- HU6_level_data ----
 
 gdb_path <- path.expand("~/.local/share/LAGOS-GIS/lagos-ne_gis.gpkg")
