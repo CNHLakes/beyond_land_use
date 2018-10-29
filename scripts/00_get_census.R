@@ -1,6 +1,3 @@
-library(LAGOSNE)
-library(LAGOSextra)
-library(sf)
 suppressMessages(library(tidyr))
 suppressMessages(library(dplyr))
 library(snakecase)
@@ -8,13 +5,17 @@ library(janitor)
 library(lwgeom)
 suppressMessages(library(magrittr))
 
+library(LAGOSNE)
+library(LAGOSextra)
+library(sf)
 library(ggplot2)
 library(rnassqs)
 library(maps)
 library(stringr)
 library(concaveman)
-
 source("scripts/utils.R")
+key <- "E44D2FCF-E267-3DE1-950A-E6C54EEA7058"
+Sys.setenv(NASSQS_TOKEN = key)
 
 # ---- census_get ----
 
@@ -25,69 +26,45 @@ iws <- st_make_valid(iws)
 
 # setwd("../")
 if(!file.exists("data/census/census_raw.rds")){
-  
   # find states intersected by iws
   states <- state_sf()[unlist(
     lapply(st_intersects(state_sf(), coordinatize(ep)), 
            function(x) length(x) > 0)),]$ABB
   
-  params <- list("source_desc" = "CENSUS",
-                 "commodity_desc"="CATTLE",
-                 "year" = 2007,
-                 "state_alpha" = "MI",
-                 "domain_des" = "TOTAL",
-                 "agg_level_desc" = "COUNTY",
-                 # "unit_desc" = "ACRES",
-                 key = key)
-  mi_animals      <- nassqs(params)
+  animals_raw <- lapply(states, function(x){
+    # x <- "MN"
+    print(x)
+    params <- list("source_desc" = "CENSUS",
+                   "commodity_desc" = c("CATTLE"),
+                   "year" = 2007,
+                   "state_alpha" = x,
+                   "domain_desc" = "TOTAL",
+                   "agg_level_desc" = "COUNTY",
+                   key = key)
+    raw <- nassqs(params)
   
-  mi_animals_tidy <- mi_animals %>%
-    mutate(state = tolower(state_name),
-           county = tolower(county_name),
-           value = as.numeric(gsub(",", "", .data$Value))) %>%
-    filter(!is.na(county) & nchar(county) > 0 & year %in% params$year) %>%
-    dplyr::select(state, county, value, short_desc, domain_desc) %>%
-    group_by(county) %>%
-    mutate(total = sum(value, na.rm = TRUE)) %>%
-    left_join(county)
+    # check unique short_desc field
+    
+    census_tidy <- mutate(raw, state = tolower(state_name),
+             county = gsub("\\.", "", gsub(" ", "", tolower(county_name))),
+             value = as.numeric(gsub(",", "", .data$Value))) %>%
+      filter(!is.na(county) & nchar(county) > 0 & year %in% params$year) %>%
+      dplyr::select(state, county, value, short_desc, domain_desc) %>%
+      group_by(county) %>%
+      mutate(total = sum(value, na.rm = TRUE)) %>%
+      left_join(county_sf(), by = c("state", "county"))
+    
+    census_tidy$area <- units::set_units(
+      st_area(st_cast(census_tidy$geometry, "POLYGON")), "acres")
+    census_tidy <- mutate(census_tidy, animal_density = total / area)
+    st_geometry(census_tidy) <- census_tidy$geometry
   
-  # rm empty geometries and calculate areas
-  mi_animals_tidy <- mi_animals_tidy[unlist(lapply(st_geometry(mi_animals_tidy$geometry), 
-                                                   "length")) == 1,]
-  mi_animals_tidy$area <- units::set_units(
-    st_area(st_cast(mi_animals_tidy$geometry, "POLYGON")), "acres")
-  mi_animals_tidy <- mutate(mi_animals_tidy, animal_density = total / area)
+    # mapview::mapview(census_tidy, zcol = "total")
+    census_tidy})
   
-  
-  datasheet <- xlsx_cells(ofile) %>%
-    select(row, col, data_type, numeric, character) %>%
-    filter(col > 4) %>%
-    mutate(character = if_else(grepl("X_", character), NA_character_, character),
-           character = if_else(nchar(character) == 0, NA_character_, character)) %>%
-    behead("N", variable) %>%
-    behead("N", year) %>%
-    behead("N", farm_nofarm) %>%
-    fill(variable, year) %>%
-    mutate(character = coalesce(character, as.character(numeric))) %>%
-    select(-col, -numeric, -data_type) %>%
-    mutate(variable = snakecase::to_any_case(variable),
-           variable = gsub("_input_from", "", variable),
-           variable = gsub("_kilograms", "", variable))
+  animals_raw <- dplyr::bind_rows(animals_raw)
 
-  county_info <- xlsx_cells(ofile) %>%
-    select(row, col, data_type, numeric, character) %>%
-    filter(col <= 4, col ) %>%
-    behead("N", key) %>%
-    filter(row > 4) %>%
-    mutate(character = coalesce(character, as.character(numeric))) %>%
-    select(row, value = character, key) %>%
-    spread(key, value) %>%
-    clean_names()
-
-  usgs_raw <- left_join(county_info, datasheet, by = "row") %>%
-    rename(value = character)
-
-  saveRDS(usgs_raw, "data/usgs/usgs_raw.rds")
+  saveRDS(animals_raw, "data/census/census_raw.rds")
 }
 
 # select counties intersected by ep iws
