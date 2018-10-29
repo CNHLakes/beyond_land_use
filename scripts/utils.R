@@ -4,7 +4,9 @@ suppressMessages(library(dplyr))
 # ---- basic_gis ----
 county_sf <- function(){
   county_sf <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
-  tidyr::separate(county_sf, ID, c("state", "county"))
+  county_sf <- tidyr::separate(county_sf, ID, c("state", "county"), ",")
+  county_sf$county <- gsub("\\.", "", gsub(" ", "", county_sf$county))
+  county_sf
 }
 
 state_sf <- function(){
