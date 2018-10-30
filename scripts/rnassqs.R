@@ -89,6 +89,100 @@ ggplot() +
   geom_sf(data = mi_animals_tidy, aes(fill = animal_density)) +
   labs(fill = "2007 USDA Census \n animal # per acre")
 
+# CAFOS
+# cattle
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="CATTLE",
+               "year" = 2007,
+               "state_alpha" = "MI",
+               "domain_des" = "PRODUCTION",
+               "agg_level_desc" = "COUNTY",
+               # "unit_desc" = "ACRES",
+               key = key)
+mi_animals     <- nassqs(params)
+
+test <- dplyr::filter(mi_animals, 
+                      stringr::str_detect(domaincat_desc, 
+                      "SALES OF CATTLE ON FEED\\: \\(500 OR MORE HEAD\\)")) %>%
+  dplyr::select(state_name, county_name, unit_desc, Value) %>%
+  dplyr::arrange(state_name, county_name) %>%
+  mutate(Value = as.numeric(gsub(",", "", Value))) %>%
+  tidyr::spread(unit_desc, Value) %>%
+  mutate(cattle_density = HEAD / OPERATIONS) %>%
+  mutate(has_cafo = tidyr::replace_na(cattle_density > 1000, FALSE))
+
+# dairy
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="CATTLE",
+               "year" = 2007,
+               "state_alpha" = "MI",
+               "domain_desc" = "INVENTORY OF MILK COWS",
+               "agg_level_desc" = "COUNTY",
+               # "unit_desc" = "ACRES",
+               key = key)
+mi_animals     <- nassqs(params)
+
+unique(mi_animals$domain_desc)
+
+test <- dplyr::filter(mi_animals, 
+                      stringr::str_detect(domaincat_desc, 
+                                          "500 OR MORE HEAD"),
+                      stringr::str_detect(short_desc, 
+                                          "OPERATIONS")) %>%
+  dplyr::select(state_name, county_name, unit_desc, Value) %>%
+  dplyr::arrange(state_name, county_name) %>%
+  mutate(Value = as.numeric(gsub(",", "", Value))) %>%
+  tidyr::spread(unit_desc, Value) %>%
+  mutate(cattle_density = HEAD / OPERATIONS) %>%
+  mutate(has_cafo = tidyr::replace_na(cattle_density > 1000, FALSE))
+  
+# broilers
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="CHICKENS",
+               "year" = 2007,
+               "state_alpha" = "MI",
+               "domain_desc" = "TOTAL",
+               "agg_level_desc" = "COUNTY",
+               "reference_period_desc" = "YEAR",
+               # "unit_desc" = "ACRES",
+               key = key)
+mi_animals     <- nassqs(params)
+
+test <- dplyr::filter(mi_animals, 
+                      stringr::str_detect(short_desc, "BROILERS"), 
+                      stringr::str_detect(prodn_practice_desc, "ALL")) %>%
+  dplyr::select(state_name, county_name, unit_desc, Value) %>%
+  dplyr::arrange(state_name, county_name) %>%
+  mutate(Value = as.numeric(gsub(",", "", Value))) %>%
+  tidyr::spread(unit_desc, Value) %>%
+  mutate(density = HEAD / OPERATIONS) %>%
+  mutate(has_cafo = tidyr::replace_na(density > 50000, FALSE))
+
+# hogs
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="HOGS",
+               "year" = 2007,
+               "state_alpha" = "MI",
+               "domain_desc" = "TOTAL",
+               "agg_level_desc" = "COUNTY",
+               "reference_period_desc" = "YEAR",
+               # "unit_desc" = "ACRES",
+               key = key)
+mi_animals     <- nassqs(params)
+
+test <- dplyr::filter(mi_animals, 
+                      !stringr::str_detect(unit_desc, "\\$"), 
+                      stringr::str_detect(prodn_practice_desc, "ALL")) %>%
+  dplyr::select(state_name, county_name, unit_desc, Value) %>%
+  dplyr::arrange(state_name, county_name) %>%
+  mutate(Value = as.numeric(gsub(",", "", Value))) %>%
+  tidyr::spread(unit_desc, Value) %>%
+  mutate(density = HEAD / OPERATIONS) %>%
+  mutate(has_cafo = tidyr::replace_na(density > 2500, FALSE))
+  
+  
+unique(test$domaincat_desc)
+
 # ---- HU6_level_data ----
 
 gdb_path <- path.expand("~/.local/share/LAGOS-GIS/lagos-ne_gis.gpkg")
