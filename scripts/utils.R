@@ -6,6 +6,11 @@ county_sf <- function(){
   county_sf <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
   county_sf <- tidyr::separate(county_sf, ID, c("state", "county"), ",")
   county_sf$county <- gsub("\\.", "", gsub(" ", "", county_sf$county))
+  county_sf <- st_make_valid(county_sf)
+  # county_sf <- county_sf[
+  #   unlist(lapply(
+  #     st_intersects(county_sf, iws),
+  #     function(x) length(x) > 0)),]
   county_sf
 }
 
@@ -44,4 +49,27 @@ get_raster_name <- function(r, path){
 
 get_iws <- function(lagoslakeid){
   LAGOSextra::query_wbd(lagoslakeid, utm = FALSE)
+}
+
+state_key <- function(){
+  data.frame(state = datasets::state.abb, 
+             state_name = datasets::state.name)
+}
+
+interp_to_iws <- function(raw, varname = "total", outname, is_extensive = TRUE){
+  # raw <- animals_raw
+  # varname = "nitrogen_livestock_manure"
+  iws <- iws[sapply(st_intersects(iws, raw), length) != 0,]
+  
+  # st_interpolate_aw
+  iws_interp <- suppressWarnings(
+    st_interpolate_aw(raw[,varname], iws,
+                      extensive = is_extensive)) # kg per ha is false, kg is true
+  iws_interp <- data.frame(outname = iws_interp[,varname],
+                           lagoslakeid = iws$lagoslakeid,
+                           stringsAsFactors = FALSE)
+  names(iws_interp)[1] <- outname
+  iws_interp <- dplyr::select(iws_interp, lagoslakeid, everything())
+  iws_interp <- dplyr::rename(iws_interp, geometry = outname.geometry)
+  st_as_sf(iws_interp)
 }

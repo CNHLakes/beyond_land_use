@@ -3,7 +3,7 @@
 
 all: data figures data/dt.rds
 
-data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo_key.csv
+data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo_key.csv data/census/census.rds
 
 gssurgo: data/gssurgo/gssurgo.rds
 
@@ -39,6 +39,9 @@ data/gssurgo/gssurgo.csv: scripts/00_get_ssurgo.R
 	Rscript $< 'data/gssurgo/'
 	
 data/gssurgo/gssurgo.rds: scripts/01_process_ssurgo.R data/gssurgo/gssurgo.csv
+	Rscript $<
+
+data/census/census.rds: scripts/00_get_census.R
 	Rscript $<
 
 data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds
