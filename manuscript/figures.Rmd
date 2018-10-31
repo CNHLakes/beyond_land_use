@@ -25,3 +25,7 @@ knitr::include_graphics("../figures/03_wetland_potential-1.pdf")
 ```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD derived and CDL derived total watershed ag and watershed pasture cover.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/04_nlcd-versus-cdl-1.pdf")
 ```
+
+```{r cafos, fig.cap = "CAFOS", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/05_cafos-1.pdf")
+```

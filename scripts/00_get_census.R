@@ -21,12 +21,69 @@ iws <- LAGOSextra::query_wbd(ep$lagoslakeid, utm = FALSE)
 # mapview::mapview(dplyr::filter(iws, lagoslakeid == 34352))
 iws <- st_make_valid(iws)
 
+source_desc = "CENSUS"
+year <- 2007
+state_alpha <- "MI"
+agg_level_desc <- "COUNTY"
+census_key <- data.frame(commodity = c("CATTLE", "CATTLE", 
+                                       "CATTLE", "CHICKENS", "HOGS"), 
+                         domain = c("TOTAL", "SALES OF CATTLE, INCL CALVES", 
+                                    "INVENTORY OF MILK COWS", "TOTAL", "TOTAL"),
+                         domaincat_desc = c(NA, "SALES OF CATTLE, INCL CALVES: (500 OR MORE HEAD)", 
+                                            "INVENTORY OF MILK COWS: (500 OR MORE HEAD)", NA, NA),
+                         unit_desc = c(NA, "OPERATIONS", "OPERATIONS", "OPERATIONS", NA),
+                         short_desc = c("CATTLE, INCL CALVES - INVENTORY", NA, NA, NA, NA),
+                         ref_period_desc = c(NA, NA, NA, "YEAR", "YEAR"), 
+                         freq_desc = c(NA, NA, NA, "ANNUAL", NA),
+                         stringsAsFactors = FALSE)
+
+test <- apply(census_key[1:2,], 1, function(x){
+  # x <- census_key[4,]
+  params <- list("source_desc" = source_desc, 
+                 "commodity_desc" = as.character(x["commodity"]), 
+                 "year" = year, 
+                 "state_alpha" = state_alpha, 
+                 "domain_desc" = as.character(x["domain"]), 
+                 "domaincat_desc" = as.character(x["domaincat_desc"]),
+                 "unit_desc" = as.character(x["unit_desc"]),
+                 "short_desc" = as.character(x["short_desc"]), 
+                 "ref_period_desc" = as.character(x["ref_period_desc"]),
+                 "freq_desc" = as.character(x["freq_desc"]),
+                 "agg_level_desc" = agg_level_desc, 
+                 key = key)
+  params <- params[!is.na(params)]
+  raw <- nassqs(params)
+  raw
+  })
+
+
 params <- list("source_desc" = "CENSUS",
-               "commodity_desc" = c("CATTLE"),
-               "year" = 2007,
-               "domain_desc" = "TOTAL",
-               "short_desc" = "CATTLE, INCL CALVES - INVENTORY",
+               "commodity_desc"="CATTLE",
+               "year" = year,
+               "state_alpha" = "MI",
+               "domain_desc" = "INVENTORY OF MILK COWS",
                "agg_level_desc" = "COUNTY",
+               # "unit_desc" = "ACRES",
+               key = key)
+
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="CHICKENS",
+               "year" = 2007,
+               "state_alpha" = "MI",
+               "domain_desc" = "TOTAL",
+               "agg_level_desc" = "COUNTY",
+               "reference_period_desc" = "YEAR",
+               # "unit_desc" = "ACRES",
+               key = key)
+
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="HOGS",
+               "year" = 2007,
+               "state_alpha" = "MI",
+               "domain_desc" = "TOTAL",
+               "agg_level_desc" = "COUNTY",
+               "reference_period_desc" = "YEAR",
+               # "unit_desc" = "ACRES",
                key = key)
 
 states <- state_sf()[unlist(
