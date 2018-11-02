@@ -18,7 +18,6 @@ Sys.setenv(NASSQS_TOKEN = key)
 # ---- census_get ----
 ep  <- readRDS("data/ep.rds")
 iws <- LAGOSextra::query_wbd(ep$lagoslakeid, utm = FALSE)
-# mapview::mapview(dplyr::filter(iws, lagoslakeid == 34352))
 iws <- st_make_valid(iws)
 states <- state_sf()[unlist(
   lapply(st_intersects(state_sf(), coordinatize(ep)), 
@@ -96,12 +95,27 @@ if(!file.exists("data/census/census_raw.rds")){
 }
 
 animals_raw <- readRDS("data/census/census_raw.rds")
-animals_raw <- dplyr::bind_rows(animals_raw)
-animals_raw <- mutate(animals_raw, state = tolower(state_name),
+animals_tidy <- dplyr::bind_rows(animals_raw)
+animals_tidy <- mutate(animals_tidy, state = tolower(state_name),
              county = gsub("\\.", "", gsub(" ", "", tolower(county_name))))
-animals_raw <- mutate_at(animals_raw, vars(matches("cattle|chicken|hog")), funs(as.numeric))
-animals_raw <- left_join(animals_raw, county_sf(), by = c("state", "county"))
-st_geometry(animals_raw) <- animals_raw$geometry
+clean_numeric <- function(x){
+  x <- gsub(",", "", x)
+  as.numeric(x)
+}
+animals_tidy <- mutate_at(animals_tidy, vars(matches("cattle|chicken|hog")), 
+                          funs(clean_numeric))
+# animals_tidy <- mutate_at(animals_tidy, vars(matches("cattle|chicken|hog")), 
+#                           funs(tidyr::replace_na(., 0)))
+animals_tidy <- left_join(animals_tidy, county_sf(), 
+                          by = c("state", "county"))
+st_geometry(animals_tidy) <- animals_tidy$geometry
+saveRDS(animals_tidy, "data/census/census_tidy.rds")
+
+# test <- dplyr::filter(animals_raw, state == "minnesota")
+# test2 <- dplyr::filter(iws, lagoslakeid == 401)
+# mapview::mapview(test, zcol = "hog_sales") +
+#   mapview::mapview(test2) +
+#   mapview::mapview(coordinatize(ep)) 
 
 # animals_raw$area <- units::set_units(
 #   st_area(animals_raw$geometry), "acres")
@@ -116,31 +130,21 @@ st_geometry(animals_raw) <- animals_raw$geometry
 # mapview::mapview(animals_raw, zcol = "animal_density")
 
 # select counties intersected by ep iws
-animals_raw <- st_transform(animals_raw, st_crs(iws))
-animals     <- interp_to_iws(animals_raw, varname = "hog_sales", 
-                             outname = "hog_sales", is_extensive = TRUE) 
-# kg per ha is false, kg is true
+# setwd("../")
+animals_tidy <- readRDS("data/census/census_tidy.rds")
+animals_tidy <- st_transform(animals_tidy, st_crs(iws))
+animals      <- lapply(tidyselect::vars_select(
+  names(animals_tidy), matches("cattle|chicken|hog")), 
+  function(x) interp_to_iws(animals_tidy, varname = x, outname = x, 
+                            is_extensive = TRUE))
+animals <- lapply(animals, function(x){ 
+  st_geometry(x) <- NULL
+  x
+  })
 
-saveRDS(animals_raw, "data/census/census.rds")
 
-# ---- viz ----
-# animals <- readRDS("data/census/census.rds")
-# st_geometry(animals) <- NULL
-# animals <- left_join(coordinatize(ep), animals, by = "lagoslakeid")
-#
-# mapview::mapview(animals, zcol = "hog_sales")
+animals <- purrr::reduce(animals, full_join, by = "lagoslakeid") %>%
+  left_join(iws, by = "lagoslakeid")
+st_geometry(animals) <- animals$geometry
 
-# ---- debug ----
-# library(mapview)
-# llid <- 885
-# t_iws <- dplyr::filter(iws, lagoslakeid == llid)
-# t_county <- county_sf[unlist(lapply(
-#   st_intersects(county_sf, t_iws), function(x) length(x) > 0)), ]
-# t_raw <- animals_raw[unlist(lapply(
-#   st_intersects(animals_raw, t_iws), function(x) length(x) > 0)), ]
-# 
-# mapview(t_raw) +
-#   mapview(t_iws)
-# 
-# units::set_units(
-#   st_area(dplyr::filter(county_sf(), state == "wisconsin", county == "pepin")), "acres")  
+saveRDS(animals, "data/census/census.rds")

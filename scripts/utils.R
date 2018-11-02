@@ -56,18 +56,31 @@ state_key <- function(){
              state_name = datasets::state.name)
 }
 
+# kg per ha is false, kg is true
 interp_to_iws <- function(raw, varname = "total", outname, is_extensive = TRUE){
-  # raw <- animals_raw
-  # varname = "nitrogen_livestock_manure"
-  iws <- iws[sapply(st_intersects(iws, raw), length) != 0,]
+  # raw <- animals_tidy
+  # varname = "hog_sales"
+  # is_extensive = TRUE
+  print(varname)
+  
+  # raw <- dplyr::filter(animals_raw, county_name %in% c("LYON", "MURRAY", "PIPESTONE", "LINCOLN", "REDWOOD", "YELLOW MEDICINE") & state == "minnesota")
+  
+  raw <- raw[!is.na(raw[,varname])[,1],]
+  raw <- raw[
+      unlist(lapply(st_intersects(raw, iws), function(x) length(x) > 0)),]
+  iws_sub <- iws[sapply(st_intersects(iws, raw), length) != 0,]
+  # mapview::mapview(raw, zcol = "hog_sales") +
+  #   mapview::mapview(iws)
+  # median(raw$hog_sales)
   
   # st_interpolate_aw
   iws_interp <- suppressWarnings(
-    st_interpolate_aw(raw[,varname], iws,
+    st_interpolate_aw(raw[,varname], iws_sub,
                       extensive = is_extensive)) # kg per ha is false, kg is true
   iws_interp <- data.frame(outname = iws_interp[,varname],
-                           lagoslakeid = iws$lagoslakeid,
+                           lagoslakeid = iws_sub$lagoslakeid,
                            stringsAsFactors = FALSE)
+  
   names(iws_interp)[1] <- outname
   iws_interp <- dplyr::select(iws_interp, lagoslakeid, everything())
   iws_interp <- dplyr::rename(iws_interp, geometry = outname.geometry)

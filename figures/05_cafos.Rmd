@@ -1,0 +1,61 @@
+---
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+source("../scripts/utils.R")
+```
+
+```{r 05_cafos, fig.height=3, echo=FALSE, eval=TRUE}
+library(LAGOSNE)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(concaveman)
+library(sf)
+# setwd("data")
+
+
+states <- st_as_sf(maps::map("state", fill = TRUE, plot = FALSE))
+ep      <- coordinatize(readRDS("../data/ep.rds"))
+ep_bbox <- concaveman(ep)$polygons
+states  <- states[unlist(lapply(st_intersects(states, ep_bbox), 
+                               function(x) length(x) > 0)),]
+
+animals <- readRDS("../data/census/census.rds")
+st_geometry(animals) <- NULL
+animals <- left_join(ep, animals, by = "lagoslakeid")
+animals <- dplyr::filter(animals, lagoslakeid != 401)
+
+# mapview::mapview(states) +
+#   mapview::mapview(animals, zcol = "hog_sales")
+
+cowplot::plot_grid(
+ggplot() +
+  geom_sf(data = states) +
+  geom_sf(data = animals, aes(color = hog_sales)) +
+  theme(title = element_text(size = 10)) +
+  labs(color = paste0("hog \n operations")),
+ggplot() +
+  geom_sf(data = states) +
+  geom_sf(data = animals, aes(color = cattle_sales)) +
+  theme(title = element_text(size = 10)) #+
+  #labs(color = paste0("hog \n operations"))
+)
+
+# ---- debug ----
+# library(mapview)
+# llid <- 457
+# t_iws <- dplyr::filter(iws, lagoslakeid == llid)
+# t_county <- st_transform(county_sf(), st_crs(t_iws))
+# t_county <- t_county[unlist(lapply(
+#   st_intersects(t_county, t_iws), function(x) length(x) > 0)), ]
+# t_raw <- animals_raw[unlist(lapply(
+#   st_intersects(animals_raw, t_iws), function(x) length(x) > 0)), ]
+# 
+# mapview(t_raw) +
+#   mapview(t_iws)
+```
