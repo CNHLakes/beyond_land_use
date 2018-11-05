@@ -26,31 +26,49 @@ ep_bbox <- concaveman(ep)$polygons
 states  <- states[unlist(lapply(st_intersects(states, ep_bbox), 
                                function(x) length(x) > 0)),]
 
+cafos_epa <- st_read("../data/cafos/CAFOs_per_County.shp")
+cafos_epa <- cafos_epa[
+  unlist(lapply(
+    st_intersects(cafos_epa, states), function(x) length(x) > 0)),]
+
 animals <- readRDS("../data/census/census.rds")
 st_geometry(animals) <- NULL
 animals <- left_join(ep, animals, by = "lagoslakeid")
-animals <- dplyr::filter(animals, !(lagoslakeid %in% c(401, 6076)))
+# animals <- dplyr::filter(animals, !(lagoslakeid %in% c(401, 6076)))
 
 # mapview::mapview(states) +
 #   mapview::mapview(animals, zcol = "hog_sales")
 
 theme_opts <- theme(legend.position = "none", 
+                    legend.title=element_blank(),
                     axis.text = element_blank(), 
                     axis.ticks = element_blank(), 
                     title = element_text(size = 8), 
                     plot.margin = unit(c(0, -2, 0, -2), "cm"))
 
+log_breaks <- function(x, l_out){
+  round(rev(exp(
+    seq(
+      log(min(x, na.rm = TRUE)), 
+      log(max(x, na.rm = TRUE)), 
+      length.out = l_out))), 1)
+}
+
 cowplot::plot_grid(
-    ggplot() +
+    
+  ggplot() +
       geom_sf(data = states) +
       geom_sf(data = 
-                dplyr::filter(animals, ), 
+                dplyr::filter(animals, !is.na(hog_sales)), 
               aes(color = hog_sales), 
               size = 0.2, alpha = 0.8) +
       coord_sf(datum = NA) + 
+      labs(color = paste0("hog \n operations")) +
       theme_minimal() + theme_opts +
       ggtitle("hog operations") +
-      labs(color = paste0("hog \n operations")),
+      scale_color_gradient(breaks = log_breaks(animals$hog_sales, 8), 
+                           trans = "log")
+  ,
     ggplot() +
       geom_sf(data = states) +
       geom_sf(data = 
@@ -60,7 +78,10 @@ cowplot::plot_grid(
               size = 0.2, alpha = 0.8) +
       coord_sf(datum = NA) + 
       ggtitle("cattle operations") +
-      theme_minimal() + theme_opts,
+      labs(color = paste0("cattle \n operations")) +
+      theme_minimal() + theme_opts +
+      scale_color_gradient(breaks = log_breaks(animals$cattle_sales, 8), 
+                           trans = "log"),
     ggplot() +
       geom_sf(data = states) +
       geom_sf(data = 
@@ -68,9 +89,11 @@ cowplot::plot_grid(
               aes(color = cattle_dairy), 
               size = 0.2, alpha = 0.8) +
       coord_sf(datum = NA) + 
+      labs(color = paste0("dairy \n operations")) +
       theme_minimal() + theme_opts +
       ggtitle("dairy operations") +
-      labs(color = paste0("dairy \n operations")),
+      scale_color_gradient(breaks = log_breaks(animals$cattle_dairy, 8), 
+                           trans = "log"),
     ggplot() +
       geom_sf(data = states) +
       geom_sf(data = 
@@ -78,9 +101,11 @@ cowplot::plot_grid(
               aes(color = chicken_sales), 
               size = 0.2, alpha = 0.8) +
       coord_sf(datum = NA) + 
+      labs(color = paste0("chicken \n operations")) +
       theme_minimal() + theme_opts +
       ggtitle("chicken operations") +
-      labs(color = paste0("chicken \n operations")),
+      scale_color_gradient(breaks = log_breaks(animals$chicken_sales, 8), 
+                           trans = "log"),
     ggplot() +
       geom_sf(data = states) +
       geom_sf(data = 
@@ -88,9 +113,17 @@ cowplot::plot_grid(
               aes(color = cattle_total), 
               size = 0.2, alpha = 0.8, pch = 19) +
       coord_sf(datum = NA) + 
+      labs(color = paste0("cattle \n head")) +
       theme_minimal() + theme_opts +
       ggtitle("cattle head") +
-      labs(color = paste0("cattle \n head")), 
+      scale_color_gradient(breaks = log_breaks(animals$cattle_total, 8), 
+                           trans = "log"), 
+  ggplot() +
+      geom_sf(data = cafos_epa, aes(fill = CAFOs), color = "transparent") +
+      geom_sf(data = states, fill = "transparent") +
+      coord_sf(datum = NA) + 
+      theme_minimal() + theme_opts +
+      ggtitle("CAFOS"),
     ncol = 1)
 
 # ---- debug ----
