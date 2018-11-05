@@ -26,6 +26,6 @@ knitr::include_graphics("../figures/03_wetland_potential-1.pdf")
 knitr::include_graphics("../figures/04_nlcd-versus-cdl-1.pdf")
 ```
 
-```{r cafos, fig.cap = "CAFOS", warning=FALSE, echo = FALSE}
+```{r cafos, fig.cap = "Livestock data from the 2007 USDA Census of Agriculture.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/05_cafos-1.pdf")
 ```

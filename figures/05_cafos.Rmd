@@ -5,17 +5,18 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 7, fig.height = 7)
 source("../scripts/utils.R")
 ```
 
-```{r 05_cafos, fig.height=3, echo=FALSE, eval=TRUE}
+```{r 05_cafos, echo=FALSE, eval=TRUE}
 library(LAGOSNE)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(concaveman)
 library(sf)
+library(cowplot)
 # setwd("data")
 
 
@@ -28,26 +29,73 @@ states  <- states[unlist(lapply(st_intersects(states, ep_bbox),
 animals <- readRDS("../data/census/census.rds")
 st_geometry(animals) <- NULL
 animals <- left_join(ep, animals, by = "lagoslakeid")
-animals <- dplyr::filter(animals, lagoslakeid != 401)
+animals <- dplyr::filter(animals, !(lagoslakeid %in% c(401, 6076)))
 
 # mapview::mapview(states) +
 #   mapview::mapview(animals, zcol = "hog_sales")
 
+theme_opts <- theme(legend.position = "none", 
+                    axis.text = element_blank(), 
+                    axis.ticks = element_blank(), 
+                    title = element_text(size = 8), 
+                    plot.margin = unit(c(0, -2, 0, -2), "cm"))
+
 cowplot::plot_grid(
-ggplot() +
-  geom_sf(data = states) +
-  geom_sf(data = animals, aes(color = hog_sales)) +
-  theme(title = element_text(size = 10)) +
-  labs(color = paste0("hog \n operations")),
-ggplot() +
-  geom_sf(data = states) +
-  geom_sf(data = animals, aes(color = cattle_sales)) +
-  theme(title = element_text(size = 10)) #+
-  #labs(color = paste0("hog \n operations"))
-)
+    ggplot() +
+      geom_sf(data = states) +
+      geom_sf(data = 
+                dplyr::filter(animals, ), 
+              aes(color = hog_sales), 
+              size = 0.2, alpha = 0.8) +
+      coord_sf(datum = NA) + 
+      theme_minimal() + theme_opts +
+      ggtitle("hog operations") +
+      labs(color = paste0("hog \n operations")),
+    ggplot() +
+      geom_sf(data = states) +
+      geom_sf(data = 
+                dplyr::filter(animals, cattle_sales <= 6 & 
+                                !is.na(cattle_sales)), 
+              aes(color = cattle_sales), 
+              size = 0.2, alpha = 0.8) +
+      coord_sf(datum = NA) + 
+      ggtitle("cattle operations") +
+      theme_minimal() + theme_opts,
+    ggplot() +
+      geom_sf(data = states) +
+      geom_sf(data = 
+                dplyr::filter(animals, !is.na(cattle_dairy)), 
+              aes(color = cattle_dairy), 
+              size = 0.2, alpha = 0.8) +
+      coord_sf(datum = NA) + 
+      theme_minimal() + theme_opts +
+      ggtitle("dairy operations") +
+      labs(color = paste0("dairy \n operations")),
+    ggplot() +
+      geom_sf(data = states) +
+      geom_sf(data = 
+                dplyr::filter(animals, chicken_sales <= 30), 
+              aes(color = chicken_sales), 
+              size = 0.2, alpha = 0.8) +
+      coord_sf(datum = NA) + 
+      theme_minimal() + theme_opts +
+      ggtitle("chicken operations") +
+      labs(color = paste0("chicken \n operations")),
+    ggplot() +
+      geom_sf(data = states) +
+      geom_sf(data = 
+                dplyr::filter(animals, cattle_total <= 20000), 
+              aes(color = cattle_total), 
+              size = 0.2, alpha = 0.8, pch = 19) +
+      coord_sf(datum = NA) + 
+      theme_minimal() + theme_opts +
+      ggtitle("cattle head") +
+      labs(color = paste0("cattle \n head")), 
+    ncol = 1)
 
 # ---- debug ----
 # library(mapview)
+# mapview(animals, zcol = "cattle_total")
 # llid <- 457
 # t_iws <- dplyr::filter(iws, lagoslakeid == llid)
 # t_county <- st_transform(county_sf(), st_crs(t_iws))
