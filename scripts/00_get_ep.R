@@ -4,11 +4,12 @@ suppressMessages(library(magrittr))
 
 source("scripts/utils.R")
 
+# setwd("../")
 lg           <- lagosne_load("1.087.1")
 iws_lulc     <- readRDS("data/iws_lulc.rds")
 county_lulc  <- readRDS("data/county_lulc.rds")
-date_start   <- as.Date("1995-01-01")
-date_end     <- as.Date("2005-01-01")
+date_start   <- as.Date("2000-01-01")
+date_end     <- as.Date("2010-01-01")
 min_sample_n <- 3
 ag_cutoff    <- 0.4
 min_state_n  <- 4
@@ -53,20 +54,20 @@ ep_nutr <- lg$epi_nutr %>%
 iws_vs_county_ag <- iws_lulc %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid), 
             by = "lagoslakeid")  %>%
-  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2001_pcent), 
+  left_join(dplyr::select(county_lulc, county_zoneid:county_ag_2011_pcent), 
             by = "county_zoneid")
 
 get_ag_cutoff <- function(cutoff){
   hi_ag_counties <- dplyr::filter(iws_vs_county_ag,
-                                  county_ag_2001_pcent >= cutoff &
-                                  iws_ag_2001_pcent >= cutoff) %>%
+                                  county_ag_2011_pcent >= cutoff &
+                                  iws_ag_2011_pcent >= cutoff) %>%
     group_by(county_zoneid) %>%
     summarize(n_lakes = n()) %>%
     dplyr::filter(n_lakes >= 1) %>%
     left_join(dplyr::select(lg$county, county_zoneid, county_state, county_name))
 
   hi_ag_iws <- dplyr::filter(iws_vs_county_ag,
-                             iws_ag_2001_pcent >= cutoff) %>%
+                             iws_ag_2011_pcent >= cutoff) %>%
     distinct(lagoslakeid)
 
   list(hi_ag_counties = hi_ag_counties, hi_ag_iws = hi_ag_iws)
