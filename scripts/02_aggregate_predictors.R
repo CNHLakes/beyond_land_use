@@ -6,7 +6,7 @@ ep <- readRDS("data/ep.rds")
 
 # predictors are at the iws level and are as close in time to 2000 as possible
 lg_lulc <- readRDS("data/iws_lulc.rds") %>%
-  select(-iws_ag_2001_pcent)
+  select(-iws_ag_2011_pcent)
 
 usgs <- readRDS("data/usgs/usgs.rds")
 
