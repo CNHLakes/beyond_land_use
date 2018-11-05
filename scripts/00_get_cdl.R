@@ -1,6 +1,6 @@
 cmdargs <- commandArgs(trailingOnly = TRUE)
 cdl_path <- cmdargs[1]
-# cdl_path <- "data/cdl/"
+cdl_path <- "data/cdl/"
 
 library(LAGOSNE)
 library(LAGOSextra)
@@ -12,6 +12,7 @@ library(concaveman)
 
 source("scripts/utils.R")
 
+cdl_year <- 2010
 lg     <- lagosne_load("1.087.1")
 ep     <- readRDS("data/ep.rds")
 ep_bbox <- st_bbox(concaveman(coordinatize(ep)))
@@ -20,24 +21,26 @@ ep     <- distinct(ep, lagoslakeid)
 
 # ep <- filter(ep, lagoslakeid %in% c(23670, 5724))
 for(i in seq_len(length(ep$lagoslakeid))){
-  llid <- ep$lagoslakeid[i]
-  print(llid)
   # i <- 1
   # llid <- 4393
+  llid <- ep$lagoslakeid[i]
+  print(llid)
   boundary_iws <- get_iws(llid)
   bbox         <- get_bbox(boundary_iws)
   states       <- get_states(bbox)
 
   # pull each cdl
 
-  # 2008 might by minimum year with all states?
-  left_join(ep, select(lg$locus, lagoslakeid, state_zoneid)) %>%
-    left_join(select(lg$state, state_zoneid, state)) %>%
+  # use 2010 
+  left_join(ep, 
+            dplyr::select(lg$locus, lagoslakeid, state_zoneid)) %>%
+    left_join(
+      dplyr::select(lg$state, state_zoneid, state)) %>%
     mutate(state = as.character(state)) %>%
     distinct(state) %>%
     sapply(fips) # for manual downloading
 
-  cdl <- cdlTools::getCDL(x = states, year = 2008,
+  cdl <- cdlTools::getCDL(x = states, year = cdl_year,
                            ssl.verifypeer = FALSE,
                            location = cdl_path)
 

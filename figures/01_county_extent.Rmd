@@ -24,7 +24,7 @@ library(ggridges)
 library(tidyr)
 library(ggExtra)
 
-ep <- readRDS("data/ep.rds")
+ep <- readRDS("../data/ep.rds")
 gdb_path <- path.expand("~/.local/share/LAGOS-GIS/lagos-ne_gis.gpkg")
 # st_layers(gdb_path)
 layer_name <- "COUNTY"
@@ -77,8 +77,8 @@ get_iws_polygon <- function(lagoslakeid, crs){
 }
 
 lg          <- lagosne_load("1.087.1")
-iws_lulc    <- readRDS("data/iws_lulc.rds")
-county_lulc <- readRDS("data/county_lulc.rds")
+iws_lulc    <- readRDS("../data/iws_lulc.rds")
+county_lulc <- readRDS("../data/county_lulc.rds")
 
 iws_vs_county_ag <- iws_lulc %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, county_zoneid))  %>%
