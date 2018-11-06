@@ -1,7 +1,7 @@
 
 .PHONY: data all
 
-all: data figures data/dt.rds
+all: data figures tables data/dt.rds
 
 data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo_key.csv data/census/census.rds
 
@@ -74,5 +74,5 @@ tables: manuscript/tables.pdf
 manuscript/tables.pdf: tables/01_predictors.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
-tables/01_predictors.pdf: tables/01_predictors.Rmd
+tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
