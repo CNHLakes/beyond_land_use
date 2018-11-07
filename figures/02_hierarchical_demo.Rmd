@@ -36,34 +36,69 @@ hu4 <-  LAGOSextra::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
 ```{r 02_hierarchical_demo, fig.height=3, echo=FALSE}
 lg <- lagosne_load("1.087.1")
 
-dt <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 
+ep <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 
                 summarize(
                   group_by(dplyr::select(lg$epi_nutr, lagoslakeid, tp, chla), 
                            lagoslakeid), 
                   tp = median(tp, na.rm = TRUE), 
-                  chla = median(chla, na.rm = TRUE))
-                ) %>%
+                  chla = median(chla, na.rm = TRUE)), 
+                by = "lagoslakeid") %>%
   tidyr::drop_na() 
 
+dt <- dplyr::select(readRDS("../data/dt.rds"), "lagoslakeid") %>% 
+  left_join(ep, by = "lagoslakeid")
+
 # hist(as.vector(table(dt$hu4_zoneid)))  
-good_hu4s <- group_by(dt, hu4_zoneid) %>% 
-  tally() %>%
-  dplyr::filter(n > 220)  
-dt <- dplyr::filter(dt, hu4_zoneid %in% good_hu4s$hu4_zoneid)
-dt <- dplyr::filter(dt, tp < 500 & chla < 150)
+# good_hu4s <- group_by(dt, hu4_zoneid) %>% 
+#   tally() %>%
+#   dplyr::filter(n > 220)  
+# dt <- dplyr::filter(dt, hu4_zoneid %in% good_hu4s$hu4_zoneid)
+# dt <- dplyr::filter(dt, tp < 500 & chla < 150)
+
+# create alpha sample size weightings
+dt <- left_join(dt, ungroup(count(group_by(dt, hu4_zoneid))), 
+                by = "hu4_zoneid") %>%
+  dplyr::filter(n >= 5) %>%
+  mutate(n = n / max(n, na.rm = TRUE))
+  
+# join iws ag
+dt <- left_join(dt, ungroup(dplyr::select(mutate(
+  group_by(lg$iws.lulc, lagoslakeid), 
+  ag_pct = sum(iws_nlcd2011_pct_81,
+                           iws_nlcd2011_pct_82, na.rm = TRUE)), 
+  lagoslakeid, ag_pct))
+  )
+
+# create hu4 labels
+centroid_xy <- sf::st_as_text(sf::st_geometry(sf::st_centroid(hu4[,"ZoneID"])))
+extract_coords <- function(messy_centroid){
+  res <- stringr::str_split(messy_centroid, "\\(", simplify = TRUE)[2]
+  res <- stringr::str_split(res, "\\)", simplify = TRUE)[1]
+  stringr::str_split(res, " ", simplify = TRUE)
+}
+coords <- data.frame(matrix(
+            as.numeric(unlist(lapply(centroid_xy, extract_coords))),
+            ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
+names(coords) <- c("x", "y")
+coords$ZoneID <- gsub("HU4_", "", hu4[,"ZoneID"]$ZoneID)
 
 plot_grid(
-  ggplot(data = dt, aes(x = tp, y = chla, color = hu4_zoneid)) + 
-    geom_point(alpha = 0.5) +
-    geom_smooth(method = lm, se = FALSE) +
+  ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha = n)) + 
+    geom_point() +
+    geom_line(stat = "smooth", method = lm, se = FALSE, aes(alpha = n))  +
     geom_smooth(aes(group = 1), method = lm, se = FALSE, 
                 color = "black", linetype = "dashed") +
     # scale_y_log10() + scale_x_log10() +
-    theme(legend.position = ""),
+    theme(legend.position = "") +
+    labs(x = "Ag. LULC (pct, NLCD 2011)", 
+         y = "TP")  +
+    ylim(0, 300),
   ggplot() +
     geom_sf(data = hu4, aes(fill = n)) +
+    # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
     theme_minimal() + 
-    theme(legend.position = "bottom"), 
+    theme(legend.position = "bottom", 
+          axis.title = element_blank()), 
   rel_heights = c(0.6, 1), labels = "AUTO"
 )
 ``` 
