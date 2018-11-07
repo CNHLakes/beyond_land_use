@@ -2,6 +2,7 @@ suppressMessages(library(dplyr))
 suppressMessages(library(magrittr))
 
 # response variables are medians from 1995 - 2005
+# setwd("../")
 ep <- readRDS("data/ep.rds")
 
 # predictors are at the iws level and are as close in time to 2000 as possible
