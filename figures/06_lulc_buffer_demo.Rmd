@@ -1,0 +1,108 @@
+---
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 7, fig.height = 7)
+source("../scripts/utils.R")
+```
+
+```{r 06_lulc_buffer_demo, echo=FALSE, eval=TRUE}
+# setwd("figures")
+library(nhdR)
+library(LAGOSextra)
+library(mapview)
+library(FedData)
+library(dplyr)
+library(ggplot2)
+library(raster)
+library(sf)
+library(cowplot)
+
+dt <- readRDS("../data/dt.rds")
+
+llid <- dt$lagoslakeid[2]
+ll_pnt <- st_coordinates(
+  st_transform(
+    query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", llid), 4326))
+ll_lake <- st_transform(
+  query_gis("LAGOS_NE_All_Lakes_4ha", "lagoslakeid", llid), 4326)
+network <- extract_network(lon = ll_pnt[1], 
+                                   lat = ll_pnt[2], 
+                                   maxsteps = Inf)
+network <- network[unlist(lapply(
+  st_intersects(network, st_transform(ll_lake, st_crs(network))), 
+  function(x) length(x) == 0)),]
+
+network_buffer <- st_buffer(network, 100)
+nlcd <- get_nlcd(template = as_Spatial(st_as_sfc(st_bbox(network_buffer))), 
+                 label = llid)
+network_buffer <- st_transform(network_buffer, projection(nlcd))
+
+nlcd_df <- as.data.frame(nlcd, xy = TRUE) %>%
+  dplyr::select(x, y, contains("Value"))
+nlcd_df[,3] <- factor(nlcd_df[,3])
+names(nlcd_df)[3] <- "value"
+cols <- dplyr::filter(pal_nlcd(), code %in% unique(nlcd_df[,3]))
+
+g_map <- ggplot() + 
+  geom_raster(data = nlcd_df, aes(x = x, y = y, fill = value)) +
+  scale_fill_manual(values = cols$color) +
+  geom_sf(data = network_buffer) +
+  coord_sf(datum = NULL) +
+  theme(legend.position = "none", 
+        axis.text = element_blank(), 
+        axis.title = element_blank(), 
+        line = element_blank(), 
+        rect = element_blank(), 
+        text = element_blank(), 
+        panel.grid = element_blank())
+
+join_key <- function(vals){
+  res <- vals %>%
+    data.frame(code = ., stringsAsFactors = FALSE) %>% 
+    count(code) %>%
+    left_join(FedData::pal_nlcd(), by = "code") %>%
+    dplyr::filter(code != 11)
+  res$description <- factor(res$description, 
+                            levels = res$description)
+  res
+} 
+
+buffer_stats <- join_key(as.character(
+  unlist(raster::extract(nlcd, network_buffer))))
+nlcd_stats <- join_key(as.character(values(nlcd)))  
+
+theme_opts <- theme(axis.text.x = element_blank(), 
+                    legend.title = element_blank(), 
+                    axis.title.x = element_blank())
+
+g_all <- ggplot() + 
+  geom_col(data = nlcd_stats, aes(x = description, 
+                             y = n, 
+                             fill = description)) +
+  scale_fill_manual(values = nlcd_stats$color) +
+  theme(legend.direction = "horizontal") +
+  theme_opts +
+  guides(fill = guide_legend(ncol = 2)) +
+  ggtitle("All LULC")
+
+g_buffer <- ggplot() + 
+  geom_col(data = buffer_stats, aes(x = description, 
+                                  y = n, 
+                                  fill = description)) +
+  scale_fill_manual(values = buffer_stats$color) +
+  theme(legend.position = "none") +
+  theme_opts +
+  ggtitle("Stream buffer LULC")
+
+legend <- get_legend(g_all)
+
+plot_grid(g_map, 
+  plot_grid(g_all + theme(legend.position = "none"),
+            g_buffer), 
+  legend, ncol = 1)
+
+```
