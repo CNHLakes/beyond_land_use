@@ -16,3 +16,5 @@ figures/*.tex
 figures/*.pdf
 RAW
 EXTRACTIONS/
+temp.py
+.envrc
