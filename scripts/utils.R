@@ -1,5 +1,6 @@
 suppressMessages(library(sf))
 suppressMessages(library(dplyr))
+library(lwgeom)
 
 # ---- basic_gis ----
 county_sf <- function(){
