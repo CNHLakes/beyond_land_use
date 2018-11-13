@@ -3,7 +3,7 @@
 
 all: data figures tables data/dt.rds
 
-data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.rds data/census/census.rds
+data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.rds data/census/census.rds data/macroag/tillage.gpkg data/macroag/crp.rds
 
 gssurgo: data/gssurgo/gssurgo.rds
 
@@ -42,6 +42,12 @@ data/gssurgo/gssurgo.rds: scripts/01_process_ssurgo.R data/gssurgo/gssurgo.csv
 	Rscript $<
 
 data/census/census.rds: scripts/00_get_census.R
+	Rscript $<
+
+data/macroag/tillage.gpkg: scripts/00_get_tillage.R
+	Rscript $<
+
+data/macroag/crp.rds: scripts/00_get_crp.R
 	Rscript $<
 
 data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds data/gssurgo/gssurgo.rds
