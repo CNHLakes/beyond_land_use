@@ -15,7 +15,6 @@ tc <- tillage_ctic %>%
   dplyr::filter(year == 2004 & crop == "allcrops")
   
 hu8 <- LAGOSextra::query_gis("HU8", "ZoneID", unique(tc$hu8_zoneid))
-hu8 <- dplyr::select(hu8, -wkt)
 hu8 <- dplyr::left_join(hu8, tc, by = c("ZoneID" = "hu8_zoneid"))
 
 write_sf(hu8, "data/macroag/tillage.gpkg")
