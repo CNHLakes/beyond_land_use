@@ -57,6 +57,8 @@ state_key <- function(){
              state_name = datasets::state.name)
 }
 
+# ---- advanced_gis ----
+
 # kg per ha is false, kg is true
 interp_to_iws <- function(raw, varname = "total", outname, is_extensive = TRUE){
   # raw <- animals_tidy
