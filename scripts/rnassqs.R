@@ -6,8 +6,9 @@ library(sf)
 library(tidyr)
 library(stringr)
 
-county <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
-county <- tidyr::separate(county, ID, c("state", "county"))
+source("scripts/utils.R")
+
+county <- county_sf()
 
 key <- "E44D2FCF-E267-3DE1-950A-E6C54EEA7058"
 Sys.setenv(NASSQS_TOKEN = key)
@@ -180,7 +181,31 @@ test <- dplyr::filter(mi_animals,
   mutate(density = HEAD / OPERATIONS) %>%
   mutate(has_cafo = tidyr::replace_na(density > 2500, FALSE))
   
-  
+unique(test$domaincat_desc)
+
+# tillage
+params <- list("source_desc" = "CENSUS",
+               "commodity_desc"="PRACTICES",
+               "state_alpha" = "MI",
+               "agg_level_desc" = "COUNTY",
+               "domaincat_desc" = "AREA",
+               # "unit_desc" = "ACRES",
+               key = key)
+mi_tillage     <- nassqs(params)
+
+unique(mi_tillage$short_desc)
+unique(mi_tillage$util_practice_desc)
+
+test <- dplyr::filter(mi_animals, 
+                      !stringr::str_detect(unit_desc, "\\$"), 
+                      stringr::str_detect(prodn_practice_desc, "ALL")) %>%
+  dplyr::select(state_name, county_name, unit_desc, Value) %>%
+  dplyr::arrange(state_name, county_name) %>%
+  mutate(Value = as.numeric(gsub(",", "", Value))) %>%
+  tidyr::spread(unit_desc, Value) %>%
+  mutate(density = HEAD / OPERATIONS) %>%
+  mutate(has_cafo = tidyr::replace_na(density > 2500, FALSE))
+
 unique(test$domaincat_desc)
 
 # ---- HU6_level_data ----
