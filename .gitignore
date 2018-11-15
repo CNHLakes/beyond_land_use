@@ -24,3 +24,4 @@ data/gssurgo/*.rds
 data/macroag/*.rds
 data/cafos
 *.jpg
+data/census/*.rds
