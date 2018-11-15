@@ -18,3 +18,9 @@ RAW
 EXTRACTIONS/
 temp.py
 .envrc
+data/usgs/*.rds
+data/crp/*.rds
+data/gssurgo/*.rds
+data/macroag/*.rds
+data/cafos
+*.jpg
