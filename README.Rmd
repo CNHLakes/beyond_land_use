@@ -52,10 +52,6 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
 * Availability of data products through time is highly variable. How to align or decide to treat properties as constant?
 
-```{r maps, echo=FALSE}
-knitr::include_graphics("figures/rmd-hi_ag_iws_w_ep-1.png")
-```
-
 ```{r echo=FALSE}
 cdl_key <- read.csv("data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
 ```

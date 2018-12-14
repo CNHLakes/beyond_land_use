@@ -40,5 +40,3 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
   - Availability of data products through time is highly variable. How
     to align or decide to treat properties as constant?
-
-![](figures/rmd-hi_ag_iws_w_ep-1.png)<!-- -->
