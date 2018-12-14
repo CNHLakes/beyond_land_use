@@ -16,10 +16,20 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
 ## Potential predictor variables
 
-  - LAGOS
-      - Lake depth
-      - IWS area
-      - IWS/Lake area
+<details>
+
+<summary><b>Lake Characteristics</b> (`LAGOSNE`) </summary>
+
+<p>
+
+  - \[x\] Lake depth
+  - \[x\] IWS area
+  - \[x\] IWS/Lake area
+
+</p>
+
+</details>
+
   - Cropland Data Layer
       - IWS pasture types (forage or not)
       - IWS specific crops (corn, wheat, etc.)
