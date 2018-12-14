@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 
 ```{r hu4_n, echo=FALSE, message=TRUE, eval=TRUE}
 library(dplyr)
-library(LAGOSextra)
+library(LAGOSNEgis)
 library(sf)
 library(ggplot2)
 library(cowplot)
@@ -21,7 +21,7 @@ ids <- test <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
   tally()
 
-hu4 <-  LAGOSextra::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
+hu4 <-  LAGOSNEgis::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
   st_cast(to = "MULTIPOLYGON") %>%
   left_join(ids, by = c("ZoneID" = "hu4_zoneid"))
 

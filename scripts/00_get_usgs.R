@@ -1,12 +1,11 @@
 library(LAGOSNE)
-library(LAGOSextra)
+library(LAGOSNEgis)
 library(sf)
 library(unpivotr)
 suppressMessages(library(tidyr))
 library(tidyxl)
 suppressMessages(library(dplyr))
 library(snakecase)
-library(janitor)
 library(lwgeom)
 suppressMessages(library(magrittr))
 
@@ -16,7 +15,7 @@ suppressMessages(library(magrittr))
 # Surface of the Conterminous United States, 1982–2001
 
 ep  <- readRDS("data/ep.rds")
-iws <- LAGOSextra::query_wbd(ep$lagoslakeid, utm = FALSE)
+iws <- LAGOSNEgis::query_wbd(ep$lagoslakeid, utm = FALSE)
 # mapview::mapview(dplyr::filter(iws, lagoslakeid == 34352))
 iws <- st_make_valid(iws)
 
@@ -62,7 +61,7 @@ if(!file.exists("data/usgs/usgs_raw.rds")){
     mutate(character = coalesce(character, as.character(numeric))) %>%
     select(row, value = character, key) %>%
     spread(key, value) %>%
-    clean_names()
+    janitor::clean_names()
 
   usgs_raw <- left_join(county_info, datasheet, by = "row") %>%
     rename(value = character)

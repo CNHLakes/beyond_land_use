@@ -1,5 +1,5 @@
 library(nhdR)
-library(LAGOSextra)
+library(LAGOSNEgis)
 library(mapview)
 library(FedData)
 library(dplyr)

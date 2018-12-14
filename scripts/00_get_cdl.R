@@ -3,7 +3,7 @@ cdl_path <- cmdargs[1]
 cdl_path <- "data/cdl/"
 
 library(LAGOSNE)
-library(LAGOSextra)
+library(LAGOSNEgis)
 library(sf)
 library(cdlTools)
 library(raster)

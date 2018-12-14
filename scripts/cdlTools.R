@@ -11,7 +11,7 @@ library(sf)
 library(ggplot2)
 library(LAGOSNE)
 library(gdalUtils)
-library(LAGOSextra)
+library(LAGOSNEgis)
 
 # ---- cdl_get_mi ----
 

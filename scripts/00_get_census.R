@@ -3,7 +3,7 @@ suppressMessages(library(dplyr))
 suppressMessages(library(magrittr))
 
 library(LAGOSNE)
-library(LAGOSextra)
+library(LAGOSNEgis)
 library(sf)
 library(lwgeom)
 library(ggplot2)
@@ -17,7 +17,7 @@ Sys.setenv(NASSQS_TOKEN = key)
 
 # ---- census_get ----
 ep  <- readRDS("data/ep.rds")
-iws <- LAGOSextra::query_wbd(ep$lagoslakeid, utm = FALSE)
+iws <- LAGOSNEgis::query_wbd(ep$lagoslakeid, utm = FALSE)
 iws <- st_make_valid(iws)
 states <- state_sf()[unlist(
   lapply(st_intersects(state_sf(), coordinatize(ep)), 
