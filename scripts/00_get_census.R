@@ -11,7 +11,7 @@ library(rnassqs)
 library(maps)
 library(stringr)
 library(concaveman)
-source("scripts/utils.R")
+source("scripts/99_utils.R")
 key <- "E44D2FCF-E267-3DE1-950A-E6C54EEA7058"
 Sys.setenv(NASSQS_TOKEN = key)
 

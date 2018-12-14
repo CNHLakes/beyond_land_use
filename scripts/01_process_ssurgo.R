@@ -8,7 +8,7 @@ library(reticulate)
 use_condaenv("gSSURGO")
 gssurgo <- import("gssurgo")
 
-source("scripts/utils.R")
+source("scripts/99_utils.R")
 ep          <- readRDS("data/ep.rds")
 
 gpkg_path   <- path.expand("~/Documents/Science/Data/gssurgo_data/gpkgs/")

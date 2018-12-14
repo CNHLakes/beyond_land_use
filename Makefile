@@ -3,13 +3,16 @@
 
 all: data figures tables data/dt.rds
 
-data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.rds data/census/census.rds data/macroag/tillage.gpkg data/macroag/crp.rds
+data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.rds data/census/census.rds data/macroag/tillage.gpkg data/macroag/crp.rds data/gis.gpkg
 
 gssurgo: data/gssurgo/gssurgo.rds
 
 cdl: data/cdl/cdl_summary.csv
 
 usgs: data/usgs/usgs.rds
+
+data/gis.gpkg: scripts/00_get_gis.R
+	Rscript $<
 
 data/ep.rds: scripts/00_get_ep.R data/iws_lulc.rds data/county_lulc.rds
 	Rscript $<

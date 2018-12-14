@@ -7,7 +7,7 @@ library(ggplot2)
 library(raster)
 
 dt <- readRDS("data/dt.rds")
-source("scripts/utils.R")
+source("scripts/99_utils.R")
 
 llid <- dt$lagoslakeid[2]
 ll_pnt <- st_coordinates(

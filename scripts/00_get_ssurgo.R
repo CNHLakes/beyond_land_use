@@ -2,7 +2,7 @@ library(sf)
 library(raster)
 library(progress)
 
-source("scripts/utils.R")
+source("scripts/99_utils.R")
 
 ep       <- readRDS("data/ep.rds")
 in_path  <- path.expand("~/Documents/Science/Data/gssurgo_data/tifs/")
