@@ -18,29 +18,73 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
 <details>
 
-<summary><b>Lake Characteristics</b> (`LAGOSNE`) </summary>
+<summary><b>Crop Types</b> (`CDL`) </summary>
+
+<p>
+
+  - \[x\] IWS pasture types (forage or not)
+  - \[x\] IWS specific crops (corn, wheat, etc.)
+  - \[ \] IWS crop frequency/rotation
+
+</p>
+
+</details>
+
+<details>
+
+<summary>Soil types (`gSSURGO`) </summary>
+
+<p>
+
+  - \[x\] IWS wetland potential (as a proxy for tile drainage)
+  - \[x\] IWS soil organic carbon
+  - \[ \] IWS root zone depth
+  - \[ \] IWS lithology (sand %, clay %, etc.)
+
+</p>
+
+</details>
+
+<details>
+
+<summary><b>Fertilizer and manure application data</b> (`USGS`)
+</summary>
+
+<p>
+
+  - \[x\] IWS from county - manure, fertilizer, and deposition of N,P
+
+</p>
+
+</details>
+
+<details>
+
+<summary>Land use cover (`LAGOSNE`) </summary>
+
+<p>
+
+  - \[ \] Lake buffer LULC
+  - \[x\] IWS LULC
+
+</p>
+
+</details>
+
+<details>
+
+<summary><b>Lake Characteristics and WQ</b> (`LAGOSNE`) </summary>
 
 <p>
 
   - \[x\] Lake depth
   - \[x\] IWS area
   - \[x\] IWS/Lake area
+  - \[x\] TP, TN, NO3
 
 </p>
 
 </details>
-
-  - Cropland Data Layer
-      - IWS pasture types (forage or not)
-      - IWS specific crops (corn, wheat, etc.)
-      - IWS crop frequency/rotation
-  - gSSURGO
-      - IWS wetland potential (as a proxy for tile drainage)
-      - IWS soil organic carbon
-      - IWS root zone depth
-      - IWS lithology (sand %, clay %, etc.)
-  - USGS
-      - IWS from county - manure, fertilizer, and deposition of N,P
 
 ## Research questions
 
