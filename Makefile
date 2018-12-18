@@ -3,7 +3,7 @@
 
 all: data figures tables data/dt.rds
 
-data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.rds data/census/census.rds data/macroag/tillage.gpkg data/macroag/crp.rds data/gis.gpkg
+data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.rds data/census/census.rds data/macroag/tillage.gpkg data/macroag/crp.rds data/gis.gpkg data/buffer_lulc.rds
 
 gssurgo: data/gssurgo/gssurgo.rds
 
@@ -54,6 +54,9 @@ data/macroag/crp.rds: scripts/00_get_crp.R
 	Rscript $<
 
 data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds data/gssurgo/gssurgo.rds
+	Rscript $<
+	
+data/buffer_lulc.rds: scripts/00_get_buffers.R
 	Rscript $<
 
 figures: manuscript/figures.pdf

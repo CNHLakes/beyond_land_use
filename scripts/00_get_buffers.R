@@ -67,10 +67,11 @@ for(i in seq_along(ep$lagoslakeid[1:3])){
 }
 
 res_all <- dplyr::bind_rows(res)
+saveRDS("data/buffer_lulc.rds")
 
-ggplot() + 
-  geom_col(data = res_all, aes(x = description, 
-                                  y = n, 
-                                  fill = description)) +
-  facet_wrap(~llid)
+# ggplot() + 
+#   geom_col(data = res_all, aes(x = description, 
+#                                   y = n, 
+#                                   fill = description)) +
+#   facet_wrap(~llid)
   
