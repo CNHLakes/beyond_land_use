@@ -24,7 +24,8 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
   - \[x\] IWS pasture types (forage or not)
   - \[x\] IWS specific crops (corn, wheat, etc.)
-  - \[ \] IWS crop frequency/rotation
+  - \[ \] ~IWS crop frequency/rotation~ -AK says this is probably not
+    needed
 
 </p>
 
@@ -38,6 +39,8 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
 
   - \[x\] IWS wetland potential (as a proxy for tile drainage)
   - \[x\] IWS soil organic carbon
+  - \[ \] IWS bulk density - needed to compute soil carbon mass
+  - \[ \] IWS rock content - needed to compute soil carbon mass
   - \[ \] IWS root zone depth
   - \[ \] IWS lithology (sand %, clay %, etc.)
 
@@ -81,6 +84,22 @@ Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
   - \[x\] IWS area
   - \[x\] IWS/Lake area
   - \[x\] TP, TN, NO3
+  - \[ \] IWS precip variability
+      - the area of a given crop in year n-1 matters. Usually, dry years
+        leave nutrients on the ground, and when followed up by a wet
+        year you get the largest signal in year n.
+
+</p>
+
+</details>
+
+<details>
+
+<summary>Animal data</b> (`USDA Census`) </summary>
+
+<p>
+
+  - \[ \] Animal units
 
 </p>
 
