@@ -13,23 +13,15 @@ join_key <- function(vals){
   res
 }
 
-
-pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
-                       total = nrow(ep), 
-                       clear = FALSE)
-res <- list()
-for(i in seq_along(ep$lagoslakeid[1:3])){
-  # llid <- ep$lagoslakeid[2]
-  llid <- ep$lagoslakeid[i]
-  pb$tick(tokens = list(llid = llid))
+get_buffer_stats <- function(llid){
   ll_pnt <- st_coordinates(
     st_transform(
       query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", llid), 4326))
   ll_lake <- st_transform(
     query_gis("LAGOS_NE_All_Lakes_4ha", "lagoslakeid", llid), 4326)
-  network <- extract_network(lon = ll_pnt[1], 
-                             lat = ll_pnt[2], 
-                             maxsteps = Inf)
+  network <- suppressWarnings(suppressMessages(extract_network(lon = ll_pnt[1], 
+                                                               lat = ll_pnt[2], 
+                                                               maxsteps = Inf)))
   network <- network[unlist(lapply(
     st_intersects(network, st_transform(ll_lake, st_crs(network))), 
     function(x) length(x) == 0)),]
@@ -57,17 +49,26 @@ for(i in seq_along(ep$lagoslakeid[1:3])){
   #         rect = element_blank(), 
   #         text = element_blank(), 
   #         panel.grid = element_blank())
-
+  
   buffer_stats <- join_key(as.character(
     unlist(raster::extract(nlcd, network_buffer)))) %>%
     mutate(llid = llid)
-  nlcd_stats <- join_key(as.character(values(nlcd)))  
-
-  res[[i]] <- buffer_stats
+  nlcd_stats <- join_key(as.character(values(nlcd)))
 }
 
-res_all <- dplyr::bind_rows(res)
-saveRDS("data/buffer_lulc.rds")
+pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
+                       total = nrow(ep), 
+                       clear = FALSE)
+res <- list()
+for(i in seq_along(ep$lagoslakeid[1:3])){
+  # llid <- ep$lagoslakeid[2]
+  llid <- ep$lagoslakeid[i]
+  pb$tick(tokens = list(llid = llid))
+  res[[i]] <- get_buffer_stats(llid)
+}
+
+buffer_lulc <- suppressWarnings(dplyr::bind_rows(res))
+saveRDS(buffer_lulc, "data/buffer_lulc.rds")
 
 # ggplot() + 
 #   geom_col(data = res_all, aes(x = description, 
