@@ -142,6 +142,7 @@ usgs <- usgs %>%
          p_input = rowSums(select(., starts_with("phosphorus")), na.rm = TRUE))
 
 saveRDS(usgs, "data/usgs/usgs.rds")
+# usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
 # usgs <- readRDS("data/usgs/usgs.rds")
 
 # ---- viz ----
