@@ -26,7 +26,7 @@ library(ggsn)
 library(nhdR)
 library(FedData)
 library(raster)
-
+library(progress)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),

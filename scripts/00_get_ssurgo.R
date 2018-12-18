@@ -1,7 +1,3 @@
-library(sf)
-library(raster)
-library(progress)
-
 source("scripts/99_utils.R")
 
 ep       <- readRDS("data/ep.rds")
