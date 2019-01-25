@@ -22,6 +22,7 @@ ep <- dplyr::filter(ep, !(lagoslakeid %in% as.numeric(existing_llids)))
 
 # pre-compute states and bboxes before conda corrupts rgdal
 if(nrow(ep) == 0){
+  system2("touch", "data/gssurgo/gssurgo.csv")
   quit("yes")
 }
 pb <- progress_bar$new(format = "  pulling bbox for :llid [:bar]", 
