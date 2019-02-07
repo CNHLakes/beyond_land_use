@@ -23,7 +23,8 @@ get_buffer_stats <- function(llid){
   network <- suppressWarnings(suppressMessages(extract_network(lon = ll_pnt[1], 
                                                                lat = ll_pnt[2], 
                                                                maxsteps = Inf)))
-  if(!is.na(network)){
+
+  if(all(class(network) != "logical")){
     network <- network[unlist(lapply(
       st_intersects(network, st_transform(ll_lake, st_crs(network))), 
       function(x) length(x) == 0)),]
@@ -34,7 +35,7 @@ get_buffer_stats <- function(llid){
   }
   
   network_buffer <- st_buffer(
-    st_transform(network, projection(nlcd)), 
+    st_transform(network, nhdR:::albers_conic()), 
     units::as_units(100, "m"))
   network_buffer <- st_transform(network_buffer, 4326)
   nlcd           <- get_nlcd(template = as_Spatial(st_as_sfc(
@@ -60,21 +61,27 @@ get_buffer_stats <- function(llid){
           text = element_blank(),
           panel.grid = element_blank())
   
+  beginCluster()
   buffer_stats <- join_key(as.character(
     unlist(raster::extract(nlcd, network_buffer)))) %>%
     mutate(llid = llid)
+  endCluster()
+  
   nlcd_stats             <- join_key(as.character(values(nlcd)))
   nlcd_stats$has_streams <- has_streams
   
   list(nlcd_stats = nlcd_stats, g_map = g_map)
 }
 
+# llid <- ep$lagoslakeid[10]
+# get_buffer_stats(llid)$nlcd_stats
+
 pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
                        total = nrow(ep), 
                        clear = FALSE)
+pb$tick(0)
 res <- list()
 for(i in seq_along(ep$lagoslakeid[1:10])){
-  # llid <- ep$lagoslakeid[5]
   llid          <- ep$lagoslakeid[i]
   pb$tick(tokens = list(llid = llid))
   res[[i]]      <- get_buffer_stats(llid)$nlcd_stats
