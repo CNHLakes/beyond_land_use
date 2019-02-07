@@ -31,13 +31,15 @@ ll_lake <- st_transform(
   query_gis("LAGOS_NE_All_Lakes_4ha", "lagoslakeid", llid), 4326)
 network <- extract_network(lon = ll_pnt[1], 
                                    lat = ll_pnt[2], 
-                                   maxsteps = Inf)
+                                   maxsteps = Inf, 
+                           buffer_dist = units::as_units(5, "km"),
+                           quiet = TRUE)
 network <- network[unlist(lapply(
   st_intersects(network, st_transform(ll_lake, st_crs(network))), 
   function(x) length(x) == 0)),]
 
 network_buffer <- st_buffer(network, 100)
-nlcd <- get_nlcd(template = as_Spatial(st_as_sfc(st_bbox(network_buffer))), 
+nlcd           <- get_nlcd(template = as_Spatial(st_as_sfc(st_bbox(network_buffer))), 
                  label = llid)
 network_buffer <- st_transform(network_buffer, projection(nlcd))
 
