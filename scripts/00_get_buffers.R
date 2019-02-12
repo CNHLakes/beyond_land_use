@@ -44,19 +44,23 @@ get_buffer_stats <- function(llid){
       st_transform(network, nhdR:::albers_conic()), 
       units::as_units(100, "m"))
     stream_buffer_area <- sum(st_area(network_buffer))
+    
+    buffer_aoi <- st_union(st_as_sfc(
+      st_bbox(network_buffer)), 
+      st_as_sfc(
+        st_bbox(lake_buffer)))
+    buffer_aoi <- st_transform(buffer_aoi, 4326)
   }else{
-    has_streams   <- FALSE
-    stream_length <- 0
+    has_streams          <- FALSE
+    network_buffer       <- NA
+    stream_length        <- 0
     stream_buffer_area   <- 0
+    
+    buffer_aoi <- st_as_sfc(st_bbox(lake_buffer))
+    buffer_aoi <- st_transform(buffer_aoi, 4326)
   }
   
   # pull nlcd
-  buffer_aoi <- st_union(st_as_sfc(
-    st_bbox(network_buffer)), 
-    st_as_sfc(
-      st_bbox(lake_buffer)))
-  buffer_aoi <- st_transform(buffer_aoi, 4326)
-  
   nlcd           <- get_nlcd(template = as_Spatial(buffer_aoi), label = llid)
   
   nlcd_df           <- as.data.frame(nlcd, xy = TRUE) %>% 
@@ -66,18 +70,33 @@ get_buffer_stats <- function(llid){
   cols              <- dplyr::filter(pal_nlcd(), code %in% unique(nlcd_df[,3]))
   
   # construct plot for debugging
-  g_map <- ggplot() +
-    geom_raster(data = nlcd_df, aes(x = x, y = y, fill = value)) +
-    scale_fill_manual(values = cols$color) +
-    geom_sf(data = network_buffer) +
-    coord_sf(datum = NULL) +
-    theme(legend.position = "none",
-          axis.text = element_blank(),
-          axis.title = element_blank(),
-          line = element_blank(),
-          rect = element_blank(),
-          text = element_blank(),
-          panel.grid = element_blank())
+  if(all(class(network) != "logical")){
+    g_map <- ggplot() +
+      geom_raster(data = nlcd_df, aes(x = x, y = y, fill = value)) +
+      scale_fill_manual(values = cols$color) +
+      geom_sf(data = network_buffer) +
+      coord_sf(datum = NULL) +
+      theme(legend.position = "none",
+            axis.text = element_blank(),
+            axis.title = element_blank(),
+            line = element_blank(),
+            rect = element_blank(),
+            text = element_blank(),
+            panel.grid = element_blank())
+  }else{
+    g_map <- ggplot() +
+      geom_raster(data = nlcd_df, aes(x = x, y = y, fill = value)) +
+      scale_fill_manual(values = cols$color) +
+      geom_sf(data = lake_buffer) +
+      coord_sf(datum = NULL) +
+      theme(legend.position = "none",
+            axis.text = element_blank(),
+            axis.title = element_blank(),
+            line = element_blank(),
+            rect = element_blank(),
+            text = element_blank(),
+            panel.grid = element_blank())
+  }
   
   beginCluster()
   # pull stream buffer nlcd
@@ -107,7 +126,7 @@ get_buffer_stats <- function(llid){
        g_map = g_map)
 }
 
-# llid <- ep$lagoslakeid[1]
+# llid <- ep$lagoslakeid[5]
 # test <- get_buffer_stats(llid)
 
 pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
@@ -118,7 +137,7 @@ res <- list()
 for(i in seq_along(ep$lagoslakeid[1:10])){
   llid          <- ep$lagoslakeid[i]
   pb$tick(tokens = list(llid = llid))
-  res[[i]]      <- get_buffer_stats(llid)$nlcd_stats
+  res[[i]]      <- get_buffer_stats(llid)
   res[[i]]$llid <- llid
 }
 
