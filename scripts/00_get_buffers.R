@@ -98,7 +98,7 @@ get_buffer_stats <- function(llid){
             panel.grid = element_blank())
   }
   
-  beginCluster()
+  suppressMessages(beginCluster())
   # pull stream buffer nlcd
   if(has_streams){
     stream_buffer_stats <- join_key(as.character(
@@ -141,12 +141,20 @@ for(i in seq_along(ep$lagoslakeid[1:10])){
   res[[i]]$llid <- llid
 }
 
-buffer_lulc <- suppressWarnings(dplyr::bind_rows(res))
-saveRDS(buffer_lulc, "data/buffer_lulc.rds")
+stream_buffer_nlcd <- suppressWarnings(dplyr::bind_rows(
+  lapply(res, function(x) x$stream_buffer_stats)))
 
-# ggplot() + 
-#   geom_col(data = res_all, aes(x = description, 
-#                                   y = n, 
-#                                   fill = description)) +
-#   facet_wrap(~llid)
-  
+lake_buffer_nlcd <- suppressWarnings(dplyr::bind_rows(
+  lapply(res, function(x) x$lake_buffer_stats)))
+
+buffer_stats <- suppressWarnings(dplyr::bind_rows(
+  lapply(res, function(x) x[c("llid", 
+                              "lake_buffer_area", 
+                              "stream_buffer_area", 
+                              "stream_length")])))
+
+res_final <- list(buffer_stats = buffer_stats, 
+                  lake_buffer_nlcd = lake_buffer_nlcd, 
+                  stream_buffer_nlcd = stream_buffer_nlcd)
+
+saveRDS(res_final, "data/buffer_lulc.rds")
