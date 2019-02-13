@@ -25,8 +25,10 @@ get_buffer_stats <- function(llid){
   lake_buffer      <- st_buffer(
     st_transform(ll_lake, nhdR:::albers_conic()), 
     units::as_units(100, "m"))
-  lake_buffer      <- st_difference(lake_buffer, st_transform(
-    fill_holes(ll_lake, 10000), nhdR:::albers_conic()))
+  lake_buffer      <- suppressWarnings(
+    st_difference(lake_buffer, 
+                    st_transform(
+                  fill_holes(ll_lake, 10000), nhdR:::albers_conic())))
   lake_buffer_area <- sum(st_area(lake_buffer))
   
   # pull stream network buffer
@@ -61,8 +63,8 @@ get_buffer_stats <- function(llid){
   }
   
   # pull nlcd
-  nlcd           <- get_nlcd(template = as_Spatial(buffer_aoi), label = llid)
-  
+  nlcd              <- get_nlcd(template = as_Spatial(buffer_aoi), 
+                                label = llid)
   nlcd_df           <- as.data.frame(nlcd, xy = TRUE) %>% 
     dplyr::select(x, y, contains("Value"))
   nlcd_df[,3]       <- factor(nlcd_df[,3])
@@ -101,11 +103,13 @@ get_buffer_stats <- function(llid){
   suppressMessages(beginCluster())
   # pull stream buffer nlcd
   if(has_streams){
-    stream_buffer_stats <- join_key(as.character(
+    suppressMessages(stream_buffer_stats <- join_key(as.character(
       unlist(raster::extract(nlcd, network_buffer)))) %>%
-      mutate(llid = llid)
+      mutate(llid = llid))
   }else{
-    stream_buffer_stats <- NA
+    stream_buffer_stats <- setNames(data.frame(NA, NA, NA, NA, NA, llid), 
+                                    c("code", "n", "class", "description", 
+                                      "color", "llid"))
   }
   
   # pull lake buffer nlcd
@@ -132,13 +136,32 @@ get_buffer_stats <- function(llid){
 pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
                        total = nrow(ep), 
                        clear = FALSE)
-pb$tick(0)
+invisible(pb$tick(0))
 res <- list()
-for(i in seq_along(ep$lagoslakeid[1:10])){
+for(i in seq_along(ep$lagoslakeid[1:8])){
   llid          <- ep$lagoslakeid[i]
   pb$tick(tokens = list(llid = llid))
   res[[i]]      <- get_buffer_stats(llid)
   res[[i]]$llid <- llid
+
+  suppressWarnings(
+  write.table(res[[i]]$stream_buffer_stats, 
+              file = "data/stream_buffer_stats.csv", append = TRUE, 
+              sep = ",", row.names = FALSE, col.names = TRUE))
+  
+  suppressWarnings(
+  write.table(res[[i]]$lake_buffer_stats, 
+              file = "data/lake_buffer_stats.csv", append = TRUE, 
+              sep = ",", row.names = FALSE, col.names = TRUE))
+  
+  suppressWarnings(
+    write.table(res[[i]][c("llid", 
+                         "lake_buffer_area", 
+                         "stream_buffer_area", 
+                         "stream_length")], 
+              file = "data/buffer_stats.csv", append = TRUE, 
+              sep = ",", row.names = FALSE, col.names = TRUE))
+  
 }
 
 stream_buffer_nlcd <- suppressWarnings(dplyr::bind_rows(
@@ -158,3 +181,6 @@ res_final <- list(buffer_stats = buffer_stats,
                   stream_buffer_nlcd = stream_buffer_nlcd)
 
 saveRDS(res_final, "data/buffer_lulc.rds")
+
+# verify
+# res <- readRDS("data/buffer_lulc.rds")
