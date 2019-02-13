@@ -138,7 +138,7 @@ pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]",
                        clear = FALSE)
 invisible(pb$tick(0))
 res <- list()
-for(i in seq_along(ep$lagoslakeid[1:8])){
+for(i in seq_along(ep$lagoslakeid)){
   llid          <- ep$lagoslakeid[i]
   pb$tick(tokens = list(llid = llid))
   res[[i]]      <- get_buffer_stats(llid)
