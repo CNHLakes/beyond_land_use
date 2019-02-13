@@ -32,9 +32,16 @@ get_buffer_stats <- function(llid){
   lake_buffer_area <- sum(st_area(lake_buffer))
   
   # pull stream network buffer
-  network <- suppressWarnings(suppressMessages(extract_network(lon = ll_pnt[1], 
-                                                               lat = ll_pnt[2], 
-                                                               maxsteps = Inf)))
+  tryCatch(network <- suppressWarnings(
+    suppressMessages(
+      extract_network(lon = ll_pnt[1], 
+                            lat = ll_pnt[2], 
+                            maxsteps = Inf))), 
+           error = function(e){network <- NA})
+  if(!exists("network")){
+    network <- NA
+  }
+  
   if(all(class(network) != "logical")){
     network <- network[unlist(lapply(
       st_intersects(network, st_transform(ll_lake, st_crs(network))), 
@@ -131,6 +138,7 @@ get_buffer_stats <- function(llid){
 }
 
 # llid <- ep$lagoslakeid[5]
+# llid <- 6874
 # test <- get_buffer_stats(llid)
 
 pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
@@ -138,7 +146,7 @@ pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]",
                        clear = FALSE)
 invisible(pb$tick(0))
 res <- list()
-for(i in seq_along(ep$lagoslakeid)){
+for(i in seq_along(ep$lagoslakeid[15:nrow(ep)])){
   llid          <- ep$lagoslakeid[i]
   pb$tick(tokens = list(llid = llid))
   res[[i]]      <- get_buffer_stats(llid)
