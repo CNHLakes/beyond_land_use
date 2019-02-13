@@ -28,7 +28,8 @@ hu4 <-  LAGOSNEgis::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
 n_cat  <- 6
 colors <- c("#FFFFFF", viridisLite::viridis(n_cat - 1))
 hu4    <- mutate(hu4, 
-                 n_cat = cut(hu4$n, breaks = classInt::classIntervals(hu4$n, n = n_cat)$brks))
+            n_cat = cut(hu4$n, breaks = 
+                          classInt::classIntervals(hu4$n, n = n_cat)$brks))
 hu4 <- dplyr::filter(hu4, !is.na(n_cat))
 
 # hist(hu4$n, n = 20)
