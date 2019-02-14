@@ -83,8 +83,9 @@ get_buffer_stats <- function(llid){
   }
   
   # pull nlcd
-  nlcd              <- get_nlcd(template = as_Spatial(buffer_aoi), 
-                                label = llid)
+  nlcd              <- suppressMessages(
+                        get_nlcd(template = as_Spatial(buffer_aoi), 
+                        label = llid))
   
   # construct plot for debugging
   # nlcd_df           <- as.data.frame(nlcd, xy = TRUE) %>% 
@@ -151,15 +152,19 @@ get_buffer_stats <- function(llid){
 }
 
 # llid <- ep$lagoslakeid[5]
-# llid <- 4254
+# llid <- 5146
 # test <- get_buffer_stats(llid)
 
+output <- read.csv("data/buffer_stats.csv", stringsAsFactors = FALSE)
+
 pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
-                       total = nrow(ep), 
+                       total = length(ep$lagoslakeid[
+                         !(ep$lagoslakeid %in% output$llid)]), 
                        clear = FALSE)
+
 res <- list()
 invisible(pb$tick(0))
-for(i in seq_along(ep$lagoslakeid[15:nrow(ep)])){
+for(i in seq_along(ep$lagoslakeid[!(ep$lagoslakeid %in% output$llid)])){
   llid          <- ep$lagoslakeid[i]
   pb$tick(tokens = list(llid = llid))
   res[[1]]      <- get_buffer_stats(llid)
