@@ -1,9 +1,21 @@
+RAWLLIDS := data/llids.txt
+VARLLIDS := $(shell cat ${RAWLLIDS})
 
 .PHONY: data all
 
 all: data figures tables data/dt.rds
 
-data: data/ep.rds data/usgs/usgs.rds data/cdl/cdl.csv data/cdl/cdl_summary.csv data/gssurgo/gssurgo.rds data/census/census.rds data/macroag/tillage.gpkg data/macroag/crp.rds data/gis.gpkg data/buffer_lulc.rds
+data: data/ep.rds \
+data/usgs/usgs.rds \
+data/cdl/cdl.csv \
+data/cdl/cdl_summary.csv \
+data/gssurgo/gssurgo.rds \
+data/census/census.rds \
+data/macroag/tillage.gpkg \
+data/macroag/crp.rds \
+data/gis.gpkg \
+data/llids.txt \
+# data/buffer_stats.csv \
 
 gssurgo: data/gssurgo/gssurgo.rds
 
@@ -16,6 +28,15 @@ data/gis.gpkg: scripts/00_get_gis.R
 
 data/ep.rds: scripts/00_get_ep.R data/iws_lulc.rds data/county_lulc.rds
 	Rscript $<
+	
+data/llids.txt: scripts/00_list_llids.R data/ep.rds
+	Rscript $<
+
+buffer_lulc: $(VARLLIDS)
+	echo buffers pulled
+	
+data/buffer_lulc/%.csv: scripts/00_get_buffers.R
+	Rscript $< $(basename $@)
 
 data/iws_lulc.rds: scripts/00_get_lulc.R
 	Rscript $<
@@ -56,7 +77,7 @@ data/macroag/crp.rds: scripts/00_get_crp.R
 data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds data/gssurgo/gssurgo.rds
 	Rscript $<
 	
-data/buffer_lulc.rds: scripts/00_get_buffers.R
+data/buffer_stats.csv: scripts/00_get_buffers.R
 	Rscript $<
 
 figures: manuscript/figures.pdf

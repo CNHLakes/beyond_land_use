@@ -1,3 +1,5 @@
+cmdargs <- commandArgs(trailingOnly = TRUE)
+
 source("scripts/99_utils.R")
 
 ep     <- readRDS("data/ep.rds")
@@ -52,9 +54,13 @@ get_buffer_stats <- function(llid){
     st_transform(
       query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", llid), 4326))
   
+  message("Pulling lake buffer........")
   ll_lake <- pull_lake_buffer(llid)
+  
+  message("Pulling stream buffer......")
   network <- pull_network(ll_pnt)
   
+  message("Calculating bounding box...")
   if(all(class(network) != "logical")){
     has_streams   <- TRUE
     network       <- network[unlist(lapply(
@@ -82,47 +88,12 @@ get_buffer_stats <- function(llid){
     buffer_aoi <- st_transform(buffer_aoi, 4326)
   }
   
-  # pull nlcd
+  message("Pulling NLCD...............")
   nlcd              <- suppressMessages(
                         get_nlcd(template = as_Spatial(buffer_aoi), 
                         label = llid))
   
-  # construct plot for debugging
-  # nlcd_df           <- as.data.frame(nlcd, xy = TRUE) %>% 
-  #   dplyr::select(x, y, contains("Value"))
-  # nlcd_df[,3]       <- factor(nlcd_df[,3])
-  # names(nlcd_df)[3] <- "value"
-  # cols              <- dplyr::filter(pal_nlcd(), code %in% unique(nlcd_df[,3]))
-  # 
-  # if(all(class(network) != "logical")){
-  #   g_map <- ggplot() +
-  #     geom_raster(data = nlcd_df, aes(x = x, y = y, fill = value)) +
-  #     scale_fill_manual(values = cols$color) +
-  #     geom_sf(data = network_buffer) +
-  #     coord_sf(datum = NULL) +
-  #     theme(legend.position = "none",
-  #           axis.text = element_blank(),
-  #           axis.title = element_blank(),
-  #           line = element_blank(),
-  #           rect = element_blank(),
-  #           text = element_blank(),
-  #           panel.grid = element_blank())
-  # }else{
-  #   g_map <- ggplot() +
-  #     geom_raster(data = nlcd_df, aes(x = x, y = y, fill = value)) +
-  #     scale_fill_manual(values = cols$color) +
-  #     geom_sf(data = lake_buffer) +
-  #     coord_sf(datum = NULL) +
-  #     theme(legend.position = "none",
-  #           axis.text = element_blank(),
-  #           axis.title = element_blank(),
-  #           line = element_blank(),
-  #           rect = element_blank(),
-  #           text = element_blank(),
-  #           panel.grid = element_blank())
-  # }
-  
-  suppressMessages(beginCluster())
+  # suppressMessages(beginCluster())
   # pull stream buffer nlcd
   if(has_streams){
     suppressMessages(stream_buffer_stats <- join_key(
@@ -138,7 +109,7 @@ get_buffer_stats <- function(llid){
   lake_buffer_stats <- join_key(
     as.character(na.omit(values(raster::mask(nlcd, ll_lake$lake_buffer))))) %>%
       mutate(llid = llid)
-  endCluster()
+  # endCluster()
   
   # save bbox nlcd
   nlcd_stats             <- join_key(as.character(values(nlcd)))
@@ -152,21 +123,29 @@ get_buffer_stats <- function(llid){
 }
 
 # llid <- ep$lagoslakeid[5]
-# llid <- 5146
+# llid <- 4790
 # test <- get_buffer_stats(llid)
 
-output <- read.csv("data/buffer_stats.csv", stringsAsFactors = FALSE)
-
-pb <- progress_bar$new(format = "  pulling buffer lulc for :llid [:bar]", 
-                       total = length(ep$lagoslakeid[
-                         !(ep$lagoslakeid %in% output$llid)]), 
-                       clear = FALSE)
+# output <- read.csv("data/buffer_stats.csv", stringsAsFactors = FALSE)
+# llids  <- ep$lagoslakeid[!(ep$lagoslakeid %in% output$llid)]
+# llids <- 4790
+if(exists("cmdargs")){
+  if(length(cmdargs) > 0){
+    llids <- cmdargs[1:length(cmdargs)]
+  }
+  if(length(grep("/", llids)) > 0){
+    llids <- 
+      sapply(llids, function(x){
+      x <- strsplit(x, "/")
+      x <- x[[1]][length(x[[1]])]
+      gsub(".csv", "", x)
+      })
+  }
+}
 
 res <- list()
-invisible(pb$tick(0))
-for(i in seq_along(ep$lagoslakeid[!(ep$lagoslakeid %in% output$llid)])){
-  llid          <- ep$lagoslakeid[i]
-  pb$tick(tokens = list(llid = llid))
+for(llid in llids){
+  message(paste0("lagoslakeid: ", llid))
   res[[1]]      <- get_buffer_stats(llid)
   res[[1]]$llid <- llid
 
@@ -185,28 +164,6 @@ for(i in seq_along(ep$lagoslakeid[!(ep$lagoslakeid %in% output$llid)])){
                          "lake_buffer_area", 
                          "stream_buffer_area", 
                          "stream_length")], 
-              file = "data/buffer_stats.csv", append = TRUE, 
+              file = paste0("data/buffer_lulc/", llid, ".csv"), append = TRUE, 
               sep = ",", row.names = FALSE, col.names = TRUE))
-  
 }
-
-# stream_buffer_nlcd <- suppressWarnings(dplyr::bind_rows(
-#   lapply(res, function(x) x$stream_buffer_stats)))
-# 
-# lake_buffer_nlcd <- suppressWarnings(dplyr::bind_rows(
-#   lapply(res, function(x) x$lake_buffer_stats)))
-# 
-# buffer_stats <- suppressWarnings(dplyr::bind_rows(
-#   lapply(res, function(x) x[c("llid", 
-#                               "lake_buffer_area", 
-#                               "stream_buffer_area", 
-#                               "stream_length")])))
-# 
-# res_final <- list(buffer_stats = buffer_stats, 
-#                   lake_buffer_nlcd = lake_buffer_nlcd, 
-#                   stream_buffer_nlcd = stream_buffer_nlcd)
-# 
-# saveRDS(res_final, "data/buffer_lulc.rds")
-
-# verify
-# res <- readRDS("data/buffer_lulc.rds")
