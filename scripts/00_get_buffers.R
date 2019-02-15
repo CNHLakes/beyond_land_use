@@ -47,7 +47,7 @@ pull_network <- function(ll_pnt){
 }
 
 get_buffer_stats <- function(llid){
-  # llid <- 4254
+  # llid <- 5424
   # LAGOSNE::lake_info(llid)
   # llid <- ep$lagoslakeid[1]
   ll_pnt  <- st_coordinates(
@@ -63,9 +63,7 @@ get_buffer_stats <- function(llid){
   message("Calculating bounding box...")
   if(all(class(network) != "logical")){
     has_streams   <- TRUE
-    network       <- network[unlist(lapply(
-      st_intersects(network, st_transform(ll_lake$ll_lake, st_crs(network))), 
-      function(x) length(x) == 0)),]
+    network       <- dplyr::filter(network, ftype != "ArtificialPath")
     stream_length <- sum(st_length(network))
     
     network_buffer <- st_buffer(
