@@ -1,3 +1,4 @@
+library(assertr)
 library(purrr)
 library(readr)
 library(dplyr)
@@ -14,11 +15,10 @@ buffer_metadata <- buffer_metadata_folder %>%
   map_df(function(x) read_csv(x, skip = 1, 
                               col_names = FALSE, col_types = "cccc")[1,]) %>%
   setNames(c("llid", "lake_buffer_area", "stream_buffer_area", 
-             "stream_length"))
-
-# nrow(buffer_metadata[which(is.na(as.numeric(buffer_metadata$stream_length))),]) == 0
-# any(!(ep$lagoslakeid %in% buffer_metadata$llid)) == FALSE
-# nrow(ep) == nrow(buffer_metadata)
+             "stream_length")) %>%
+  verify(nrow(.) == nrow(ep)) %>%
+  verify(all(ep$lagoslakeid %in% llid)) %>%
+  verify(!any(is.na(as.numeric(stream_length))))
 
 buffer_summary <- function(){
   
