@@ -15,7 +15,7 @@ data/macroag/tillage.gpkg \
 data/macroag/crp.rds \
 data/gis.gpkg \
 data/llids.txt \
-# data/buffer_stats.csv \
+data/buffer_lulc.csv
 
 gssurgo: data/gssurgo/gssurgo.rds
 
@@ -37,6 +37,9 @@ buffer_lulc: $(VARLLIDS)
 	
 data/buffer_lulc/%.csv: scripts/00_get_buffers.R
 	Rscript $< $(basename $@)
+	
+data/buffer_lulc.csv: scripts/01_process_buffers.R buffer_lulc 
+	Rscript $<
 
 data/iws_lulc.rds: scripts/00_get_lulc.R
 	Rscript $<
