@@ -20,7 +20,7 @@ library(ggeffects)
 library(ggplot2)
 
 dt <- readRDS("data/dt.rds")
-dt_sub <- dplyr::select(dt, tp, lake_area_ha:wheat, -other.non.ag, 
+dt_sub <- dplyr::select(dt, tp, tn, lake_area_ha:wheat, -other.non.ag, 
                         -mixed.crop) %>%
   dplyr::filter(complete.cases(.)) %>%
   mutate_all(as.numeric) %>%
@@ -29,11 +29,20 @@ dt_sub <- dplyr::select(dt, tp, lake_area_ha:wheat, -other.non.ag,
   corrr::shave() %>%
   janitor::remove_empty_cols() %>%
   janitor::remove_empty_rows() %>%
+  mutate_if(is.numeric, round, 2) %>%
+  arrange(desc(abs(tp))) %>%
   data.frame()
 dt_sub <- dt_sub[,-1]
 dt_sub <- dt_sub[-1,]
 row.names(dt_sub) <- names(dt_sub)
-dt_sub <- dt_sub[,c("tp", "lake_area_ha")]
+dt_sub <- dt_sub[,c("tp", "tn")]
+
+dt_sub
+dt_tn <- dt_sub %>% 
+  mutate(var = row.names(dt_sub)) %>%
+  arrange(desc(abs(tn))) %>% 
+  data.frame()
+
 
 pheatmap::pheatmap(
   t(dt_sub),  
