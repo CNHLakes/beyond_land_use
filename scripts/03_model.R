@@ -20,6 +20,27 @@ library(ggeffects)
 library(ggplot2)
 
 dt <- readRDS("data/dt.rds")
+dt_sub <- dplyr::select(dt, tp, lake_area_ha:wheat, -other.non.ag, 
+                        -mixed.crop) %>%
+  dplyr::filter(complete.cases(.)) %>%
+  mutate_all(as.numeric) %>%
+  data.frame(stringsAsFactors = FALSE) %>%
+  corrr::correlate() %>%
+  corrr::shave() %>%
+  janitor::remove_empty_cols() %>%
+  janitor::remove_empty_rows() %>%
+  data.frame()
+dt_sub <- dt_sub[,-1]
+dt_sub <- dt_sub[-1,]
+row.names(dt_sub) <- names(dt_sub)
+dt_sub <- dt_sub[,c("tp", "lake_area_ha")]
+
+pheatmap::pheatmap(
+  t(dt_sub),  
+  cluster_cols = FALSE, cluster_rows = FALSE, 
+  na.col = "grey", 
+  cellheight = 4)
+
 dt <- coordinatize(dt)
 dt <- data.frame(dt) %>%
   mutate(hu4_zoneid = as.factor(hu4_zoneid)) %>%
