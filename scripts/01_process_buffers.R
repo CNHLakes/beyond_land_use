@@ -30,19 +30,26 @@ buffer_summary <- function(x){
   # x <- lake_lulc
   test <- x %>%
     dplyr::filter(llid != "llid") %>%
+    dplyr::filter(code != 0) %>%
     distinct(llid, description, .keep_all = TRUE)
   
+  dplyr::filter(test, llid == 4717)
+  
   test2 <- group_by(test, llid) %>%
-    summarize(total_n = sum(as.numeric(n))) %>%
+    summarize(total_n = sum(as.numeric(n))) %>% 
+    left_join(buffer_metadata, by = "llid") %>%
     arrange(desc(total_n))
   
-  lake_info(4717)
+  plot(test2$total_n * 1000, test2$lake_buffer_area)
+  abline(0, 1)
+  
+  lake_info(5717)
   
   test3 <- left_join(test2, buffer_metadata)
   
   test2[1,]$total_n * 30
   
-  dplyr::filter(buffer_metadata, llid == test2[1,]$llid)
+  dplyr::filter(buffer_metadata, llid == 4717)
   
   
 }
