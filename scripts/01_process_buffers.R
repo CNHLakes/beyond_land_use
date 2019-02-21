@@ -19,6 +19,7 @@ buffer_metadata <- buffer_metadata_folder %>%
                               col_names = FALSE, col_types = "cccc")[1,]) %>%
   setNames(c("llid", "lake_buffer_area", "stream_buffer_area", 
              "stream_length")) %>%
+  mutate_all(as.numeric) %>%
   verify(nrow(.) == nrow(ep)) %>%
   verify(all(ep$lagoslakeid %in% llid)) %>%
   verify(!any(is.na(as.numeric(stream_length))))
