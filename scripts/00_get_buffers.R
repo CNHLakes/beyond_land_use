@@ -32,13 +32,15 @@ pull_lake_buffer <- function(llid){
        lake_buffer_area = lake_buffer_area)
 }
 
-pull_network <- function(ll_pnt){
-  tryCatch(network <- suppressWarnings(
+pull_network <- function(x){
+  network <- tryCatch(suppressWarnings(
     suppressMessages(
-      extract_network(lon = ll_pnt[1], 
-                      lat = ll_pnt[2], 
+      extract_network(lon = x[1], 
+                      lat = x[2], 
                       maxsteps = Inf))), 
-    error = function(e){network <- NA})
+    error = function(e){
+      NA
+    })
   if(!exists("network")){
     network <- NA
   }
