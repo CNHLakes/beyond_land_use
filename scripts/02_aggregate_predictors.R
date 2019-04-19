@@ -3,18 +3,26 @@ suppressMessages(library(magrittr))
 
 # response variables are medians from 1995 - 2005
 # setwd("../")
-ep <- readRDS("data/ep.rds")
+ep          <- readRDS("data/ep.rds")
 
 # predictors are at the iws level and are as close in time to 2000 as possible
-lg_lulc <- readRDS("data/iws_lulc.rds") %>%
-  select(-iws_ag_2011_pcent)
+lg_lulc     <- readRDS("data/iws_lulc.rds") %>%
+  dplyr::select(-iws_ag_2011_pcent)
 
-usgs <- readRDS("data/usgs/usgs.rds")
+usgs        <- readRDS("data/usgs/usgs.rds")
 
-gssurgo <- ungroup(readRDS("data/gssurgo/gssurgo.rds")$res)
+gssurgo     <- ungroup(readRDS("data/gssurgo/gssurgo.rds")$res)
 gssurgo_key <- readRDS("data/gssurgo/gssurgo.rds")$gssurgo_key
 
-cdl <- read.csv("data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
+cdl         <- read.csv("data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
+
+lake_buffer_lulc <- read.csv("data/buffer_lulc.csv", stringsAsFactors = FALSE) %>%
+  dplyr::select(llid, description, percent_lake) %>%
+  mutate(description = janitor::make_clean_names(description))
+
+# TODO: why is janitor butchering the names conversion?
+
+test <- tidyr::spread(lake_buffer_lulc, description, percent_lake)
 
 dt <- ep %>%
   left_join(lg_lulc, by = "lagoslakeid") %>%

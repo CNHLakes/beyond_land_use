@@ -56,7 +56,7 @@ lulc_tidy <- full_join(lake_lulc_tidy, stream_lulc_tidy,
 # View(dplyr::filter(stream_lulc_tidy, llid == 4717))
 # View(dplyr::filter(lulc_tidy, llid == 4717))
   
-write.csv(lulc_tidy, "data/buffer_lulc.csv")
+write.csv(lulc_tidy, "data/buffer_lulc.csv", row.names = FALSE)
 
 # verify that numbers look correct
 # source("scripts/99_utils.R")

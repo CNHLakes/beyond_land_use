@@ -38,7 +38,7 @@ buffer_lulc: $(VARLLIDS)
 data/buffer_lulc/%.csv: scripts/00_get_buffers.R
 	Rscript $< $(basename $@)
 	
-data/buffer_lulc.csv: scripts/01_process_buffers.R buffer_lulc 
+data/buffer_lulc.csv: scripts/01_process_buffers.R
 	Rscript $<
 
 data/iws_lulc.rds: scripts/00_get_lulc.R
@@ -77,7 +77,7 @@ data/macroag/tillage.gpkg: scripts/00_get_tillage.R
 data/macroag/crp.rds: scripts/00_get_crp.R
 	Rscript $<
 
-data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds data/gssurgo/gssurgo.rds
+data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds data/gssurgo/gssurgo.rds data/buffer_lulc.csv
 	Rscript $<
 	
 data/buffer_stats.csv: scripts/00_get_buffers.R
