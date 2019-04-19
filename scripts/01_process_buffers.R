@@ -1,7 +1,7 @@
 library(assertr)
 library(purrr)
 library(readr)
-library(dplyr)
+suppressMessages(library(dplyr))
 library(LAGOSNE)
 
 ep                     <- readRDS("data/ep.rds")
@@ -51,7 +51,6 @@ buffer_summary <- function(x){
   test2[1,]$total_n * 30
   
   dplyr::filter(buffer_metadata, llid == 4717)
-  
   
 }
 

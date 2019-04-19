@@ -1,10 +1,11 @@
 cmdargs <- commandArgs(trailingOnly = TRUE)
+# cmdargs <- 6970
 
 source("scripts/99_utils.R")
 
-ep     <- readRDS("data/ep.rds")
+ep               <- readRDS("data/ep.rds")
 
-join_key <- function(vals){
+join_key         <- function(vals){
   res <- vals %>%
     data.frame(code = ., stringsAsFactors = FALSE) %>% 
     count(code) %>%
@@ -32,7 +33,7 @@ pull_lake_buffer <- function(llid){
        lake_buffer_area = lake_buffer_area)
 }
 
-pull_network <- function(x){
+pull_network     <- function(x){
   network <- tryCatch(suppressWarnings(
     suppressMessages(
       extract_network(lon = x[1], 
@@ -145,6 +146,7 @@ if(exists("cmdargs")){
 
 res <- list()
 for(llid in llids){
+  # llid <- 6970
   message(paste0("lagoslakeid: ", llid))
   res[[1]]      <- get_buffer_stats(llid)
   res[[1]]$llid <- llid
