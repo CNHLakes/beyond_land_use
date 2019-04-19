@@ -24,7 +24,7 @@ buffer_metadata <- buffer_metadata_folder %>%
   verify(all(ep$lagoslakeid %in% llid)) %>%
   verify(!any(is.na(as.numeric(stream_length))))
 
-summarize_lake_lulc <- function(x){
+summarize_lulc <- function(x){
   # tidy global lulc object
   x_tidy <- x %>%
     dplyr::filter(llid != "llid") %>%
@@ -44,19 +44,40 @@ summarize_lake_lulc <- function(x){
     mutate(percent = (n / total_n) * 100)
 }
 
-lake_lulc_tidy <- summarize_lake_lulc(lake_lulc)
+lake_lulc_tidy   <- summarize_lulc(lake_lulc) %>%
+  rename(percent_lake = percent)
+stream_lulc_tidy <- summarize_lulc(stream_lulc) %>%
+  rename(percent_stream = percent) %>%
+  dplyr::select(llid, description, percent_stream)
+
+lulc_tidy <- full_join(lake_lulc_tidy, stream_lulc_tidy, 
+                       by = c("llid", "description"))
+  
+# View(dplyr::filter(stream_lulc_tidy, llid == 4717))
+# View(dplyr::filter(lulc_tidy, llid == 4717))
+  
+write.csv(lulc_tidy, "data/buffer_lulc.csv")
 
 # verify that numbers look correct
-source("scripts/99_utils.R")
-
-ll_info <- lake_info(4717)
-
-test <- pull_lake_buffer(4717)
-mapview::mapview(test$lake_buffer) + mapview::mapview(test$ll_lake)
-
-ll_info$lake_area_ha
-st_area(test$lake_buffer); st_area(test$ll_lake);
-dplyr::filter(lake_lulc_tidy, llid == 4717)[1,]
-ll_info$lake_perim_meters
-View(dplyr::filter(lake_lulc_tidy, llid == 4717))
-
+# source("scripts/99_utils.R")
+# 
+# ll_info <- lake_info(4717)
+# 
+# test <- pull_lake_buffer(4717)
+# mapview::mapview(test$lake_buffer) + mapview::mapview(test$ll_lake)
+# 
+# ll_info$lake_area_ha
+# st_area(test$lake_buffer); st_area(test$ll_lake);
+# dplyr::filter(lake_lulc_tidy, llid == 4717)[1,]
+# ll_info$lake_perim_meters
+# View(dplyr::filter(lake_lulc_tidy, llid == 4717))
+# 
+# 
+# ll_pnt  <- st_coordinates(
+#   st_transform(
+#     query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", 4717), 4326))
+# 
+# test <- pull_network(ll_pnt)
+# mapview(test)
+# sum(st_length(test))
+# View(dplyr::filter(stream_lulc_tidy, llid == 4717))
