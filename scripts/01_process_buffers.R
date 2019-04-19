@@ -24,33 +24,39 @@ buffer_metadata <- buffer_metadata_folder %>%
   verify(all(ep$lagoslakeid %in% llid)) %>%
   verify(!any(is.na(as.numeric(stream_length))))
 
-buffer_summary <- function(x){
-  unique(lake_lulc$description)
-  unique(stream_lulc$description)
-  
-  # x <- lake_lulc
-  test <- x %>%
+summarize_lake_lulc <- function(x){
+  # tidy global lulc object
+  x_tidy <- x %>%
     dplyr::filter(llid != "llid") %>%
     dplyr::filter(code != 0) %>%
-    distinct(llid, description, .keep_all = TRUE)
+    distinct(llid, description, .keep_all = TRUE) %>%
+    mutate(llid = as.numeric(llid))
   
-  dplyr::filter(test, llid == 4717)
-  
-  test2 <- group_by(test, llid) %>%
+  # calculate total lulc cell area
+  area_totals <- group_by(x_tidy, llid) %>%
     summarize(total_n = sum(as.numeric(n))) %>% 
     left_join(buffer_metadata, by = "llid") %>%
-    arrange(desc(total_n))
+    arrange(desc(total_n)) %>%
+    mutate(total_area = total_n * 1000)
   
-  plot(test2$total_n * 1000, test2$lake_buffer_area)
-  abline(0, 1)
-  
-  lake_info(5717)
-  
-  test3 <- left_join(test2, buffer_metadata)
-  
-  test2[1,]$total_n * 30
-  
-  dplyr::filter(buffer_metadata, llid == 4717)
-  
+  left_join(x_tidy, area_totals, by = "llid") %>%
+    mutate(n = as.numeric(n)) %>%
+    mutate(percent = (n / total_n) * 100)
 }
+
+lake_lulc_tidy <- summarize_lake_lulc(lake_lulc)
+
+# verify that numbers look correct
+source("scripts/99_utils.R")
+
+ll_info <- lake_info(4717)
+
+test <- pull_lake_buffer(4717)
+mapview::mapview(test$lake_buffer) + mapview::mapview(test$ll_lake)
+
+ll_info$lake_area_ha
+st_area(test$lake_buffer); st_area(test$ll_lake);
+dplyr::filter(lake_lulc_tidy, llid == 4717)[1,]
+ll_info$lake_perim_meters
+View(dplyr::filter(lake_lulc_tidy, llid == 4717))
 
