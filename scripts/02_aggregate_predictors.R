@@ -1,5 +1,4 @@
-suppressMessages(library(dplyr))
-suppressMessages(library(magrittr))
+source("scripts/99_utils.R")
 
 # response variables are medians from 1995 - 2005
 # setwd("../")
@@ -18,18 +17,47 @@ cdl         <- read.csv("data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
 
 lake_buffer_lulc <- read.csv("data/buffer_lulc.csv", stringsAsFactors = FALSE) %>%
   dplyr::select(llid, description, percent_lake) %>%
-  mutate(description = janitor::make_clean_names(description))
+  dplyr::mutate(description = snakecase::to_any_case(description)) %>%
+  tidyr::spread(description, percent_lake) %>%
+  # preprend lake to col names 
+  setNames(paste0("lake_", names(.))) %>%
+  rename(llid = lake_llid) %>%
+  # assert that lulc adds up to 100%
+  mutate(lulc_sum = rowSums(
+    dplyr::select(., 
+                  lake_barren_land_rock_sand_clay:lake_woody_wetlands), 
+    na.rm = TRUE)) %>% 
+  assertr::assert(within_bounds(99.999, 100.001), lulc_sum) %>%
+  dplyr::select(-lulc_sum)
 
-# TODO: why is janitor butchering the names conversion?
+stream_buffer_lulc <- read.csv("data/buffer_lulc.csv", stringsAsFactors = FALSE) %>%
+  dplyr::select(llid, description, percent_stream) %>%
+  dplyr::mutate(description = snakecase::to_any_case(description)) %>%
+  tidyr::spread(description, percent_stream) %>%
+  # preprend stream to col names 
+  setNames(paste0("stream_", names(.))) %>%
+  rename(llid = stream_llid) %>%
+  # assert that lulc adds up to 100%
+  mutate(lulc_sum = rowSums(
+    dplyr::select(., 
+                  stream_barren_land_rock_sand_clay:stream_woody_wetlands), 
+    na.rm = TRUE)) %>%
+  mutate(lulc_sum = case_when(
+    lulc_sum == 0 ~ NA_real_,
+    lulc_sum == 100 ~ 100, 
+    TRUE ~ NA_real_)) %>%
+  assertr::assert(in_set(NA, 100), lulc_sum) %>%
+  dplyr::select(-lulc_sum)
 
-test <- tidyr::spread(lake_buffer_lulc, description, percent_lake)
-
+# ---- collect_response_variables ----
 dt <- ep %>%
   left_join(lg_lulc, by = "lagoslakeid") %>%
   left_join(usgs, by = "lagoslakeid") %>%
   left_join(mutate(gssurgo, llid = as.integer(as.character(llid))), 
             by = c("lagoslakeid" = "llid")) %>%
-  left_join(cdl, by = c("lagoslakeid" = "llid"))
+  left_join(cdl, by = c("lagoslakeid" = "llid")) %>%
+  left_join(lake_buffer_lulc, by = c("lagoslakeid" = "llid")) %>%
+  left_join(stream_buffer_lulc, by = c("lagoslakeid" = "llid"))
 
 saveRDS(dt, "data/dt.rds")
 # dt <- readRDS("data/dt.rds")
@@ -48,6 +76,6 @@ dt_units <- left_join(dt_units,
           dplyr::select(gssurgo_key, metric, units = agg_type), 
           by = c("variable" = "metric")) %>%
   mutate(units = coalesce(units.x, units.y)) %>%
-  select(variable, units)
+  dplyr::select(variable, units)
 
 saveRDS(dt_units, "data/dt_units.rds")

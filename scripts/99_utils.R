@@ -28,6 +28,7 @@ library(FedData)
 suppressMessages(library(raster))
 library(progress)
 suppressMessages(library(smoothr))
+library(assertr)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
