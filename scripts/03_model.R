@@ -1,3 +1,5 @@
+source("scripts/99_utils.R")
+
 # ---- placeholder ----
 
 cat("predictors:
@@ -10,7 +12,7 @@ reponse:
   tn, tp")
 
 # ---- exploratory_models ----
-# lme4 cheatsheet - 
+
 library(dplyr)
 library(lme4)
 library(merTools)
@@ -25,27 +27,53 @@ dt_sub <- dplyr::select(dt, tp, tn, lake_area_ha:wheat, -other.non.ag,
   dplyr::filter(complete.cases(.)) %>%
   mutate_all(as.numeric) %>%
   data.frame(stringsAsFactors = FALSE)
-dt_cor <- dt_sub %>%
+
+dt_tp <- dt_sub %>%
   corrr::correlate() %>%
   corrr::shave() %>%
   janitor::remove_empty(c("rows", "cols")) %>%
   mutate_if(is.numeric, round, 2) %>%
   arrange(desc(abs(tp))) %>%
-  data.frame()
-dt_cor <- dt_cor[,c("rowname", "tp", "tn")]
-dt_cor
+  data.frame() %>%
+  dplyr::select(rowname, tp, tn)
 
-dt_tn <- dt_sub %>% 
-  mutate(var = row.names(dt_sub)) %>%
+dt_tn <- dt_tp %>% 
   arrange(desc(abs(tn))) %>% 
   data.frame()
 
+dt_tp_rows <- dt_tp$rowname
+dt_tp <- dt_tp %>%
+  dplyr::select(-rowname) %>%
+  mutate_all(abs)
+row.names(dt_tp) <- dt_tp_rows
+
+dt_tn_rows <- dt_tn$rowname
+dt_tn <- dt_tn %>%
+  dplyr::select(-rowname) %>%
+  mutate_all(abs)
+row.names(dt_tn) <- dt_tn_rows
 
 pheatmap::pheatmap(
-  t(dt_test),  
+  t(dt_tp),  
+  color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+                                            "Reds"))(100),
   cluster_cols = FALSE, cluster_rows = FALSE, 
   na.col = "grey", 
   cellheight = 7)
+
+pheatmap::pheatmap(
+  t(dt_tn),  
+  color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+                                                      "Reds"))(100),
+  cluster_cols = FALSE, cluster_rows = FALSE, 
+  na.col = "grey", 
+  cellheight = 7)
+
+# table(
+#   cbind(row.names(dt_tp), row.names(dt_tn))[1:15,]
+#   )
+
+# cor.test(dt_sub$tn, dt_sub$corn)
 
 dt <- coordinatize(dt)
 dt <- data.frame(dt) %>%
