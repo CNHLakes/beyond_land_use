@@ -60,6 +60,7 @@ dt <- ep %>%
   left_join(stream_buffer_lulc, by = c("lagoslakeid" = "llid"))
 
 saveRDS(dt, "data/dt.rds")
+write.csv(dt, "data/dt.csv", row.names = FALSE)
 # dt <- readRDS("data/dt.rds")
 
 dt_units <- data.frame(variable = names(dt), stringsAsFactors = FALSE) %>%
