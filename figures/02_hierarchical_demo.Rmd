@@ -5,11 +5,12 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 6.5, fig.height = 4.5)
+# setwd("figures")
 source("../scripts/99_utils.R")
 ```
 
-```{r hu4_n, echo=FALSE, message=TRUE, eval=TRUE}
+```{r 02_hierarchical_demo, echo=FALSE, message=TRUE, eval=TRUE}
 # setwd("figures")
 ids <- test <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
@@ -28,11 +29,6 @@ hu4 <- dplyr::filter(hu4, !is.na(n_cat))
 
 # hist(hu4$n, n = 20)
 # table(as.character(dt$hu4_zoneid))
-```
-
-```{r 02_hierarchical_demo, fig.height=3, echo=FALSE}
-library(tidyr)
-library(LAGOSNE)
 
 lg <- lagosne_load("1.087.1")
 
@@ -82,7 +78,7 @@ coords <- data.frame(matrix(
 names(coords) <- c("x", "y")
 coords$ZoneID <- gsub("HU4_", "", hu4[,"ZoneID"]$ZoneID)
 
-plot_grid(
+cowplot::plot_grid(
   ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha = n)) + 
     # geom_point() +
     geom_line(stat = "smooth", method = lm, se = FALSE, aes(alpha = n))  +
@@ -95,12 +91,12 @@ plot_grid(
     scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 300)),
   ggplot() +
     geom_sf(data = hu4, aes(fill = n_cat)) +
-    # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
-    theme_minimal() + 
-    theme(legend.position = "bottom", 
-          axis.title = element_blank(), 
-          legend.title = element_blank()) + 
-    scale_fill_manual(values = colors, levels(hu4$n_cat)), 
+    # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +
+    theme_minimal() +
+    theme(legend.position = "bottom",
+          axis.title = element_blank(),
+          legend.title = element_blank()) +
+    scale_fill_manual(values = colors, levels(hu4$n_cat)),
   rel_heights = c(0.6, 1), labels = "AUTO"
 )
 ``` 
