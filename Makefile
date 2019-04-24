@@ -26,7 +26,9 @@ usgs: data/usgs/usgs.rds
 data/gis.gpkg: scripts/00_get_gis.R
 	Rscript $<
 
-data/ep.rds: scripts/00_get_ep.R data/iws_lulc.rds data/county_lulc.rds
+data/ep.rds: scripts/00_get_ep.R \
+data/iws_lulc.rds \
+data/county_lulc.rds
 	Rscript $<
 	
 data/llids.txt: scripts/00_list_llids.R data/ep.rds
@@ -53,7 +55,9 @@ data/usgs/usgs.rds: scripts/00_get_usgs.R data/ep.rds
 data/cdl/cdl.csv: scripts/00_get_cdl.R
 	Rscript $< 'data/cdl/'
 	
-data/cdl/cdl_summary.csv: scripts/01_process_cdl.R data/cdl/cdl.csv data/cdl/cdl_key.csv
+data/cdl/cdl_summary.csv: scripts/01_process_cdl.R \
+data/cdl/cdl.csv \
+data/cdl/cdl_key.csv
 	Rscript $< 
 	
 data/cdl/cdl_key.csv: scripts/99_make_cdl_key.R
@@ -77,7 +81,12 @@ data/macroag/tillage.gpkg: scripts/00_get_tillage.R
 data/macroag/crp.rds: scripts/00_get_crp.R
 	Rscript $<
 
-data/dt.rds: scripts/02_aggregate_predictors.R data/ep.rds data/iws_lulc.rds data/usgs/usgs.rds data/gssurgo/gssurgo.rds data/buffer_lulc.csv
+data/dt.rds: scripts/02_aggregate_predictors.R \
+data/ep.rds \
+data/iws_lulc.rds \
+data/usgs/usgs.rds \
+data/gssurgo/gssurgo.rds \
+data/buffer_lulc.csv
 	Rscript $<
 	
 data/buffer_stats.csv: scripts/00_get_buffers.R
@@ -85,7 +94,14 @@ data/buffer_stats.csv: scripts/00_get_buffers.R
 
 figures: manuscript/figures.pdf
 
-manuscript/figures.pdf: manuscript/figures.Rmd figures/01_county_extent-1.pdf figures/02_hierarchical_demo-1.pdf figures/03_wetland_potential-1.pdf figures/04_nlcd-versus-cdl-1.pdf figures/05_cafos-1.pdf figures/06_lulc_buffer_demo-1.pdf figures/08_exploratory_dotplot-1.pdf
+manuscript/figures.pdf: manuscript/figures.Rmd \
+figures/01_county_extent-1.pdf \
+figures/02_hierarchical_demo-1.pdf \
+figures/03_wetland_potential-1.pdf \
+figures/04_nlcd-versus-cdl-1.pdf \
+figures/05_cafos-1.pdf \
+figures/06_lulc_buffer_demo-1.pdf \
+figures/08_exploratory_dotplot-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
 	-mv manuscript/figures2.pdf manuscript/figures.pdf

@@ -27,3 +27,4 @@ data/cafos
 data/census/*.rds
 data/gis.gpkg
 data/macroag/tillage.gpkg
+TODO.md
