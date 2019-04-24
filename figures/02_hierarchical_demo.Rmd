@@ -6,16 +6,10 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+source("../scripts/99_utils.R")
 ```
 
 ```{r hu4_n, echo=FALSE, message=TRUE, eval=TRUE}
-library(dplyr)
-library(LAGOSNEgis)
-library(sf)
-library(ggplot2)
-library(cowplot)
-library(classInt)
-
 # setwd("figures")
 ids <- test <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
