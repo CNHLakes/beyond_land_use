@@ -6,20 +6,12 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 7, fig.height = 7)
+# setwd("figures")
 source("../scripts/99_utils.R")
 ```
 
 ```{r 06_lulc_buffer_demo, echo=FALSE, eval=TRUE}
 # setwd("figures")
-library(nhdR)
-library(LAGOSNEgis)
-library(mapview)
-library(FedData)
-library(dplyr)
-library(ggplot2)
-library(raster)
-library(sf)
-library(cowplot)
 
 dt <- readRDS("../data/dt.rds")
 
@@ -49,6 +41,7 @@ nlcd_df[,3] <- factor(nlcd_df[,3])
 names(nlcd_df)[3] <- "value"
 cols <- dplyr::filter(pal_nlcd(), code %in% unique(nlcd_df[,3]))
 
+
 g_map <- ggplot() + 
   geom_raster(data = nlcd_df, aes(x = x, y = y, fill = value)) +
   scale_fill_manual(values = cols$color) +
@@ -59,8 +52,8 @@ g_map <- ggplot() +
         axis.title = element_blank(), 
         line = element_blank(), 
         rect = element_blank(), 
-        text = element_blank(), 
-        panel.grid = element_blank())
+        panel.grid = element_blank()) +
+    ggtitle(paste0("llid: ", llid))
 
 join_key <- function(vals){
   res <- vals %>%
@@ -73,9 +66,25 @@ join_key <- function(vals){
   res
 } 
 
-buffer_stats <- join_key(as.character(
-  unlist(raster::extract(nlcd, network_buffer))))
-nlcd_stats <- join_key(as.character(values(nlcd)))  
+buffer_stats <- read.csv("../data/buffer_lulc.csv") %>%
+  dplyr::filter(llid == 2745) %>%
+  rename(total_n_lake = total_n, 
+         n_lake = n) %>%
+  mutate(total_n_stream = stream_buffer_area / 1000, 
+         n_stream = round((percent_stream / 100) * total_n_stream, 0))
+
+# create a vector of nlcd codes of length n_lake or n_stream
+expand_nlcd_codes <- function(x, n_col){
+  x_filtered <- x %>%
+    dplyr::filter(!is.na(UQ(rlang::sym(n_col))))
+  Map(rep, x_filtered$code, x_filtered[,n_col])  
+}
+
+lake_buffer_stats   <- join_key(as.character(unlist(
+  expand_nlcd_codes(buffer_stats, "n_lake"))))
+stream_buffer_stats <- join_key(as.character(unlist(
+  expand_nlcd_codes(buffer_stats, "n_stream"))))
+nlcd_stats          <- join_key(as.character(values(nlcd)))  
 
 theme_opts <- theme(axis.text.x = element_blank(), 
                     legend.title = element_blank(), 
@@ -89,22 +98,32 @@ g_all <- ggplot() +
   theme(legend.direction = "horizontal") +
   theme_opts +
   guides(fill = guide_legend(ncol = 2)) +
-  ggtitle("All LULC")
+  ggtitle("Viewport LULC")
 
-g_buffer <- ggplot() + 
-  geom_col(data = buffer_stats, aes(x = description, 
+g_stream_buffer <- ggplot() + 
+  geom_col(data = stream_buffer_stats, aes(x = description, 
                                   y = n, 
                                   fill = description)) +
-  scale_fill_manual(values = buffer_stats$color) +
+  scale_fill_manual(values = stream_buffer_stats$color) +
   theme(legend.position = "none") +
   theme_opts +
   ggtitle("Stream buffer LULC")
+
+g_lake_buffer <- ggplot() + 
+  geom_col(data = lake_buffer_stats, aes(x = description, 
+                                  y = n, 
+                                  fill = description)) +
+  scale_fill_manual(values = lake_buffer_stats$color) +
+  theme(legend.position = "none") +
+  theme_opts +
+  ggtitle("Lake buffer LULC")
 
 legend <- get_legend(g_all)
 
 plot_grid(g_map, 
   plot_grid(g_all + theme(legend.position = "none"),
-            g_buffer), 
-  legend, ncol = 1)
+            g_lake_buffer, ggplot(),
+            g_stream_buffer), 
+  legend, ncol = 1) 
 
 ```
