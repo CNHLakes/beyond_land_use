@@ -1,0 +1,80 @@
+---
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 6.5, fig.height = 4.5)
+# setwd("figures")
+source("../scripts/99_utils.R")
+```
+
+```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE}
+dt     <- readRDS("../data/dt.rds")
+dt_sub <- dplyr::select(dt, tp, tn, lake_area_ha:wheat, -other.non.ag, 
+                        -mixed.crop) %>%
+  dplyr::filter(complete.cases(.)) %>%
+  mutate_all(as.numeric) %>%
+  data.frame(stringsAsFactors = FALSE)
+
+dt_tp <- dt_sub %>%
+  corrr::correlate() %>%
+  corrr::shave() %>%
+  janitor::remove_empty(c("rows", "cols")) %>%
+  mutate_if(is.numeric, round, 2) %>%
+  arrange(desc(abs(tp))) %>%
+  data.frame() %>%
+  dplyr::select(rowname, tp, tn)
+
+dt_tn <- dt_tp %>% 
+  arrange(desc(abs(tn))) %>% 
+  data.frame()
+
+dt_tp_rows <- dt_tp$rowname
+dt_tp <- dt_tp %>%
+  dplyr::select(-rowname) %>%
+  mutate_all(abs)
+row.names(dt_tp) <- dt_tp_rows
+
+dt_tn_rows <- dt_tn$rowname
+dt_tn <- dt_tn %>%
+  dplyr::select(-rowname) %>%
+  mutate_all(abs)
+row.names(dt_tn) <- dt_tn_rows
+
+# pheatmap::pheatmap(
+#   t(dt_tp),  
+#   color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+#                                             "Reds"))(100),
+#   cluster_cols = FALSE, cluster_rows = FALSE, 
+#   na.col = "grey", 
+#   cellheight = 7)
+# 
+# pheatmap::pheatmap(
+#   t(dt_tn),  
+#   color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+#                                                       "Reds"))(100),
+#   cluster_cols = FALSE, cluster_rows = FALSE, 
+#   na.col = "grey", 
+#   cellheight = 7)
+
+prep_dotplot <- function(x, col_name){
+  dplyr::select(x, UQ(rlang::sym(col_name))) %>% 
+    dplyr::mutate(var = factor(row.names(x), 
+                            levels = rev(row.names(x)))) %>%
+    dplyr::filter(!(var %in% c("tp", "tn")))
+}
+
+plot_opts <- theme(axis.title.y = element_blank(), 
+                   axis.text = element_text(size = 8))
+plot_grid(
+  ggplot(data = prep_dotplot(dt_tp, "tp")) + 
+    geom_point(aes(x = tp, y = var)) + 
+    plot_opts, 
+  ggplot(data = prep_dotplot(dt_tn, "tn")) + 
+    geom_point(aes(x = tn, y = var)) +
+    plot_opts
+)
+ 
+``` 

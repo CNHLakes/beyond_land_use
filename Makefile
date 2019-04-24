@@ -85,7 +85,7 @@ data/buffer_stats.csv: scripts/00_get_buffers.R
 
 figures: manuscript/figures.pdf
 
-manuscript/figures.pdf: manuscript/figures.Rmd figures/01_county_extent-1.pdf figures/02_hierarchical_demo-1.pdf figures/03_wetland_potential-1.pdf figures/04_nlcd-versus-cdl-1.pdf figures/05_cafos-1.pdf figures/06_lulc_buffer_demo-1.pdf
+manuscript/figures.pdf: manuscript/figures.Rmd figures/01_county_extent-1.pdf figures/02_hierarchical_demo-1.pdf figures/03_wetland_potential-1.pdf figures/04_nlcd-versus-cdl-1.pdf figures/05_cafos-1.pdf figures/06_lulc_buffer_demo-1.pdf figures/08_exploratory_dotplot-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
 	-mv manuscript/figures2.pdf manuscript/figures.pdf
@@ -106,6 +106,9 @@ figures/05_cafos-1.pdf: figures/05_cafos.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 figures/06_lulc_buffer_demo-1.pdf: figures/06_lulc_buffer_demo.Rmd
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+
+figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 tables: manuscript/tables.pdf
