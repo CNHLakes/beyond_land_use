@@ -43,7 +43,8 @@ lg <- lagosne_load("1.087.1")
 #   tidyr::drop_na() 
 
 dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", "ag_pct", "phosphorus_fertilizer_use")
+  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", 
+                "ag_pct", "phosphorus_fertilizer_use", "soybeans")
 
 # hist(as.vector(table(dt$hu4_zoneid)))  
 # good_hu4s <- group_by(dt, hu4_zoneid) %>% 
@@ -106,6 +107,8 @@ plot_grid(
 library(brms)
 
 names(dt) <- gsub("_", "v", names(dt))
+dt <- dplyr::filter(dt, !is.na(phosphorusvfertilizervuse), 
+                    !is.na(soybeans))
 
 # linear
 model_form <- bf(tp ~ agvpct)
@@ -118,13 +121,26 @@ model_form <- bf(tp ~ bagvpct * agvpct,
                  bagvpct ~ 1 + 
                    (1|hu4vzoneid), 
                  nl = TRUE)
-nlprior <- c(prior(norma(0, 100), nlpar = "bagvpct"))
+fit1 <- brm(formula = model_form, data = dt, 
+           family = gaussian())
 
+# non-linear re w/ 2nd level coeffs
+model_form2 <- bf(tp ~ bagvpct * agvpct, 
+                 bagvpct ~ 1 + phosphorusvfertilizervuse + soybeans +
+                   (1|hu4vzoneid), 
+                 nl = TRUE)
+fit2 <- brm(formula = model_form2, data = dt, 
+           family = gaussian())
+---
+loo1 <- loo(fit1)
+loo2 <- loo(fit2)
+loo_compare(loo1, loo2)  
+  
 fit <- brm(formula = model_form, data = dt, 
-           family = gaussian(), prior = nlprior)
+           family = gaussian())
 
-summary(fit)
-marginal_effects(fit)
+summary(fit2)
+marginal_effects(fit2)
 conditions <- data.frame(hu4vzoneid = unique(dt$hu4vzoneid)[1])
 rownames(conditions) <- unique(dt$hu4vzoneid)[1]
 me_zone <- marginal_effects(fit, conditions = conditions, 
@@ -135,19 +151,7 @@ ran_ef <- as.data.frame(ranef(fit)$hu4vzoneid) %>%
 
 plot(me_zone, ncol = 1)$agvpct + 
   ggtitle(unique(dt$hu4vzoneid)[1]) +
-  geom_abline(intercept = 0, slope = 0.6899723 + 1.25)
-# ranef slope + fixed slope
-
-
-ranef(fit)
-
-
-get_prior(formula = model_form, data = dt)
-
-model_prior <- prior()
-
-
-
-fit <- brm(formula = model_form, data = dt, prior = model_prior)
+  geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
+                broom::tidy(fit)$estimate[1])
 
 ```
