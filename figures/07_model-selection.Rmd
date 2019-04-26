@@ -1,0 +1,153 @@
+---
+output: pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+# setwd("figures")
+source("../scripts/99_utils.R")
+```
+
+```{r ```{r 07_model_selection, fig.height=3, echo=FALSE}
+
+# setwd("figures")
+ids <- test <- readRDS("../data/dt.rds") %>%
+  group_by(hu4_zoneid) %>% 
+  tally()
+
+hu4 <-  LAGOSNEgis::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
+  st_cast(to = "MULTIPOLYGON") %>%
+  left_join(ids, by = c("ZoneID" = "hu4_zoneid"))
+
+n_cat  <- 6
+colors <- c("#FFFFFF", viridisLite::viridis(n_cat - 1))
+hu4    <- mutate(hu4, 
+            n_cat = cut(hu4$n, breaks = 
+                          classInt::classIntervals(hu4$n, n = n_cat)$brks))
+hu4 <- dplyr::filter(hu4, !is.na(n_cat))
+
+# hist(hu4$n, n = 20)
+# table(as.character(dt$hu4_zoneid))
+
+lg <- lagosne_load("1.087.1")
+
+# ep <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 
+#                 summarize(
+#                   group_by(dplyr::select(lg$epi_nutr, lagoslakeid, tp, chla), 
+#                            lagoslakeid), 
+#                   tp = median(tp, na.rm = TRUE), 
+#                   chla = median(chla, na.rm = TRUE)), 
+#                 by = "lagoslakeid") %>%
+#   tidyr::drop_na() 
+
+dt <- readRDS("../data/dt.rds") %>%
+  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", "ag_pct", "phosphorus_fertilizer_use")
+
+# hist(as.vector(table(dt$hu4_zoneid)))  
+# good_hu4s <- group_by(dt, hu4_zoneid) %>% 
+#   tally() %>%
+#   dplyr::filter(n > 220)  
+# dt <- dplyr::filter(dt, hu4_zoneid %in% good_hu4s$hu4_zoneid)
+# dt <- dplyr::filter(dt, tp < 500 & chla < 150)
+
+# create alpha sample size weightings
+dt <- left_join(dt, ungroup(count(group_by(dt, hu4_zoneid))), 
+                by = "hu4_zoneid") %>%
+  dplyr::filter(n >= 5) %>%
+  mutate(n = n / max(n, na.rm = TRUE))
+  
+# join iws ag
+# dt <- left_join(dt, ungroup(dplyr::select(mutate(
+#   group_by(lg$iws.lulc, lagoslakeid), 
+#   ag_pct = sum(iws_nlcd2011_pct_81,
+#                            iws_nlcd2011_pct_82, na.rm = TRUE)), 
+#   lagoslakeid, ag_pct))
+#   )
+
+# create hu4 labels
+centroid_xy <- sf::st_as_text(sf::st_geometry(sf::st_centroid(hu4[,"ZoneID"])))
+extract_coords <- function(messy_centroid){
+  res <- stringr::str_split(messy_centroid, "\\(", simplify = TRUE)[2]
+  res <- stringr::str_split(res, "\\)", simplify = TRUE)[1]
+  stringr::str_split(res, " ", simplify = TRUE)
+}
+coords <- data.frame(matrix(
+            as.numeric(unlist(lapply(centroid_xy, extract_coords))),
+            ncol = 2, byrow = TRUE), stringsAsFactors = FALSE)
+names(coords) <- c("x", "y")
+coords$ZoneID <- gsub("HU4_", "", hu4[,"ZoneID"]$ZoneID)
+
+plot_grid(
+  ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha = n)) + 
+    # geom_point() +
+    geom_line(stat = "smooth", method = lm, se = FALSE, aes(alpha = n))  +
+    geom_smooth(aes(group = 1), method = lm, se = FALSE, 
+                color = "black", linetype = "dashed") +
+    # scale_y_log10() + scale_x_log10() +
+    theme(legend.position = "") +
+    labs(x = "Ag. LULC (pct, NLCD 2011)", 
+         y = "TP")  +
+    scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 300)),
+  ggplot() +
+    geom_sf(data = hu4, aes(fill = n_cat)) +
+    # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
+    theme_minimal() + 
+    theme(legend.position = "bottom", 
+          axis.title = element_blank(), 
+          legend.title = element_blank()) + 
+    scale_fill_manual(values = colors, levels(hu4$n_cat)), 
+  rel_heights = c(0.6, 1), labels = "AUTO"
+)
+``` 
+
+```{r brms_stan}
+library(brms)
+
+names(dt) <- gsub("_", "v", names(dt))
+
+# linear
+model_form <- bf(tp ~ agvpct)
+
+# linear re
+model_form <- bf(tp ~ (1 + agvpct | hu4vzoneid))
+
+# non-linear re
+model_form <- bf(tp ~ bagvpct * agvpct, 
+                 bagvpct ~ 1 + 
+                   (1|hu4vzoneid), 
+                 nl = TRUE)
+nlprior <- c(prior(norma(0, 100), nlpar = "bagvpct"))
+
+fit <- brm(formula = model_form, data = dt, 
+           family = gaussian(), prior = nlprior)
+
+summary(fit)
+marginal_effects(fit)
+conditions <- data.frame(hu4vzoneid = unique(dt$hu4vzoneid)[1])
+rownames(conditions) <- unique(dt$hu4vzoneid)[1]
+me_zone <- marginal_effects(fit, conditions = conditions, 
+                            re_formula = NULL, method = "predict")
+ran_ef <- as.data.frame(ranef(fit)$hu4vzoneid) %>%
+  mutate(zoneid = rownames(.)) %>%
+  dplyr::filter(zoneid == unique(dt$hu4vzoneid)[1])
+
+plot(me_zone, ncol = 1)$agvpct + 
+  ggtitle(unique(dt$hu4vzoneid)[1]) +
+  geom_abline(intercept = 0, slope = 0.6899723 + 1.25)
+# ranef slope + fixed slope
+
+
+ranef(fit)
+
+
+get_prior(formula = model_form, data = dt)
+
+model_prior <- prior()
+
+
+
+fit <- brm(formula = model_form, data = dt, prior = model_prior)
+
+```
