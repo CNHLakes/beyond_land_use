@@ -106,15 +106,21 @@ plot_grid(
 ```{r brms_stan}
 library(brms)
 
+dt        <- readRDS("../data/dt.rds") %>% 
+  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", 
+                "ag_pct", "phosphorus_fertilizer_use", "soybeans")
+
 names(dt) <- gsub("_", "v", names(dt))
-dt <- dplyr::filter(dt, !is.na(phosphorusvfertilizervuse), 
+dt        <- dplyr::filter(dt, !is.na(phosphorusvfertilizervuse), 
                     !is.na(soybeans))
 
 # linear
-model_form <- bf(tp ~ agvpct)
+# model_form <- bf(tp ~ agvpct)
 
 # linear re
 model_form <- bf(tp ~ (1 + agvpct | hu4vzoneid))
+fit <- brm(formula = model_form, data = dt, 
+           family = gaussian())
 
 # non-linear re
 model_form <- bf(tp ~ bagvpct * agvpct, 
@@ -132,9 +138,57 @@ model_form2 <- bf(tp ~ bagvpct * agvpct,
 fit2 <- brm(formula = model_form2, data = dt, 
            family = gaussian())
 ---
+
+# plot(fit1, pars = "bagvpct")
+  
+get_variables(fit)
+spread_draws(fit, b_Intercept)
+
+test <- spread_draws(fit, r_hu4vzoneid[hu4vzoneid,term]) %>%
+  dplyr::filter(term == "agvpct" & hu4vzoneid == "HU4_40")
+
+m <- add_fitted_draws(dt, b_)
+
+spread_draws(fit, Intercept)
+spread_draws(fit1, bagvpct[hu4vzoneid,])
+
+ggplot() + 
+    stat_lineribbon(data = m, 
+                             aes(x = retention_time_yr, 
+                                 y = estimate), .prob = c(0.95), 
+                    fill = "grey", color = "black", alpha = 0.5)
+
+
++ 
+    geom_point(data = nes, aes(x = retention_time_yr, 
+                               y = p_percent_retention), 
+               size = 0.6, color = "black") + 
+    scale_x_log10() + ylim(0, 1) +
+    scale_fill_discrete("grey") + 
+    theme_pred() + 
+ylab("P retention") + xlab("Residence time (yr)") + ggtitle("A.")
+
+stat_lineribbon()
+stancode(fit1)  
+    
+m <- tidybayes::recover_types(fit1)
+
+bayes_results = m %>%
+  spread_draws()
+%>%
+  median_qi(estimate = condition_mean) %>%
+  to_broom_names() %>%
+  mutate(model = "Bayes")
+bayes_result
+
+---
 loo1 <- loo(fit1)
 loo2 <- loo(fit2)
 loo_compare(loo1, loo2)  
+---
+
+
+
   
 fit <- brm(formula = model_form, data = dt, 
            family = gaussian())
