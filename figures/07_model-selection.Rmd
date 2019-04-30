@@ -105,17 +105,22 @@ plot_grid(
 
 ```{r brms_stan}
 library(brms)
+library(tidybayes)
 
 dt        <- readRDS("../data/dt.rds") %>% 
   dplyr::select("lagoslakeid", "hu4_zoneid", "tp", 
                 "ag_pct", "phosphorus_fertilizer_use", "soybeans")
-
 names(dt) <- gsub("_", "v", names(dt))
 dt        <- dplyr::filter(dt, !is.na(phosphorusvfertilizervuse), 
                     !is.na(soybeans))
 
 # linear
-# model_form <- bf(tp ~ agvpct)
+model_form <- bf(tp ~ agvpct)
+fit0 <- brm(formula = model_form, data = dt, 
+           family = gaussian())
+
+get_variables(fit0)
+plot(fit0, pars = "agvpct")
 
 # linear re
 model_form <- bf(tp ~ (1 + agvpct | hu4vzoneid))
@@ -139,13 +144,44 @@ fit2 <- brm(formula = model_form2, data = dt,
            family = gaussian())
 ---
 
-# plot(fit1, pars = "bagvpct")
-  
-get_variables(fit)
-spread_draws(fit, b_Intercept)
+# pull global distribution (lower, mean, upper)
+# get_variables(fit0)
+global_dist <- spread_draws(fit0, b_agvpct) %>%
+    mutate(hu4vzoneid = "global") %>%
+    group_by(hu4vzoneid) %>%
+    do(tibble::as_tibble(t(quantile(.$b_agvpct, c(0.05, 0.5, 0.95)))))
+
+# pull hu4 distribution (lower, mean, upper)
+hu4_dist <- spread_draws(fit, r_hu4vzoneid[hu4vzoneid,term]) %>%
+  dplyr::filter(term == "agvpct") %>%
+  group_by(hu4vzoneid) %>%
+  do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
+  mutate(signif = case_when(`5%` > 0 ~ TRUE))
+
+all_dist <- bind_rows(global_dist, hu4_dist)
+
+ggplot(data = all_dist) +
+  geom_point(aes(x = hu4vzoneid, y = `50%`)) +
+  geom_errorbar(aes(ymin = `5%`, ymax = `95%`, x = hu4vzoneid, color = signif)) +
+  geom_hline(yintercept = 0) +
+  coord_flip()
+
+hu4_signif <-  LAGOSNEgis::query_gis(
+  "HU4", "ZoneID", dplyr::filter(hu4_dist, signif)$hu4vzoneid) %>% 
+  st_cast(to = "MULTIPOLYGON")
+
+# pull 2nd level covariate distributions
+get_variables(fit2)
+# spread_draws(fit, b_Intercept)
+
+plot(fit, pars = "agvpct")
 
 test <- spread_draws(fit, r_hu4vzoneid[hu4vzoneid,term]) %>%
-  dplyr::filter(term == "agvpct" & hu4vzoneid == "HU4_40")
+  dplyr::filter(term == "agvpct") %>%
+  group_by(hu4vzoneid) %>%
+  summarise(agvpct_effect = median(r_hu4vzoneid))
+quantile(test$agvpct_effect, c(0.05, 0.5, 0.95))
+
 
 m <- add_fitted_draws(dt, b_)
 
