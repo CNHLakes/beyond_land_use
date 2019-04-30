@@ -43,13 +43,27 @@ dt_tn <- dt_tn %>%
   mutate_all(abs)
 row.names(dt_tn) <- dt_tn_rows
 
-# pheatmap::pheatmap(
-#   t(dt_tp),  
-#   color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
-#                                             "Reds"))(100),
-#   cluster_cols = FALSE, cluster_rows = FALSE, 
-#   na.col = "grey", 
-#   cellheight = 7)
+# ----
+dt_tp <- dt_sub %>%
+  corrr::correlate() %>%
+  corrr::shave() %>%
+  janitor::remove_empty(c("rows", "cols")) %>%
+  mutate_if(is.numeric, round, 2) %>%
+  data.frame()
+
+dt_tp_rows <- dt_tp$rowname
+dt_tp <- dt_tp %>%
+  dplyr::select(-rowname) %>%
+  mutate_all(abs)
+row.names(dt_tp) <- dt_tp_rows
+
+pheatmap::pheatmap(
+  t(dt_tp),
+  color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+                                            "Reds"))(100),
+  cluster_cols = FALSE, cluster_rows = FALSE,
+  na.col = "grey",
+  cellheight = 7)
 # 
 # pheatmap::pheatmap(
 #   t(dt_tn),  
