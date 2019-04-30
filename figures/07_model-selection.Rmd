@@ -115,6 +115,12 @@ names(dt) <- gsub("_", "v", names(dt))
 dt        <- dplyr::filter(dt, !is.na(phosphorusvfertilizervuse), 
                     !is.na(soybeans))
 
+good_hu4s <- readRDS("../data/dt.rds") %>%
+  group_by(hu4_zoneid) %>% 
+  tally() %>%
+  dplyr::filter(n >= 3)
+dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
+
 # linear
 model_form <- bf(tp ~ agvpct)
 fit0 <- brm(formula = model_form, data = dt, 
@@ -212,16 +218,32 @@ ggplot() +
   geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
                 broom::tidy(fit)$estimate[3])
 
-dt %>%
-  modelr::data_grid(agvpct = seq_range(agvpct, n = 101)) %>%
-  mutate(hu4vzoneid = hu4_id[1]) %>%
+dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID) %>%
+  modelr::data_grid(agvpct = seq_range(agvpct, n = 101), hu4vzoneid) %>%
   add_predicted_draws(fit) %>%
   ggplot(aes(x = agvpct, y = tp)) +
   stat_lineribbon(aes(y = .prediction), .width = c(.99, .95, .8, .5), color = "#08519C") +
-  geom_point(data = dplyr::filter(dt, hu4vzoneid == hu4_id[1]), 
+  geom_point(data = dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID), 
                                   size = 2) +
-  scale_fill_brewer()
-  
+  scale_fill_brewer() +
+  facet_wrap(~ hu4vzoneid)
+
+
+hu4_not_signif_n <- sample(unique(
+  pull(
+    dplyr::filter(dt, !(hu4vzoneid %in% hu4_signif$ZoneID)),
+    hu4vzoneid)), 5)
+
+dplyr::filter(dt, hu4vzoneid %in% hu4_not_signif_n) %>%
+  modelr::data_grid(agvpct = seq_range(agvpct, n = 101), hu4vzoneid) %>%
+  add_predicted_draws(fit) %>%
+  ggplot(aes(x = agvpct, y = tp)) +
+  stat_lineribbon(aes(y = .prediction), .width = c(.99, .95, .8, .5), color = "#08519C") +
+  geom_point(data = dplyr::filter(dt, hu4vzoneid %in% hu4_not_signif_n), 
+                                  size = 2) +
+  scale_fill_brewer() +
+  facet_wrap(~ hu4vzoneid)
+
 
 ----
 # loo significance testing
