@@ -106,6 +106,7 @@ plot_grid(
 ```{r brms_stan}
 library(brms)
 library(tidybayes)
+library(modelr)
 
 dt        <- readRDS("../data/dt.rds") %>% 
   dplyr::select("lagoslakeid", "hu4_zoneid", "tp", 
@@ -161,8 +162,8 @@ hu4_dist <- spread_draws(fit, r_hu4vzoneid[hu4vzoneid,term]) %>%
 all_dist <- bind_rows(global_dist, hu4_dist)
 
 ggplot(data = all_dist) +
-  geom_point(aes(x = hu4vzoneid, y = `50%`)) +
-  geom_errorbar(aes(ymin = `5%`, ymax = `95%`, x = hu4vzoneid, color = signif)) +
+  geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`, color = signif)) +
   geom_hline(yintercept = 0) +
   coord_flip()
 
@@ -171,77 +172,63 @@ hu4_signif <-  LAGOSNEgis::query_gis(
   st_cast(to = "MULTIPOLYGON")
 
 # pull 2nd level covariate distributions
-get_variables(fit2)
-# spread_draws(fit, b_Intercept)
+coef_signif <- bind_rows(
+  spread_draws(fit2, b_bagvpct_soybeans) %>%
+    do(tibble::as_tibble(t(quantile(.$b_bagvpct_soybeans, 
+                                    c(0.05, 0.5, 0.95))))), 
+  spread_draws(fit2, b_bagvpct_phosphorusvfertilizervuse) %>%
+    do(tibble::as_tibble(t(quantile(.$b_bagvpct_phosphorusvfertilizervuse, 
+                                    c(0.05, 0.5, 0.95)))))
+  )
+coef_signif$var <- c("soybeans", "pfertilizer")
 
-plot(fit, pars = "agvpct")
+ggplot(data = coef_signif) +
+  geom_pointrange(aes(x = var, y = `50%`, ymin = `5%`, ymax = `95%`)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip()
 
-test <- spread_draws(fit, r_hu4vzoneid[hu4vzoneid,term]) %>%
-  dplyr::filter(term == "agvpct") %>%
-  group_by(hu4vzoneid) %>%
-  summarise(agvpct_effect = median(r_hu4vzoneid))
-quantile(test$agvpct_effect, c(0.05, 0.5, 0.95))
+# plot prediction lines
+# hu4_signif$ZoneID
+hu4_id               <- hu4_signif$ZoneID[3]
+conditions           <- data.frame(hu4vzoneid = hu4_id)
+rownames(conditions) <- hu4_id
 
-
-m <- add_fitted_draws(dt, b_)
-
-spread_draws(fit, Intercept)
-spread_draws(fit1, bagvpct[hu4vzoneid,])
-
-ggplot() + 
-    stat_lineribbon(data = m, 
-                             aes(x = retention_time_yr, 
-                                 y = estimate), .prob = c(0.95), 
-                    fill = "grey", color = "black", alpha = 0.5)
-
-
-+ 
-    geom_point(data = nes, aes(x = retention_time_yr, 
-                               y = p_percent_retention), 
-               size = 0.6, color = "black") + 
-    scale_x_log10() + ylim(0, 1) +
-    scale_fill_discrete("grey") + 
-    theme_pred() + 
-ylab("P retention") + xlab("Residence time (yr)") + ggtitle("A.")
-
-stat_lineribbon()
-stancode(fit1)  
-    
-m <- tidybayes::recover_types(fit1)
-
-bayes_results = m %>%
-  spread_draws()
-%>%
-  median_qi(estimate = condition_mean) %>%
-  to_broom_names() %>%
-  mutate(model = "Bayes")
-bayes_result
-
----
-loo1 <- loo(fit1)
-loo2 <- loo(fit2)
-loo_compare(loo1, loo2)  
----
-
-
-
-  
-fit <- brm(formula = model_form, data = dt, 
-           family = gaussian())
-
-summary(fit2)
-marginal_effects(fit2)
-conditions <- data.frame(hu4vzoneid = unique(dt$hu4vzoneid)[1])
-rownames(conditions) <- unique(dt$hu4vzoneid)[1]
-me_zone <- marginal_effects(fit, conditions = conditions, 
+me_zone <- marginal_effects(fit1, conditions = conditions, 
                             re_formula = NULL, method = "predict")
-ran_ef <- as.data.frame(ranef(fit)$hu4vzoneid) %>%
+
+ran_ef <- as.data.frame(ranef(fit1)$hu4vzoneid) %>%
   mutate(zoneid = rownames(.)) %>%
-  dplyr::filter(zoneid == unique(dt$hu4vzoneid)[1])
+  dplyr::filter(zoneid == hu4_id)
 
 plot(me_zone, ncol = 1)$agvpct + 
-  ggtitle(unique(dt$hu4vzoneid)[1]) +
   geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
-                broom::tidy(fit)$estimate[1])
+                broom::tidy(fit)$estimate[3]) + 
+  ggtitle(hu4_id)
+  
+ggplot() + 
+    geom_point(data = dplyr::filter(dt, 
+                                  hu4vzoneid == hu4_id), 
+             aes(x = agvpct, y = tp)) + 
+  geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
+                broom::tidy(fit)$estimate[3])
+
+dt %>%
+  modelr::data_grid(agvpct = seq_range(agvpct, n = 101)) %>%
+  mutate(hu4vzoneid = hu4_id[1]) %>%
+  add_predicted_draws(fit) %>%
+  ggplot(aes(x = agvpct, y = tp)) +
+  stat_lineribbon(aes(y = .prediction), .width = c(.99, .95, .8, .5), color = "#08519C") +
+  geom_point(data = dplyr::filter(dt, hu4vzoneid == hu4_id[1]), 
+                                  size = 2) +
+  scale_fill_brewer()
+  
+
+----
+# loo significance testing
+loo0 <- loo(fit)
+loo1 <- loo(fit1)
+loo2 <- loo(fit2)
+loo_compare(loo1, loo2)
+loo_compare(loo0, loo1)
 
 ```
