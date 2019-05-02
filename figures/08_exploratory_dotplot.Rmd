@@ -44,21 +44,21 @@ dt_tn <- dt_tn %>%
 row.names(dt_tn) <- dt_tn_rows
 
 # ----
-dt_tp <- dt_sub %>%
+dt_tp_hmap <- dt_sub %>%
   corrr::correlate() %>%
   # corrr::shave() %>%
   # janitor::remove_empty(c("rows", "cols")) %>%
   mutate_if(is.numeric, round, 2) %>%
   data.frame()
 
-dt_tp_rows       <- dt_tp$rowname
-dt_tp            <- dt_tp %>%
+dt_tp_rows       <- dt_tp_hmap$rowname
+dt_tp_hmap            <- dt_tp_hmap %>%
   dplyr::select(-rowname) %>%
   mutate_all(abs)
-row.names(dt_tp) <- dt_tp_rows
+row.names(dt_tp_hmap) <- dt_tp_rows
 
 pheatmap::pheatmap(
-  t(dt_tp),
+  t(dt_tp_hmap),
   color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
                                             "Reds"))(100),
   cluster_cols = TRUE, cluster_rows = TRUE,
