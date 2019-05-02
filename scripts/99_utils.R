@@ -252,3 +252,28 @@ backstitch <- function(
     )
   }
 }
+
+# jsta::get_if_not_exists
+get_if_not_exists <- function(x, destfile, overwrite = FALSE, ...){
+  
+  if(is.function(x)){
+    if(!file.exists(destfile) | overwrite){
+      res <- x(destfile, ...)
+      return(res)
+    }else{
+      message(paste0("A local evaulation of x already exists on disk"))
+      if(length(grep("*.rds", destfile)) > 0){
+        return(readRDS(destfile))
+      }
+    }
+  } 
+  
+  if(!is.function(x)){
+    if(!file.exists(destfile) | overwrite){
+      download.file(x, destfile)
+    }else{
+      message(paste0("A local copy of ", x, " already exists on disk"))
+    }
+    invisible(x)
+  }
+}

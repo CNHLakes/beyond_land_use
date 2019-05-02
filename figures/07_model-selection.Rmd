@@ -121,10 +121,16 @@ good_hu4s <- readRDS("../data/dt.rds") %>%
   dplyr::filter(n >= 3)
 dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
 
+brm_fit <- function(destfile, formula, data){
+  fit <- brm(formula = formula, data = data, 
+           family = gaussian())
+  saveRDS(fit, destfile)
+  return(fit)
+}
+
 # linear
 model_form <- bf(tp ~ agvpct)
-fit0 <- brm(formula = model_form, data = dt, 
-           family = gaussian())
+fit0 <- get_if_not_exists(brm_fit, "fit0.rds", formula = model_form, data = dt)
 
 get_variables(fit0)
 plot(fit0, pars = "agvpct")
