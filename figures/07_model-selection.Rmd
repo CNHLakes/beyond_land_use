@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 source("../scripts/99_utils.R")
 ```
 
-```{r ```{r 07_model_selection, fig.height=3, echo=FALSE}
+```{r 07_model_selection, fig.height=3, echo=FALSE}
 
 # setwd("figures")
 ids <- test <- readRDS("../data/dt.rds") %>%
@@ -103,7 +103,7 @@ plot_grid(
 )
 ``` 
 
-```{r brms_stan}
+```{r model_fitting, echo=FALSE}
 library(brms)
 library(tidybayes)
 library(modelr)
@@ -132,30 +132,28 @@ brm_fit <- function(destfile, formula, data){
 model_form <- bf(tp ~ agvpct)
 fit0 <- get_if_not_exists(brm_fit, "fit0.rds", formula = model_form, data = dt)
 
-get_variables(fit0)
-plot(fit0, pars = "agvpct")
-
 # linear re
 model_form <- bf(tp ~ (1 + agvpct | hu4vzoneid))
-fit <- brm(formula = model_form, data = dt, 
-           family = gaussian())
+fit <- get_if_not_exists(brm_fit, "fit.rds", formula = model_form, data = dt)
 
 # non-linear re
 model_form <- bf(tp ~ bagvpct * agvpct, 
                  bagvpct ~ 1 + 
                    (1|hu4vzoneid), 
                  nl = TRUE)
-fit1 <- brm(formula = model_form, data = dt, 
-           family = gaussian())
+fit1 <- get_if_not_exists(brm_fit, "fit1.rds", formula = model_form, data = dt)
 
 # non-linear re w/ 2nd level coeffs
 model_form2 <- bf(tp ~ bagvpct * agvpct, 
                  bagvpct ~ 1 + phosphorusvfertilizervuse + soybeans +
                    (1|hu4vzoneid), 
                  nl = TRUE)
-fit2 <- brm(formula = model_form2, data = dt, 
-           family = gaussian())
----
+fit2 <- get_if_not_exists(brm_fit, "fit2.rds", formula = model_form2, data = dt)
+```
+
+```{r model_diagnostics, echo=FALSE}
+# get_variables(fit0)
+plot(fit0, pars = "agvpct")
 
 # pull global distribution (lower, mean, upper)
 # get_variables(fit0)
@@ -201,7 +199,7 @@ ggplot(data = coef_signif) +
 
 # plot prediction lines
 # hu4_signif$ZoneID
-hu4_id               <- hu4_signif$ZoneID[3]
+hu4_id               <- hu4_signif$ZoneID[2]
 conditions           <- data.frame(hu4vzoneid = hu4_id)
 rownames(conditions) <- hu4_id
 
@@ -212,17 +210,18 @@ ran_ef <- as.data.frame(ranef(fit1)$hu4vzoneid) %>%
   mutate(zoneid = rownames(.)) %>%
   dplyr::filter(zoneid == hu4_id)
 
-plot(me_zone, ncol = 1)$agvpct + 
-  geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
-                broom::tidy(fit)$estimate[3]) + 
-  ggtitle(hu4_id)
+# plot(me_zone, ncol = 1)$agvpct # + 
+  # geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
+  #               broom::tidy(fit)$estimate[3]) + 
+  # ggtitle(hu4_id)
   
-ggplot() + 
-    geom_point(data = dplyr::filter(dt, 
-                                  hu4vzoneid == hu4_id), 
-             aes(x = agvpct, y = tp)) + 
-  geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
-                broom::tidy(fit)$estimate[3])
+# ggplot() + 
+#     geom_point(data = dplyr::filter(dt, 
+#                                   hu4vzoneid == hu4_id), 
+#              aes(x = agvpct, y = tp)) + 
+#   geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
+#                 broom::tidy(fit)$estimate[3]) +
+#   ylim(0, 450) + xlim(40, 90) + ggtitle(hu4_id)
 
 dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID) %>%
   modelr::data_grid(agvpct = seq_range(agvpct, n = 101), hu4vzoneid) %>%
@@ -233,7 +232,6 @@ dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID) %>%
                                   size = 2) +
   scale_fill_brewer() +
   facet_wrap(~ hu4vzoneid)
-
 
 hu4_not_signif_n <- sample(unique(
   pull(
@@ -250,13 +248,10 @@ dplyr::filter(dt, hu4vzoneid %in% hu4_not_signif_n) %>%
   scale_fill_brewer() +
   facet_wrap(~ hu4vzoneid)
 
-
-----
 # loo significance testing
 loo0 <- loo(fit)
 loo1 <- loo(fit1)
 loo2 <- loo(fit2)
-loo_compare(loo1, loo2)
 loo_compare(loo0, loo1)
-
+loo_compare(loo1, loo2)
 ```
