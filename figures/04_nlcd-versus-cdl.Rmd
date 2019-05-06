@@ -33,9 +33,24 @@ res <- dplyr::left_join(cdl, lg, by = c("lagoslakeid")) %>%
   tidyr::spread(source, value) %>%
   dplyr::filter(variable != "rowcrop")
 
+get_r2 <- function(x, y){
+  fit <- lm(y ~ x)
+  round(broom::glance(fit)$r.squared, 2)
+}
+
+r2 <- data.frame(variable = c("ag", "pasture"), 
+                 r2 = c(get_r2(dplyr::filter(res, variable == "ag")$cdl, 
+                               dplyr::filter(res, variable == "ag")$nlcd), 
+                        get_r2(dplyr::filter(res, variable == "pasture")$cdl, 
+                               dplyr::filter(res, variable == "pasture")$nlcd)
+                        ), stringsAsFactors = FALSE)
+r2$r2 <- paste0("r2 = ", r2$r2)
+
+
 ggplot(data = res, aes(x = nlcd, y = cdl)) + 
   geom_point() +
   geom_abline(intercept = 0, slope = 1) +
   facet_wrap(~variable) +
+  geom_text(data = r2, aes(x = 13, y = 75, label = r2)) +
   theme_minimal()
 ```

@@ -29,6 +29,7 @@ suppressMessages(library(raster))
 library(progress)
 suppressMessages(library(smoothr))
 library(assertr)
+library(HydroData) # install_github("mikejohnson51/HydroData")
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
