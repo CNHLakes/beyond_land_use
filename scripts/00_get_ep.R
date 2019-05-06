@@ -1,19 +1,15 @@
-library(LAGOSNE)
-suppressMessages(library(dplyr))
-suppressMessages(library(magrittr))
-
 source("scripts/99_utils.R")
 
 # setwd("../")
-lg           <- lagosne_load("1.087.1")
-iws_lulc     <- readRDS("data/iws_lulc.rds")
-county_lulc  <- readRDS("data/county_lulc.rds")
-date_start   <- as.Date("2000-01-01")
-date_end     <- as.Date("2010-01-01")
-min_sample_n <- 3
-ag_cutoff    <- 0.4
-min_state_n  <- 4
-max_iws_ha   <- 190000
+lg               <- lagosne_load("1.087.1")
+iws_lulc         <- readRDS("data/iws_lulc.rds")
+county_lulc      <- readRDS("data/county_lulc.rds")
+date_start       <- as.Date("2000-01-01")
+date_end         <- as.Date("2010-01-01")
+min_sample_n     <- 3
+ag_cutoff        <- 0.4
+min_state_n      <- 4
+max_iws_ha       <- 190000
 max_lake_area_ha <- 40000
 
 fix_wi_lkls <- function(lg){
@@ -39,7 +35,7 @@ calculate_tn <- function(lg){
 ep_nutr <- lg$epi_nutr %>%
   fix_wi_lkls() %>%
   calculate_tn() %>%
-  select(lagoslakeid, sampledate, tp, tn, no2no3) %>%
+  dplyr::select(lagoslakeid, sampledate, tp, tn, no2no3) %>%
   filter(!is.na(tp) | !is.na(tn) | !is.na(no2no3)) %>%
   group_by(lagoslakeid) %>%
   filter(sampledate > date_start & sampledate < date_end) %>%
@@ -85,13 +81,14 @@ ep <- ep %>%
   summarize(n_count = n()) %>%
   right_join(ep) %>%
   filter(n_count >= min_state_n) %>%
-  select(lagoslakeid:nhd_lat) %>%
+  dplyr::select(lagoslakeid:nhd_lat) %>%
   left_join(ep_nutr)
 
 # add focal predictors
 ep <- ep %>%
   left_join(dplyr::select(lg$iws, lagoslakeid, iws_ha)) %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid, lake_area_ha)) %>%
+  left_join(dplyr::select(lg$lakes_limno, lagoslakeid, maxdepth)) %>%
   mutate(iwsla_ratio = iws_ha / lake_area_ha)
 
 # filter focal predictors

@@ -36,6 +36,16 @@ dt <- data.frame(dt) %>%
   mutate(tp_grp = mean(tp, na.rm = TRUE),
          tp_diff = tp_grp - dt_mean) 
 
+#### explore mediation effects
+# https://en.wikipedia.org/wiki/Mediation_(statistics)
+fit1 <- lm(tn ~ row_crop_pct, data = dt)
+fit2 <- lm(tn ~ iwsla_ratio, data = dt)
+fit3 <- lm(tn ~ row_crop_pct + iwsla_ratio, data = dt)
+
+summary(fit1)
+summary(fit3)
+
+
 #### Fit unconditional model
 formula_unconditional <- as.formula(tp ~ (1|hu4_zoneid) - 1)
 fit <- lmer(formula_unconditional, 
