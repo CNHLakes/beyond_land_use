@@ -43,7 +43,7 @@ dt_tn <- dt_tn %>%
   mutate_all(abs)
 row.names(dt_tn) <- dt_tn_rows
 
-# ----
+# ---- heatmap ----
 dt_tp_hmap <- dt_sub %>%
   corrr::correlate() %>%
   # corrr::shave() %>%
@@ -65,6 +65,8 @@ pheatmap::pheatmap(
   na.col = "grey",
   cellheight = 7)
 
+# ---- dotplot ----
+
 prep_dotplot <- function(x, col_name){
   dplyr::select(x, UQ(rlang::sym(col_name))) %>% 
     dplyr::mutate(var = factor(row.names(x), 
@@ -83,4 +85,23 @@ plot_grid(
     plot_opts
 )
  
+
+# ---- densityplots ----
+library(ggforce)
+
+ggplot(data = tidyr::gather(dt_sub)) + 
+  geom_density(aes(value)) +
+  facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 1)
+ggplot(data = tidyr::gather(dt_sub)) + 
+  geom_density(aes(value)) +
+  facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 2)
+ggplot(data = tidyr::gather(dt_sub)) + 
+  geom_density(aes(value)) +
+  facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 3)
+ggplot(data = tidyr::gather(dt_sub)) + 
+  geom_density(aes(value)) +
+  facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 4)
+
 ``` 
+
+
