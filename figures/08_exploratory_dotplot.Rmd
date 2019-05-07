@@ -64,14 +64,6 @@ pheatmap::pheatmap(
   cluster_cols = TRUE, cluster_rows = TRUE,
   na.col = "grey",
   cellheight = 7)
-# 
-# pheatmap::pheatmap(
-#   t(dt_tn),  
-#   color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
-#                                                       "Reds"))(100),
-#   cluster_cols = FALSE, cluster_rows = FALSE, 
-#   na.col = "grey", 
-#   cellheight = 7)
 
 prep_dotplot <- function(x, col_name){
   dplyr::select(x, UQ(rlang::sym(col_name))) %>% 
