@@ -39,10 +39,11 @@ dt <- data.frame(dt) %>%
 #### explore mediation effects
 # https://en.wikipedia.org/wiki/Mediation_(statistics)
 fit1 <- lm(tn ~ row_crop_pct, data = dt)
-fit2 <- lm(tn ~ iwsla_ratio, data = dt)
-fit3 <- lm(tn ~ row_crop_pct + iwsla_ratio, data = dt)
+fit2 <- lm(tn ~ maxdepth, data = dt)
+fit3 <- lm(tn ~ row_crop_pct + maxdepth, data = dt)
 
 summary(fit1)
+summary(fit2)
 summary(fit3)
 
 
