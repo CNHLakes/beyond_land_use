@@ -87,9 +87,15 @@ ep <- ep %>%
 # add focal predictors
 ep <- ep %>%
   left_join(dplyr::select(lg$iws, lagoslakeid, iws_ha)) %>%
-  left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid, lake_area_ha)) %>%
+  left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid, hu12_zoneid, 
+                          lake_area_ha)) %>%
   left_join(dplyr::select(lg$lakes_limno, lagoslakeid, maxdepth)) %>%
   mutate(iwsla_ratio = iws_ha / lake_area_ha)
+
+# add huc predictors
+ep <- ep %>%
+  left_join(dplyr::select(lg$hu12.chag, hu12_zoneid,                           hu12_ppt_mean = hu12_prism_ppt_30yr_normal_800mm2_annual_mean, 
+    hu12_ppt_std = hu12_prism_ppt_30yr_normal_800mm2_annual_std))
 
 # filter focal predictors
 ep <- dplyr::filter(ep, iws_ha <= max_iws_ha & 

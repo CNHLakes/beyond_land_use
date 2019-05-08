@@ -16,7 +16,7 @@ library(magrittr)
 
 # setwd("tables")
 dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select(tp:clay_pct, -hu4_zoneid) %>%
+  dplyr::select(tp:clay_pct, -matches("zoneid")) %>%
   tidyr::gather(key = "variable") %>%
   group_by(variable) %>%
   mutate(value = as.numeric(value)) %>%
