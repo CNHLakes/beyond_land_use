@@ -110,7 +110,8 @@ library(tidybayes)
 library(modelr)
 
 dt        <- readRDS("../data/dt.rds") %>% 
-  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", "hu12_ppt_mean", 
+  dplyr::select("lagoslakeid", "hu4_zoneid", "hu12_zoneid", 
+                "tp", "hu12_ppt_mean", "hu12_baseflow_mean",
                 "maxdepth", "iwsla_ratio", "ag", "row_crop_pct", "corn", 
                 "soybeans", "pasture", 
                 "phosphorus_fertilizer_use", "nitrogen_fertilizer_use")
@@ -118,9 +119,10 @@ names(dt) <- gsub("_", "v", names(dt))
 dt        <- dplyr::filter(dt, 
                            !is.na(phosphorusvfertilizervuse), 
                            !is.na(soybeans), 
+                           !is.na(corn),
                            !is.na(maxdepth), 
                            !is.na(tp))
-dt <- mutate_at(dt, scale, .vars = vars(-lagoslakeid, -hu4vzoneid))
+dt <- mutate_at(dt, scale, .vars = vars(-lagoslakeid, -hu4vzoneid, -hu12vzoneid))
 
 good_hu4s <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
@@ -159,15 +161,45 @@ fit1 <- get_if_not_exists(brm_fit, "../data/mcmc/fit1.rds", formula = model_form
 # plot(fit1)
 # print(fit$formula)
 
-# linear re with multivariate focal predictor
-model_form <- bf(tp ~ maxdepth + iwslavratio + (1 + ag | hu4vzoneid))
+model_form <- bf(tp ~ hu12vbaseflowvmean + 
+                   (1 + ag | hu4vzoneid))
 # unlink("../data/mcmc/fit2.rds")
 fit2 <- get_if_not_exists(brm_fit, "../data/mcmc/fit2.rds", formula = model_form, 
                          data = dt)
-# plot(fit1)
-# print(fit$formula)
 
-loo_compare(loo(fit1), loo(fit2))
+
+# linear re with multivariate focal predictor
+model_form <- bf(tp ~ maxdepth + iwslavratio + hu12vbaseflowvmean +
+                   (1 + ag | hu4vzoneid))
+# unlink("../data/mcmc/fit3.rds")
+fit3 <- get_if_not_exists(brm_fit, "../data/mcmc/fit3.rds", formula = model_form, 
+                         data = dt)
+
+
+model_form <- bf(tp ~ maxdepth + iwslavratio + hu12vbaseflowvmean +
+                   (1 + soybeans | hu4vzoneid))
+# unlink("../data/mcmc/fit4.rds")
+fit4 <- get_if_not_exists(brm_fit, "../data/mcmc/fit4.rds", formula = model_form, 
+                         data = dt)
+
+loo_compare(loo(fit3), loo(fit4))
+
+
+
+model_form <- bf(tp ~ maxdepth + iwslavratio + 
+                   (1 + corn | hu4vzoneid))
+# unlink("../data/mcmc/fit3.rds")
+fit4 <- get_if_not_exists(brm_fit, "../data/mcmc/fit4.rds", formula = model_form, 
+                         data = dt)
+
+
+
+
+brms::bayes_R2(fit2)
+brms::bayes_R2(fit3)
+brms::bayes_R2(fit4)
+
+
 
 range(dt$iwslavratio)
 
