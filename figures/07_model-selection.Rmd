@@ -110,11 +110,17 @@ library(tidybayes)
 library(modelr)
 
 dt        <- readRDS("../data/dt.rds") %>% 
-  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", 
-                "ag_pct", "phosphorus_fertilizer_use", "soybeans")
+  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", "hu12_ppt_mean", 
+                "maxdepth", "iwsla_ratio", "ag", "row_crop_pct", "corn", 
+                "soybeans", "pasture", 
+                "phosphorus_fertilizer_use", "nitrogen_fertilizer_use")
 names(dt) <- gsub("_", "v", names(dt))
-dt        <- dplyr::filter(dt, !is.na(phosphorusvfertilizervuse), 
-                    !is.na(soybeans))
+dt        <- dplyr::filter(dt, 
+                           !is.na(phosphorusvfertilizervuse), 
+                           !is.na(soybeans), 
+                           !is.na(maxdepth), 
+                           !is.na(tp))
+dt <- mutate_at(dt, scale, .vars = vars(-lagoslakeid, -hu4vzoneid))
 
 good_hu4s <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
@@ -130,18 +136,45 @@ brm_fit <- function(destfile, formula, data){
 }
 
 # linear
-model_form <- bf(tp ~ agvpct)
+model_form <- bf(tp ~ ag)
+# unlink("../data/mcmc/fit0.rds")
 fit0 <- get_if_not_exists(brm_fit, "../data/mcmc/fit0.rds", formula = model_form, 
-                          data = dt)
+                            data = dt)
 print("fixed effect")
 print(fit0$formula)
 
 # linear re
-model_form <- bf(tp ~ (1 + agvpct | hu4vzoneid))
+model_form <- bf(tp ~ (1 + ag | hu4vzoneid))
+# unlink("../data/mcmc/fit.rds")
 fit <- get_if_not_exists(brm_fit, "../data/mcmc/fit.rds", formula = model_form, 
                          data = dt)
 # plot(fit)
 # print(fit$formula)
+
+# linear re with focal predictor
+model_form <- bf(tp ~ maxdepth + (1 + ag | hu4vzoneid))
+# unlink("../data/mcmc/fit1.rds")
+fit1 <- get_if_not_exists(brm_fit, "../data/mcmc/fit1.rds", formula = model_form, 
+                         data = dt)
+# plot(fit1)
+# print(fit$formula)
+
+# linear re with multivariate focal predictor
+model_form <- bf(tp ~ maxdepth + iwslavratio + (1 + ag | hu4vzoneid))
+# unlink("../data/mcmc/fit2.rds")
+fit2 <- get_if_not_exists(brm_fit, "../data/mcmc/fit2.rds", formula = model_form, 
+                         data = dt)
+# plot(fit1)
+# print(fit$formula)
+
+loo_compare(loo(fit1), loo(fit2))
+
+range(dt$iwslavratio)
+
+range((dt$iwslavratio - mean(dt$iwslavratio)) / sd(dt$iwslavratio))
+hist((dt$iwslavratio - mean(dt$iwslavratio)) / sd(dt$iwslavratio))
+test <- mutate_at(dt, scale, .vars = vars(-lagoslakeid, -hu4vzoneid))
+
 
 # non-linear re
 model_form <- bf(tp ~ bagvpct * agvpct, 
@@ -168,20 +201,20 @@ print(fit2$formula)
 
 ```{r model_diagnostics_basics, echo=FALSE, fig.height=2}
 # get_variables(fit0)
-plot(fit0, pars = "agvpct")
+plot(fit0, pars = "ag")
 ```
 
 ```{r model_diagnostics_advanced, fig.height=4, echo=FALSE}
 # pull global distribution (lower, mean, upper)
 # get_variables(fit0)
-global_dist <- spread_draws(fit0, b_agvpct) %>%
+global_dist <- spread_draws(fit0, b_ag) %>%
     mutate(hu4vzoneid = "global") %>%
     group_by(hu4vzoneid) %>%
-    do(tibble::as_tibble(t(quantile(.$b_agvpct, c(0.05, 0.5, 0.95)))))
+    do(tibble::as_tibble(t(quantile(.$b_ag, c(0.05, 0.5, 0.95)))))
 
 # pull hu4 distribution (lower, mean, upper)
 hu4_dist <- spread_draws(fit, r_hu4vzoneid[hu4vzoneid,term]) %>%
-  dplyr::filter(term == "agvpct") %>%
+  dplyr::filter(term == "ag") %>%
   group_by(hu4vzoneid) %>%
   do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
   mutate(signif = case_when(`5%` > 0 ~ TRUE))
@@ -282,7 +315,8 @@ dplyr::filter(dt, hu4vzoneid %in% hu4_not_signif_n) %>%
   facet_wrap(~ hu4vzoneid)
 
 # loo significance testing
-loo0 <- loo(fit)
+loo  <- loo(fit)
+loo0 <- loo(fit0)
 loo1 <- loo(fit1)
 loo2 <- loo(fit2)
 loo_compare(loo0, loo1)
