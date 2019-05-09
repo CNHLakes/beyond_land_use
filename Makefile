@@ -124,7 +124,7 @@ figures/05_cafos-1.pdf: figures/05_cafos.Rmd
 figures/06_lulc_buffer_demo-1.pdf: figures/06_lulc_buffer_demo.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
-figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd
+figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 tables: manuscript/tables.pdf
