@@ -133,13 +133,15 @@ dt <- readRDS("../data/dt.rds") %>%
   mutate(diff = stream_cultivated_crops - ag_pct) %>%
   drop_na(diff)
 
-# ggplot(data = dt) + 
-#   geom_point(aes(x = ag_pct, y = stream_cultivated_crops, color = diff > 0)) + 
-#   geom_abline(aes(slope = 1, intercept = 0))
+ggplot(data = dt) +
+  geom_point(aes(x = ag_pct, y = stream_cultivated_crops, color = diff > 3)) +
+  geom_abline(aes(slope = 1, intercept = 0)) +
+  theme(legend.position = 0)
 # 
 # res_pnt  <- query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", 
 #                       dplyr::filter(dt, diff > 0)$lagoslakeid)
-res_iws  <- query_gis("IWS", "lagoslakeid", dplyr::filter(dt, diff > 3)$lagoslakeid)
+res_iws  <- query_gis("IWS", "lagoslakeid", 
+                      dplyr::filter(dt, diff > 3)$lagoslakeid)
 
 # ggplot() + 
 #   geom_sf(data = state_sf()) +
@@ -152,8 +154,6 @@ library(raster)
 library(rgdal)
 
 get_image <- function(outpath, iws){
-  # outpath <- outpaths[1]
-  # iws <- res_iws[1,]
   tile_grid <- bbox_to_tile_grid(st_bbox(
     st_transform(iws, 4326)), max_tiles = 15)
 
@@ -176,33 +176,81 @@ get_image <- function(outpath, iws){
   return(raster_out)
 }
 
-# lapply iws's
-outpaths <- paste0("../data/mapbox/", res_iws$lagoslakeid, ".tif")
-images   <- lapply(seq_along(outpaths), function(i) 
-  get_if_not_exists(get_image, outpaths[i], raster::raster, iws = res_iws[i,]))
+outpaths     <- paste0("../data/mapbox/", res_iws$lagoslakeid, ".tif")
+images       <- lapply(seq_along(outpaths), function(i) 
+  get_if_not_exists(get_image, outpaths[i], raster::brick, iws = res_iws[i,]))
   
-iws_sized <- which(abs(res_iws$IWSAreaHa - median(res_iws$IWSAreaHa)) < 1000)
+iws_sized    <- which(abs(res_iws$IWSAreaHa - median(res_iws$IWSAreaHa)) < 1000)
 images_sized <- images[iws_sized]
 
-plotRGB(images_sized[[1]])
+get_streams <- function(destfile){
+  res <- lapply(iws_sized, function(x) 
+            nhdR::nhd_plus_query(
+              poly = res_iws[x,], dsn = "NHDFlowLine")$sp$NHDFlowLine)
+  saveRDS(res, destfile)
+  return(res)
+}
 
-res_streams <- lapply(iws_sized, function(x) 
-  nhdR::nhd_plus_query(poly = res_iws[x,], dsn = "NHDFlowLine")$sp$NHDFlowLine)
+res_streams <- get_if_not_exists(get_streams, "../data/nhd/res_streams.rds")
 
-viewRGB(images_sized[[1]]) + mapview(res_streams$sp$NHDFlowLine)
+# m <- viewRGB(r) + 
+#   mapview(res_streams[[1]]) + 
+#   mapview(s, alpha.regions = 0, color = "red")
+# 
+# mapshot(m, file = paste0(getwd(), "/map.png"))
+# extent(r); st_bbox(s)
 
-library(tmap)
+i <- 7
+r_raw      <- images_sized[[i]]
+r          <- projectRaster(r_raw, crs = as.character(st_crs(s))[2])
 
-tm_basemap(leaflet::providers$Stamen.Watercolor) + 
-  
-  tmap_mode("plot")
-tm_basemap(leaflet::providers$Stamen.Terrain) + 
-  tm_shape(res_iws[8,]) + tm_fill(alpha = 0) + tm_borders() +
-    tm_basemap(server = "OpenTopoMap")
-  
-  
-  tm_tiles(paste0("http://services.arcgisonline.com/arcgis/rest/services/Canvas/",
-    "World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"), group = "Labels")
+tab        <- as.data.frame(r, xy = TRUE)
+names(tab) <- c("x", "y", "red", "green", "blue")
+tab$red   <- scales::rescale(tab$red, to = c(0, 255))
+tab$blue  <- scales::rescale(tab$blue, to = c(0, 255))
+tab$green <- scales::rescale(tab$green, to = c(0, 255))
+tab          <- tab[complete.cases(tab),]
+tab$hex      <- rgb(tab$red, tab$green, tab$blue, maxColorValue = 255)
 
+ggplot() + 
+  geom_raster(data = tab, aes(x, y, fill = I(hex))) +
+  geom_sf(data = res_iws[iws_sized[i],], alpha = 0, color = "red") +
+  geom_sf(data = res_streams[[i]], color = "cyan") +
+  coord_sf(datum = NA) +
+  theme_void()
+
+
+outpaths     <- paste0("../data/mapbox/", 6201, ".tif") # good sized but low stream ag
+iws_temp     <- query_gis("IWS", "lagoslakeid", 6201)
+# unlink("../data/mapbox/6201.tif")
+images       <- lapply(seq_along(outpaths), function(i) 
+  get_if_not_exists(get_image, outpaths[i], raster::brick, iws = iws_temp))
+
+get_streams <- function(destfile){
+  res <- lapply(iws_sized, function(x) 
+            nhdR::nhd_plus_query(
+              poly = iws_temp, dsn = "NHDFlowLine")$sp$NHDFlowLine)
+  saveRDS(res, destfile)
+  return(res)
+}
+
+streams_temp <- get_if_not_exists(get_streams, "../data/nhd/temp_streams.rds")
+r_raw      <- images[[1]]
+r          <- projectRaster(r_raw, crs = as.character(st_crs(s))[2])
+
+tab        <- as.data.frame(r, xy = TRUE)
+names(tab) <- c("x", "y", "red", "green", "blue")
+tab$red   <- scales::rescale(tab$red, to = c(0, 255))
+tab$blue  <- scales::rescale(tab$blue, to = c(0, 255))
+tab$green <- scales::rescale(tab$green, to = c(0, 255))
+tab          <- tab[complete.cases(tab),]
+tab$hex      <- rgb(tab$red, tab$green, tab$blue, maxColorValue = 255)
+
+ggplot() + 
+  geom_raster(data = tab, aes(x, y, fill = I(hex))) +
+  geom_sf(data = iws_temp, alpha = 0, color = "red") +
+  geom_sf(data = streams_temp[[1]], color = "cyan") +
+  coord_sf(datum = NA) +
+  theme_void()
 
 ```
