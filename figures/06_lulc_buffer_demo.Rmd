@@ -128,7 +128,7 @@ plot_grid(g_map,
 
 ```
 
-```{r buffer-lulc_vs_iws-lulc, echo=FALSE}
+```{r buffer-lulc_vs_iws-lulc, echo=FALSE, fig.height=3}
 dt <- readRDS("../data/dt.rds") %>%
   mutate(diff = stream_cultivated_crops - ag_pct) %>%
   drop_na(diff)
@@ -137,6 +137,9 @@ ggplot(data = dt) +
   geom_point(aes(x = ag_pct, y = stream_cultivated_crops, color = diff > 3)) +
   geom_abline(aes(slope = 1, intercept = 0)) +
   theme(legend.position = 0)
+```
+
+```{r satellite, echo=FALSE}
 # 
 # res_pnt  <- query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", 
 #                       dplyr::filter(dt, diff > 0)$lagoslakeid)
@@ -200,7 +203,8 @@ res_streams <- get_if_not_exists(get_streams, "../data/nhd/res_streams.rds")
 # mapshot(m, file = paste0(getwd(), "/map.png"))
 # extent(r); st_bbox(s)
 
-i <- 7
+i          <- 7
+s          <- res_iws[iws_sized[i],]
 r_raw      <- images_sized[[i]]
 r          <- projectRaster(r_raw, crs = as.character(st_crs(s))[2])
 
