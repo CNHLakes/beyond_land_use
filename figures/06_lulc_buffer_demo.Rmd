@@ -262,10 +262,19 @@ ggplot() +
 ```{r cdl_viewport}
 library(raster)
 library(dplyr)
+library(stars)
 
 cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
 
 r  <- raster::raster("../data/cdl/2745.tif")
+
+cdl_df <- as.data.frame(r, xy = TRUE) %>%
+  dplyr::select(x, y, contains("2745"))
+names(cdl_df)[3] <- "value"
+cdl_df <- left_join(cdl_df, cdl_key, by = c("value" = "code"))
+
+ggplot() + 
+  geom_raster(data = cdl_df, aes(x = x, y = y, fill = category))
 
 cdl_table <- as.data.frame(table(values(r)), stringsAsFactors = FALSE) %>%
     mutate(code = as.integer(Var1)) %>%
@@ -282,11 +291,9 @@ test2 <- cdl_table %>%
   mutate(percent = round((group_n / sum(group_n, na.rm = TRUE)) * 100, 0)) %>%
   dplyr::filter(percent >= 1) %>%
   arrange(is_ag, percent) 
-%>%
-  add_row(category = "ag", group_n = 100, is_ag = "ag", percent = 200)
 
 test2 <- test2 %>%
-  add_row(category = "ag", group_n = NA, is_ag = NA, percent = 
+  add_row(category = "crops", group_n = NA, is_ag = NA, percent = 
             sum(dplyr::filter(test2, is_ag == "ag" & 
                                 category != "pasture")$percent))
   
