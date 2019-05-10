@@ -127,3 +127,82 @@ plot_grid(g_map,
   legend, ncol = 1) 
 
 ```
+
+```{r buffer-lulc_vs_iws-lulc, echo=FALSE}
+dt <- readRDS("../data/dt.rds") %>%
+  mutate(diff = stream_cultivated_crops - ag_pct) %>%
+  drop_na(diff)
+
+# ggplot(data = dt) + 
+#   geom_point(aes(x = ag_pct, y = stream_cultivated_crops, color = diff > 0)) + 
+#   geom_abline(aes(slope = 1, intercept = 0))
+# 
+# res_pnt  <- query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", 
+#                       dplyr::filter(dt, diff > 0)$lagoslakeid)
+res_iws  <- query_gis("IWS", "lagoslakeid", dplyr::filter(dt, diff > 3)$lagoslakeid)
+
+# ggplot() + 
+#   geom_sf(data = state_sf()) +
+#   geom_sf(data = res_pnt)
+
+library(curl)
+library(glue)
+library(slippymath)
+library(raster)
+library(rgdal)
+
+get_image <- function(outpath, iws){
+  # outpath <- outpaths[1]
+  # iws <- res_iws[1,]
+  tile_grid <- bbox_to_tile_grid(st_bbox(
+    st_transform(iws, 4326)), max_tiles = 15)
+
+  mapbox_query_string <-
+    paste0("https://api.mapbox.com/v4/mapbox.satellite/{zoom}/{x}/{y}.jpg90",
+           "?access_token=",
+           Sys.getenv("MAPBOX_API_KEY"))
+  
+  images <- apply(tile_grid$tiles, 1, function(i) {
+    url     <- glue(mapbox_query_string, x = i[1], y = i[2], 
+                zoom = tile_grid$zoom)
+    outfile <- glue("../data/mapbox/{x}_{y}.jpg", x = i[1], y = i[2])
+    get_if_not_exists(url, outfile)
+    return(outfile)
+  })
+  
+  raster_out <- compose_tile_grid(tile_grid, images)
+  
+  writeRaster(raster_out, outpath, options="INTERLEAVE=BAND")   
+  return(raster_out)
+}
+
+# lapply iws's
+outpaths <- paste0("../data/mapbox/", res_iws$lagoslakeid, ".tif")
+images   <- lapply(seq_along(outpaths), function(i) 
+  get_if_not_exists(get_image, outpaths[i], raster::raster, iws = res_iws[i,]))
+  
+iws_sized <- which(abs(res_iws$IWSAreaHa - median(res_iws$IWSAreaHa)) < 1000)
+images_sized <- images[iws_sized]
+
+plotRGB(images_sized[[1]])
+
+res_streams <- lapply(iws_sized, function(x) 
+  nhdR::nhd_plus_query(poly = res_iws[x,], dsn = "NHDFlowLine")$sp$NHDFlowLine)
+
+viewRGB(images_sized[[1]]) + mapview(res_streams$sp$NHDFlowLine)
+
+library(tmap)
+
+tm_basemap(leaflet::providers$Stamen.Watercolor) + 
+  
+  tmap_mode("plot")
+tm_basemap(leaflet::providers$Stamen.Terrain) + 
+  tm_shape(res_iws[8,]) + tm_fill(alpha = 0) + tm_borders() +
+    tm_basemap(server = "OpenTopoMap")
+  
+  
+  tm_tiles(paste0("http://services.arcgisonline.com/arcgis/rest/services/Canvas/",
+    "World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"), group = "Labels")
+
+
+```

@@ -256,7 +256,8 @@ backstitch <- function(
 }
 
 # jsta::get_if_not_exists
-get_if_not_exists <- function(x, destfile, overwrite = FALSE, ...){
+get_if_not_exists <- function(x, destfile, read_function = readRDS, 
+                              overwrite = FALSE, ...){
   
   if(is.function(x)){
     if(!file.exists(destfile) | overwrite){
@@ -264,9 +265,7 @@ get_if_not_exists <- function(x, destfile, overwrite = FALSE, ...){
       return(res)
     }else{
       message(paste0("A local evaulation of x already exists on disk"))
-      if(length(grep("*.rds", destfile)) > 0){
-        return(readRDS(destfile))
-      }
+      return(read_function(destfile))
     }
   } 
   
