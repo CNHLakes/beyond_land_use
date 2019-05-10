@@ -258,3 +258,47 @@ ggplot() +
   theme_void()
 
 ```
+
+```{r cdl_viewport}
+library(raster)
+library(dplyr)
+
+cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
+
+r  <- raster::raster("../data/cdl/2745.tif")
+
+cdl_table <- as.data.frame(table(values(r)), stringsAsFactors = FALSE) %>%
+    mutate(code = as.integer(Var1)) %>%
+    dplyr::select(-Var1) %>%
+    left_join(cdl_key, by = "code") 
+
+test2 <- cdl_table %>% 
+  dplyr::filter(description != "Background") %>%
+  rename(n = Freq) %>%
+  arrange(desc(n)) %>%
+  group_by(category) %>%
+  summarize(group_n = sum(n, na.rm = TRUE), is_ag = first(is_ag)) %>%
+  ungroup() %>%
+  mutate(percent = round((group_n / sum(group_n, na.rm = TRUE)) * 100, 0)) %>%
+  dplyr::filter(percent >= 1) %>%
+  arrange(is_ag, percent) 
+%>%
+  add_row(category = "ag", group_n = 100, is_ag = "ag", percent = 200)
+
+test2 <- test2 %>%
+  add_row(category = "ag", group_n = NA, is_ag = NA, percent = 
+            sum(dplyr::filter(test2, is_ag == "ag" & 
+                                category != "pasture")$percent))
+  
+ggplot() + 
+  geom_col(data = test2, aes(x = category, 
+                             y = percent, 
+                             fill = category)) +
+  theme(legend.direction = "horizontal", 
+        legend.position = 0,
+        axis.text.x = element_text(angle = 90)) +
+  guides(fill = guide_legend(ncol = 2)) +
+  ggtitle("CDL llid = 2745")
+```
+
+
