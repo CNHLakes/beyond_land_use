@@ -182,17 +182,16 @@ model_form <- bf(tp ~ maxdepth + iwslavratio + hu12vbaseflowvmean +
 fit4 <- get_if_not_exists(brm_fit, "../data/mcmc/fit4.rds", formula = model_form, 
                          data = dt)
 
-loo_compare(loo(fit3), loo(fit4))
-
-
-
-model_form <- bf(tp ~ maxdepth + iwslavratio + 
-                   (1 + corn | hu4vzoneid))
-# unlink("../data/mcmc/fit3.rds")
-fit4 <- get_if_not_exists(brm_fit, "../data/mcmc/fit4.rds", formula = model_form, 
+model_form <- bf(tp ~ maxdepth + iwslavratio + hu12vbaseflowvmean + soybeans)
+# unlink("../data/mcmc/fit5.rds")
+fit5 <- get_if_not_exists(brm_fit, "../data/mcmc/fit5.rds", formula = model_form, 
                          data = dt)
 
+loo_compare(loo(fit4), loo(fit5))
 
+
+quantile(ranef(fit4)$hu4vzoneid[,,2], c(0, 0.05, 0.5, 0.95, 1))
+plot(fit4)
 
 
 brms::bayes_R2(fit2)
