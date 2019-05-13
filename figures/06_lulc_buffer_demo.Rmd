@@ -131,7 +131,6 @@ plot_grid(g_map,
 ```{r cdl_viewport, fig.height=5}
 library(raster)
 library(dplyr)
-library(stars)
 
 cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
 
@@ -158,10 +157,23 @@ test2 <- cdl_table %>%
 #             sum(dplyr::filter(test2, is_ag == "ag" & 
 #                                 category != "pasture")$percent))
   
-g_bar <- ggplot() + 
+color_key <- data.frame(category = test2$category, 
+                         color_cat = c("ag", "ag", "ag", "ag", "ag", "ag", 
+                                       "water", "dev", "forest"),
+                         color = c(
+                           RColorBrewer::brewer.pal(6, "YlOrBr"), 
+                           "#9ecae1", "#000000", "#2ca25f"),
+                        stringsAsFactors = FALSE)
+color_key <- arrange(color_key, color_cat)
+
+test2 <- left_join(test2, color_key)
+test2$category <- factor(test2$category, levels = color_key$category)
+
+g_bar <- 
+    ggplot() + 
   geom_col(data = test2, aes(x = category, 
-                             y = percent, 
-                             fill = category)) +
+                             y = percent, fill = category)) +
+    scale_fill_manual(values = setNames(color_key$color, color_key$category)) +
   theme(legend.direction = "horizontal", 
         legend.position = 0,
         axis.text.x = element_text(angle = 90)) +
@@ -176,9 +188,12 @@ names(cdl_df)[3] <- "value"
 cdl_df <- left_join(cdl_df, cdl_key, by = c("value" = "code")) 
 cdl_df <- dplyr::filter(cdl_df, !is.na(category), 
                         category %in% test2$category)
+cdl_df$category <- factor(cdl_df$category, levels = color_key$category)
 
 g_raster <- ggplot() + 
   geom_raster(data = cdl_df, aes(x = x, y = y, fill = category)) +
+  scale_fill_manual(values = setNames(color_key$color, 
+                                      color_key$category)) +
   theme_void()
 
 ####
