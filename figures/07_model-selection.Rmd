@@ -137,6 +137,37 @@ brm_fit <- function(destfile, formula, data){
   return(fit)
 }
 
+
+# evaulate fixed effects
+# ag + {maxdepth, baseflow, iwslavratio}
+
+(model_forms <- list(
+  "ag" = bf(tp ~ ag), 
+  "depth+bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean),
+  "depth+iwsla" = bf(tp ~ ag + maxdepth + iwslavratio), 
+  "all" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + iwslavratio) 
+))
+
+fe_brms <- 
+  lapply(seq_along(model_forms), function(i) 
+    get_if_not_exists(brm_fit, 
+                      paste0("../data/mcmc/fe/", names(model_forms)[i]), 
+                      formula = model_forms[[i]], 
+                      data = dt))
+
+
+dplyr::bind_rows(
+  lapply(fe_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
+  mutate(Model = names(model_forms), 
+         Response = "TP", 
+         Estimate = round(Estimate, 2)) %>%
+  dplyr::select(Response, Model, Estimate) 
+
+
+# evaulate spatial random effects
+# {fixed effects} + 1/ag, 1/soybeans, 1/corn
+
+
 # linear
 model_form <- bf(tp ~ ag)
 # unlink("../data/mcmc/fit0.rds")
