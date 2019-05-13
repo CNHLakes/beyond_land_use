@@ -34,6 +34,10 @@ knitr::include_graphics("../figures/05_cafos-1.pdf")
 knitr::include_graphics("../figures/06_lulc_buffer_demo-1.pdf")
 ```
 
+```{r cdl_viewport, fig.cap = "CDL landuse cover in example IWS.", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/cdl_viewport-1.pdf")
+```
+
 ```{r lulc_vs_iws-lulc, fig.cap = "Stream buffer versus IWS lulc.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/buffer-lulc_vs_iws-lulc-1.pdf")
 ```

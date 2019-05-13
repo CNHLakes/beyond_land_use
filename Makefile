@@ -127,10 +127,17 @@ figures/06_lulc_buffer_demo-1.pdf: figures/06_lulc_buffer_demo.Rmd
 figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
+figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+
 tables: manuscript/tables.pdf
 
-manuscript/tables.pdf: tables/01_predictors.pdf
+manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
 tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+
+tables/02_cdl_key.pdf: tables/02_cdl_key.Rmd
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	
