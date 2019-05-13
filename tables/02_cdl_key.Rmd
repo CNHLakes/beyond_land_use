@@ -1,0 +1,34 @@
+---
+output:
+  pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
+```
+
+```{r summary_table, eval=TRUE}
+library(kableExtra)
+library(dplyr)
+library(magrittr)
+
+# setwd("tables")
+# ---- cdl_key ----
+cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
+cdl_key %>%
+  group_by(category) %>%
+  sample_n(1) %>%
+  knitr::kable(digits = 0, format = "markdown", caption = "Example of CDL categorizations.") 
+
+# ---- cdl summary ----
+cdl_data <- read.csv("../data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
+
+apply(cdl_data, 2, function(x) quantile(x, c(0.05, 0.5, 0.95), 
+                                        na.rm = TRUE)) %>%
+  data.frame() %>%
+  dplyr::select(-llid) %>%
+  t() %>%
+  knitr::kable(format = "markdown", caption = "CDL summary statistics")
+```
