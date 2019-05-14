@@ -96,6 +96,21 @@ r2_re <- dplyr::bind_rows(
 write.csv(dplyr::bind_rows(r2_fe, r2_re), "data/mcmc/model_r2.csv",
           row.names = FALSE)
 
+# ---- diagnostics ----
+# knitr::kable(r2_fe, "markdown")
+# knitr::kable(r2_re, "markdown")
+# 
+# fe_brms[[1]]$formula
+# re_brms[[5]]$formula
+# 
+# dt %>%
+#   add_residual_draws(fe_brms[[1]]) %>%
+#   ggplot(aes(x = maxdepth, y = .residual)) +
+#   stat_pointinterval() +
+#   theme(axis.text.x = element_text(angle = 90))
+# 
+# pairs(~maxdepth + hu12vbaseflowvmean + iwslavratio + , data = dt)
+
 # ---- placeholder ----
 
 # cat("predictors:
