@@ -93,7 +93,7 @@ data/buffer_lulc.csv
 data/buffer_stats.csv: scripts/00_get_buffers.R
 	Rscript $<
 
-data/mcmc/model_r2.csv: scripts/03_model.R
+data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds
 	Rscript $<
 
 figures: manuscript/figures.pdf
