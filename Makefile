@@ -15,7 +15,8 @@ data/macroag/tillage.gpkg \
 data/macroag/crp.rds \
 data/gis.gpkg \
 data/llids.txt \
-data/buffer_lulc.csv
+data/buffer_lulc.csv \
+data/mcmc/model_r2.csv
 
 gssurgo: data/gssurgo/gssurgo.rds
 
@@ -92,6 +93,9 @@ data/buffer_lulc.csv
 data/buffer_stats.csv: scripts/00_get_buffers.R
 	Rscript $<
 
+data/mcmc/model_r2.csv: scripts/03_model.R
+	Rscript $<
+
 figures: manuscript/figures.pdf
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
@@ -132,7 +136,7 @@ figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
 
 tables: manuscript/tables.pdf
 
-manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf
+manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf tables/03_model_summary.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
 tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
@@ -141,3 +145,5 @@ tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
 tables/02_cdl_key.pdf: tables/02_cdl_key.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	
+tables/03_model_summary.pdf: tables/03_model_summary.Rmd data/mcmc/model_r2.csv
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"

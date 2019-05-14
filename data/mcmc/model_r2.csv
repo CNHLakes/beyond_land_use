@@ -1,0 +1,13 @@
+"Model","Estimate"
+"tp_depth+bf",0.23
+"tp_depth+iwsla",0.18
+"tp_fe",0.24
+"tn_depth+bf",0.19
+"tn_depth+iwsla",0.2
+"tn_fe",0.21
+"tp_ag",0.33
+"tp_soybeans",0.33
+"tp_re",0.34
+"tn_ag",0.39
+"tn_corn",0.47
+"tn_re",0.49

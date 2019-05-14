@@ -1,0 +1,21 @@
+---
+output:
+  pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
+```
+
+```{r summary_table, eval=TRUE}
+library(kableExtra)
+library(dplyr)
+library(magrittr)
+
+# setwd("tables")
+read.csv("../data/mcmc/model_r2.csv", 
+                     stringsAsFactors = FALSE) %>%
+  knitr::kable(digits = 2, format = "markdown", caption = "Model R2")
+```
