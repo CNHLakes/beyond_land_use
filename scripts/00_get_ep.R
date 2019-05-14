@@ -11,6 +11,7 @@ ag_cutoff        <- 0.4
 min_state_n      <- 4
 max_iws_ha       <- 190000
 max_lake_area_ha <- 40000
+max_depth        <- 33
 
 fix_wi_lkls <- function(lg){
   lg$tkn[which(lg$programname=="WI_LKLS")] <-
@@ -90,6 +91,7 @@ ep <- ep %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid, hu12_zoneid, 
                           lake_area_ha)) %>%
   left_join(dplyr::select(lg$lakes_limno, lagoslakeid, maxdepth)) %>%
+  dplyr::filter(maxdepth <= max_depth) %>%
   mutate(iwsla_ratio = iws_ha / lake_area_ha)
 
 # add huc predictors
