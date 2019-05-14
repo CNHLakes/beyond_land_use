@@ -4,8 +4,10 @@ library(sf)
 library(progress)
 suppressMessages(library(dplyr))
 
+Sys.setenv(RETICULATE_PYTHON = 
+             "/home/jose/anaconda3/envs/gSSURGO/bin/python")
 library(reticulate)
-use_condaenv("gSSURGO")
+use_condaenv("gSSURGO", required = TRUE)
 gssurgo <- import("gssurgo")
 
 source("scripts/99_utils.R")
@@ -69,7 +71,7 @@ pull_metric <- function(col_name, qry, agg_type, r_list, llids, res_disk, gssurg
            "', '", file.path(aoi_path, "temp.tif')"))
     
     writeLines(c("import gssurgo", py_string), "temp.py")    
-    system("python temp.py")
+    system(paste0(Sys.getenv("RETICULATE_PYTHON"), " temp.py"))
     
     data_r           <- suppressMessages(raster(file.path(aoi_path, "temp.tif")))
     
