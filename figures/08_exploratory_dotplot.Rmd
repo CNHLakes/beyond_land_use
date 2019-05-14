@@ -14,6 +14,8 @@ source("../scripts/99_utils.R")
 dt     <- readRDS("../data/dt.rds")
 dt_sub <- dplyr::select(dt, tp, tn, lake_area_ha:wheat, -other.non.ag, 
                         -mixed.crop) %>%
+  dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>%
+  dplyr::select(-matches("other")) %>%
   dplyr::filter(complete.cases(.)) %>%
   mutate_all(as.numeric) %>%
   data.frame(stringsAsFactors = FALSE)
