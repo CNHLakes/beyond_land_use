@@ -12,10 +12,11 @@ source("../scripts/99_utils.R")
 
 ```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE}
 dt     <- readRDS("../data/dt.rds")
-dt_sub <- dplyr::select(dt, tp, tn, lake_area_ha:wheat, -other.non.ag, 
-                        -mixed.crop) %>%
-  dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>%
-  dplyr::select(-matches("other")) %>%
+dt_sub <- dt %>% 
+  dplyr::select(tp, tn, lake_area_ha:wheat, 
+                matches("cultivated_crops")) %>%
+  dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>% # rm nlcd
+  dplyr::select(-mixed.crop, -matches("other")) %>% # rm junk
   dplyr::filter(complete.cases(.)) %>%
   mutate_all(as.numeric) %>%
   data.frame(stringsAsFactors = FALSE)
