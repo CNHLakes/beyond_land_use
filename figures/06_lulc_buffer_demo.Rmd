@@ -15,7 +15,7 @@ source("../scripts/99_utils.R")
 
 dt <- readRDS("../data/dt.rds")
 
-llid <- dt$lagoslakeid[2]
+llid <- 2745
 ll_pnt <- st_coordinates(
   st_transform(
     query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", llid), 4326))
@@ -29,10 +29,12 @@ network <- extract_network(lon = ll_pnt[1],
 network <- network[unlist(lapply(
   st_intersects(network, st_transform(ll_lake, st_crs(network))), 
   function(x) length(x) == 0)),]
+iws  <- query_gis("IWS", "lagoslakeid", llid)
 
 network_buffer <- st_buffer(network, 100)
-nlcd           <- get_nlcd(template = as_Spatial(st_as_sfc(st_bbox(network_buffer))), 
+nlcd           <- get_nlcd(template = as_Spatial(st_as_sfc(st_bbox(iws))), 
                  label = llid)
+# mapview(nlcd) + mapview(iws)
 network_buffer <- st_transform(network_buffer, projection(nlcd))
 
 nlcd_df <- as.data.frame(nlcd, xy = TRUE) %>%
@@ -129,11 +131,8 @@ plot_grid(g_map,
 ```
 
 ```{r cdl_viewport, fig.height=5}
-library(raster)
-library(dplyr)
-
+# pull cdl lulc
 cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
-
 r  <- raster::raster("../data/cdl/2745.tif")
 
 cdl_table <- as.data.frame(table(values(r)), stringsAsFactors = FALSE) %>%
@@ -158,10 +157,10 @@ test2 <- cdl_table %>%
 #                                 category != "pasture")$percent))
   
 color_key <- data.frame(category = test2$category, 
-                         color_cat = c("ag", "ag", "ag", "ag", "ag", "ag", 
+                         color_cat = c("ag", "ag", "ag", "ag", "ag", "pasture", 
                                        "water", "dev", "forest"),
                          color = c(
-                           RColorBrewer::brewer.pal(6, "YlOrBr"), 
+                           RColorBrewer::brewer.pal(5, "YlOrBr"), "#DBD83D",
                            "#9ecae1", "#000000", "#2ca25f"),
                         stringsAsFactors = FALSE)
 color_key <- arrange(color_key, color_cat)
@@ -200,4 +199,44 @@ g_raster <- ggplot() +
 
 cowplot::plot_grid(g_raster, g_bar)
 
+```
+
+```{r cdl_vs_nlcd}
+# mask nlcd lulc
+
+test <- raster::mask(nlcd, iws) %>% 
+  as.data.frame(xy = TRUE) %>%
+  dplyr::select(x, y, contains("Value"))
+test <- test[test[,3] %in% c(81, 82),]
+test[,3] <- factor(test[,3])
+names(test)[3] <- "value"
+test <- test %>%
+  drop_na("value")
+cols <- dplyr::filter(pal_nlcd(), code %in% unique(test[,3]))
+
+# codes 81 = pasture; 82 = row_crop
+
+g_nlcd <- ggplot() + 
+  geom_raster(data = test, aes(x = x, y = y, fill = value)) +
+  scale_fill_manual(values = cols$color, labels = cols$description) +
+  geom_sf(data = iws, alpha = 0) +
+  coord_sf(datum = NA) + 
+  theme_void() + 
+  theme(legend.position = 0)
+
+g_cdl <- ggplot() + 
+  geom_raster(data = dplyr::filter(cdl_df, as.character(category) %in% 
+                                     c("corn", "soybeans", "pasture")), 
+              aes(x = x, y = y, fill = category)) +
+  scale_fill_manual(values = setNames(color_key$color, 
+                                      color_key$category)) +
+  geom_sf(data = iws, alpha = 0) +
+  geom_sf(data = network) +
+  geom_sf(data = ll_lake) +
+  coord_sf(datum = NA) + 
+  theme_void()
+
+cowplot::plot_grid(g_nlcd + ggtitle("NLCD (2011)"), 
+                   g_cdl + ggtitle("CDL (2010)"), 
+                   rel_widths = c(0.75, 1))
 ```
