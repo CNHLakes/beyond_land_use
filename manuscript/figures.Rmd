@@ -42,12 +42,8 @@ knitr::include_graphics("../figures/cdl_viewport-1.pdf")
 knitr::include_graphics("../figures/09_stream_buffer-1.pdf")
 ```
 
-```{r big_stream_ag, fig.cap = "Stream buffer Ag >> IWS", warning=FALSE, echo = FALSE}
+```{r big_stream_ag, fig.cap = "Stream buffer Ag compared to IWS Ag.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/satellite-1.pdf")
-```
-
-```{r small_stream_ag, fig.cap = "Stream buffer Ag << IWS", warning=FALSE, echo = FALSE}
-knitr::include_graphics("../figures/satellite-2.pdf")
 ```
 
 ```{r exploratory_heatmap, fig.cap = "Exploratory heatmap showing absolute value correlations.", warning=FALSE, echo = FALSE}
