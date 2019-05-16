@@ -8,8 +8,9 @@ dt        <- readRDS("data/dt.rds") %>%
   dplyr::select("lagoslakeid", "hu4_zoneid", "hu12_zoneid", 
                 "tp", "tn", "hu12_ppt_mean", "hu12_baseflow_mean",
                 "maxdepth", "iwsla_ratio", "ag", "row_crop_pct", "corn", 
-                "soybeans", "pasture", 
-                "phosphorus_fertilizer_use", "nitrogen_fertilizer_use")
+                "soybeans", "pasture", "p_input", "n_input",
+                "phosphorus_fertilizer_use", "nitrogen_fertilizer_use", 
+                "stream_cultivated_crops")
 names(dt) <- gsub("_", "v", names(dt))
 dt        <- dplyr::filter(dt, 
                            !is.na(phosphorusvfertilizervuse), 
@@ -93,10 +94,25 @@ r2_re <- dplyr::bind_rows(
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
 
-write.csv(dplyr::bind_rows(r2_fe, r2_re), "data/mcmc/model_r2.csv",
-          row.names = FALSE)
+if(!interactive()){
+  write.csv(dplyr::bind_rows(r2_fe, r2_re), 
+            "data/mcmc/model_r2.csv",
+            row.names = FALSE)
+}
 
 # ---- diagnostics ----
+
+# look for evidence of interaction effects
+# following shalizi...
+dt %>%
+  add_residual_draws(fe_brms[[1]]) %>%
+  ggplot(aes(x = log(maxdepth + abs(min(dt$maxdepth))), y = .residual, color = iwslavratio)) +
+  geom_point() +
+  # stat_pointinterval(alpha = 0.4) +
+  theme(axis.text.x = element_text(angle = 90))
+
+# ----
+
 # knitr::kable(r2_fe, "markdown")
 # knitr::kable(r2_re, "markdown")
 # 
@@ -123,29 +139,37 @@ write.csv(dplyr::bind_rows(r2_fe, r2_re), "data/mcmc/model_r2.csv",
 #   tn, tp")
 
 # ---- exploratory_models ----
-
-# library(dplyr)
+# #### Find optimal random effects structure
 # library(lme4)
-# library(merTools)
-# library(LAGOSNE)
-# library(sf)
 # library(ggeffects)
-# library(ggplot2)
+
+# model_form <- as.formula(tp ~ 1 + ag + (1 + ag | hu4vzoneid))
+# fit0 <- lmer(model_form, data = dt, na.action = na.omit)
+# 
+# model_form <- as.formula(tp ~ 1 + streamvcultivatedvcrops + 
+#                            (1 + streamvcultivatedvcrops | hu4vzoneid))
+# fit1 <- lmer(model_form, data = dt, na.action = na.omit)
+# 
+# sjstats::r2(fit0); sjstats::r2(fit1);
+# 
+# model_form <- as.formula(tp ~ 1 + 
+#                            streamvcultivatedvcrops + maxdepth + 
+#   (1 + streamvcultivatedvcrops | hu4vzoneid))
+# fit2 <- lmer(model_form, data = dt, na.action = na.omit)
+# 
+# # #### Fit unconditional model
+# formula_unconditional <- as.formula(tp ~ (1|hu4_zoneid) - 1)
+# fit <- lmer(formula_unconditional,
+#             data = dt, na.action = na.omit)
+# getME(fit, "X")
+# getME(fit, "Z")
+#  
+# re <- ggpredict(fit, type = "re")
+# sjstats::r2(fit)
+
+# #####
 # 
 # dt     <- readRDS("data/dt.rds")
-# 
-# # table(
-# #   cbind(row.names(dt_tp), row.names(dt_tn))[1:15,]
-# #   )
-# 
-# # cor.test(dt_sub$tn, dt_sub$corn)
-# 
-# dt <- coordinatize(dt)
-# dt <- data.frame(dt) %>%
-#   mutate(hu4_zoneid = as.factor(hu4_zoneid)) %>%
-#   group_by(hu4_zoneid) %>%
-#   mutate(tp_grp = mean(tp, na.rm = TRUE),
-#          tp_diff = tp_grp - dt_mean) 
 # 
 # #### explore mediation effects
 # # https://en.wikipedia.org/wiki/Mediation_(statistics)
@@ -157,16 +181,8 @@ write.csv(dplyr::bind_rows(r2_fe, r2_re), "data/mcmc/model_r2.csv",
 # summary(fit2)
 # summary(fit3)
 # 
-# 
-# #### Fit unconditional model
-# formula_unconditional <- as.formula(tp ~ (1|hu4_zoneid) - 1)
-# fit <- lmer(formula_unconditional, 
-#             data = dt, na.action = na.omit)
-# getME(fit, "X")
-# getME(fit, "Z")
-# 
-# re <- ggpredict(fit, type = "re")
-# # sjstats::r2(fit)
+# ####
+#
 # plot(re)$hu4_zoneid + 
 #   geom_hline(aes(yintercept = mean(
 #     dplyr::filter(dt, hu4_zoneid == "HU4_16")$tp))) +
