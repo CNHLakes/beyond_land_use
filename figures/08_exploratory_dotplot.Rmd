@@ -16,14 +16,15 @@ dt_sub <- dt %>%
   dplyr::select(tp, tn, lake_area_ha:wheat, 
                 matches("cultivated_crops")) %>%
   dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>% # rm nlcd
-  dplyr::select(-mixed.crop, -matches("other")) %>% # rm junk
+  dplyr::select(-mixed.crop, -matches("other"), -forage, 
+                -hu12_ppt_std, -water, -developed, -forest) %>% # rm junk
   dplyr::filter(complete.cases(.)) %>%
   mutate_all(as.numeric) %>%
   data.frame(stringsAsFactors = FALSE)
 
 dt_tp <- dt_sub %>%
   corrr::correlate() %>%
-  corrr::shave() %>%
+  # corrr::shave() %>%
   janitor::remove_empty(c("rows", "cols")) %>%
   mutate_if(is.numeric, round, 2) %>%
   arrange(desc(abs(tp))) %>%
@@ -104,6 +105,37 @@ ggplot(data = tidyr::gather(dt_sub)) +
 ggplot(data = tidyr::gather(dt_sub)) + 
   geom_density(aes(value)) +
   facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 4)
+
+```
+
+```{r n-dep_dotplot}
+
+slice_cormat <- function(var_name, dt_sub){
+  # var_name <- "nitrogen_atmospheric_deposition"
+
+  dt_corr <- dt_sub %>%
+    corrr::correlate() %>%
+    # corrr::shave() %>%
+    janitor::remove_empty(c("rows", "cols")) %>%
+    mutate_if(is.numeric, round, 2) %>%
+    arrange(desc(abs(!!rlang::sym(var_name)))) %>%
+    data.frame() %>%
+    dplyr::select(rowname, var_name)
+
+  dt_corr_rows <- dt_corr$rowname
+  dt_corr <- dt_corr %>%
+    dplyr::select(-rowname) %>%
+    mutate_all(abs)
+  row.names(dt_corr) <- dt_corr_rows
+
+  dt_corr
+}
+
+test <- slice_cormat("nitrogen_atmospheric_deposition", dt_sub)
+
+ggplot(data = prep_dotplot(test, "nitrogen_atmospheric_deposition")) +
+    geom_point(aes(x = nitrogen_atmospheric_deposition, y = var)) +
+    plot_opts
 
 ``` 
 
