@@ -240,3 +240,32 @@ cowplot::plot_grid(g_nlcd + ggtitle("NLCD (2011)"),
                    g_cdl + ggtitle("CDL (2010)"), 
                    rel_widths = c(0.75, 1))
 ```
+
+```{r raster_resolution}
+library(nadp)
+
+llid  <- 2745
+
+iws   <- query_gis("IWS", "lagoslakeid", llid)
+n_dep <- nadp_load("2010", "totalN")
+n_dep <- raster::crop(n_dep, as_Spatial(st_as_sfc(st_bbox(iws))))
+n_dep <- mask(n_dep, iws)
+
+# create a baseflow grid of 1000m and a ndep grid of 2338 m
+gg_dep_grid <- ggplot() + 
+  geom_sf(data = iws) +
+  geom_sf(data = st_make_grid(iws, cellsize = 2338), alpha = 0) +
+  coord_sf(datum = NA) +
+  theme_void()
+
+gg_bf_grid <- ggplot() + 
+  geom_sf(data = iws) +
+  geom_sf(data = st_make_grid(
+    st_buffer(st_as_sfc(st_bbox(st_make_grid(iws, cellsize = 2338))), 400), 
+                    cellsize = 1000), 
+    alpha = 0) +
+  coord_sf(datum = NA) +
+  theme_void()
+
+cowplot::plot_grid(gg_dep_grid, gg_bf_grid)
+```
