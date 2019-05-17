@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 6.5, fi
 source("../scripts/99_utils.R")
 ```
 
-```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE}
+```{r 10_nitrogen_deposition, echo=FALSE, message=TRUE, eval=TRUE}
 dt     <- readRDS("../data/dt.rds")
 dt_sub <- dt %>% 
   dplyr::select(tp, tn, lake_area_ha:wheat, 
@@ -21,13 +21,6 @@ dt_sub <- dt %>%
   dplyr::filter(complete.cases(.)) %>%
   mutate_all(as.numeric) %>%
   data.frame(stringsAsFactors = FALSE)
-
-plot(lg$hu12.chag$hu12_dep_totaln_2010_mean, 
-     lg$hu12.chag$hu12_prism_ppt_30yr_normal_800mm2_annual_mean)
-
-ggplot(data = dt_sub) + 
-  geom_point(aes(x = ))
-
 
 slice_cormat <- function(var_name, dt_sub){
   # var_name <- "nitrogen_atmospheric_deposition"
@@ -60,8 +53,20 @@ prep_dotplot <- function(x, col_name){
 dt_ndep <- slice_cormat("nitrogen_atmospheric_deposition", dt_sub)
 
 ggplot(data = prep_dotplot(dt_ndep, "nitrogen_atmospheric_deposition")) +
-    geom_point(aes(x = nitrogen_atmospheric_deposition, y = var)) +
-    plot_opts
+    geom_point(aes(x = nitrogen_atmospheric_deposition, y = var))
+
+# ---- scatterplots ----
+# plot n_dep vs ppt
+# plot n_dep vs baseflow
+
+# plot(lg$hu12.chag$hu12_dep_totaln_2010_mean, 
+#      lg$hu12.chag$hu12_prism_ppt_30yr_normal_800mm2_annual_mean)
+
+# ggplot(data = dt_sub) + 
+#   geom_point(aes(x = ))
+
+# ---- autocorrelation_plots ----
+# spind::acfft()
 
 ``` 
 

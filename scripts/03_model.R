@@ -111,6 +111,10 @@ dt %>%
   # stat_pointinterval(alpha = 0.4) +
   theme(axis.text.x = element_text(angle = 90))
 
+# choropleth of model residuals
+
+# autocorrelation plot of model residuals
+
 # ----
 
 # knitr::kable(r2_fe, "markdown")
