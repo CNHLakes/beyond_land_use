@@ -15,8 +15,7 @@ data/macroag/tillage.gpkg \
 data/macroag/crp.rds \
 data/gis.gpkg \
 data/llids.txt \
-data/buffer_lulc.csv \
-data/mcmc/model_r2.csv
+data/buffer_lulc.csv 
 
 gssurgo: data/gssurgo/gssurgo.rds
 
@@ -33,6 +32,9 @@ data/county_lulc.rds
 	Rscript $<
 	
 data/llids.txt: scripts/00_list_llids.R data/ep.rds
+	Rscript $<
+
+data/predictor_key.csv: scripts/99_make_predictor_key.R
 	Rscript $<
 
 buffer_lulc: $(VARLLIDS)
@@ -129,7 +131,7 @@ figures/05_cafos-1.pdf: figures/05_cafos.Rmd
 figures/06_lulc_buffer_demo-1.pdf: figures/06_lulc_buffer_demo.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
-figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt.rds
+figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt.rds data/predictor_key.csv
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
@@ -137,7 +139,7 @@ figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
 
 tables: manuscript/tables.pdf
 
-manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf tables/03_model_summary.pdf
+manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf 
 	pdftk $^ cat output manuscript/tables.pdf
 	
 tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
