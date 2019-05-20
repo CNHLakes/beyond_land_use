@@ -7,15 +7,24 @@ pred_key <- data.frame(var = c(
   "soil_org_carbon", "soybeans","n_input", 
   "nitrogen_fertilizer_use", "phosphorus_fertilizer_use","p_input", 
   "phosphorus_livestock_manure", "wheat","pasture"),
+                      pretty = c(
+    "N deposition", "Max depth", "Watershed-lake ratio", 
+    "Baseflow", "Precipitation", "Lake-buffer Ag", 
+    "Stream-buffer Ag", "Wetlands", "Ag",
+    "Non-ag", "Clay", "Lake area",
+    "Wetland potential", "Corn", "Manure N input", 
+    "Soil organic carbon", "Soybeans", "N input",
+    "Fertilizer N input", "Fertilizer P input", "P input", 
+    "Manure P input", "Wheat", "Pasture"),
                       category = c(
-  "nutrient_sources", "lake", "lake", 
-  "transport_capacity", "transport_capacity", "nutrient_proxies",
-  "nutrient_proxies","nutrient_proxies","nutrient_proxies",
-  "nutrient_proxies", "transport_capacity","lake",
-  "transport_capacity", "nutrient_proxies","nutrient_sources", 
-  "nutrient_proxies", "nutrient_proxies", "nutrient_sources",
-  "nutrient_sources", "nutrient_sources", "nutrient_sources", 
-  "nutrient_sources", "nutrient_proxies","nutrient_proxies"),
+  "Nutrient sources", "Lake", "Lake", 
+  "Transport capacity", "Transport capacity", "Nutrient proxies",
+  "Nutrient proxies","Nutrient proxies","Nutrient proxies",
+  "Nutrient proxies", "Transport capacity","Lake",
+  "Transport capacity", "Nutrient proxies","Nutrient sources", 
+  "Nutrient proxies", "Nutrient proxies", "Nutrient sources",
+  "Nutrient sources", "Nutrient sources", "Nutrient sources", 
+  "Nutrient sources", "Nutrient proxies","Nutrient proxies"),
                       stringsAsFactors = FALSE)
 
 # View(pred_key)

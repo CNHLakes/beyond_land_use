@@ -74,14 +74,16 @@ pheatmap::pheatmap(
 prep_dotplot <- function(x, col_name){
   pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
   res      <- dplyr::select(x, UQ(rlang::sym(col_name))) %>%
+    
     dplyr::mutate(var = row.names(x)) %>%
     dplyr::left_join(pred_key, by = "var") %>%
     dplyr::mutate(var = factor(row.names(x), 
                             levels = rev(row.names(x))), 
+                  pretty = factor(pretty, levels = rev(pretty)),
                   category = factor(category, 
-                                    levels = c("lake", "nutrient_sources",
-                                               "nutrient_proxies",
-                                               "transport_capacity"))) %>%
+                                    levels = c("Lake", "Nutrient sources",
+                                               "Nutrient proxies",
+                                               "Transport capacity"))) %>%
     dplyr::filter(!(var %in% c("tp", "tn")))
   res
 }
@@ -90,17 +92,27 @@ plot_opts <- theme(axis.title.y = element_blank(),
                    axis.text = element_text(size = 8), 
                    legend.position = 0)
 
+# head(prep_dotplot(dt_tp, "tp"))
 # show_col(brewer_pal("div", "Set1")(4))                   
-plot_grid(
-  ggplot(data = prep_dotplot(dt_tp, "tp")) + 
-    geom_point(aes(x = tp, y = var, color = category)) + 
+gg_tp <-  ggplot(data = prep_dotplot(dt_tp, "tp")) + 
+    geom_point(aes(x = tp, y = pretty, color = category)) + 
     scale_color_brewer(palette = "Set1") +
-    plot_opts, 
-  ggplot(data = prep_dotplot(dt_tn, "tn")) + 
-    geom_point(aes(x = tn, y = var, color = category)) +
-    scale_color_brewer(palette = "Set1") +
+    xlim(0, 0.5) +
     plot_opts
-)
+gg_tn <- ggplot(data = prep_dotplot(dt_tn, "tn")) + 
+    geom_point(aes(x = tn, y = pretty, color = category)) +
+    scale_color_brewer(palette = "Set1") +
+    xlim(0, 0.5) +
+    plot_opts
+legend_b <- get_legend(gg_tp + 
+                         theme(legend.position="bottom", 
+                               legend.justification = "center", 
+                               legend.text = element_text(size = 10), 
+                               legend.title = element_blank()))
+plot_grid(
+  plot_grid(gg_tp, gg_tn), 
+  legend_b, ncol = 1, rel_heights = c(1, 0.1))
+
  
 
 # ---- densityplots ----
