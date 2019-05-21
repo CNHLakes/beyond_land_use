@@ -73,8 +73,8 @@ pheatmap::pheatmap(
 
 prep_dotplot <- function(x, col_name){
   pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
-  res      <- dplyr::select(x, UQ(rlang::sym(col_name))) %>%
-    
+  res      <- 
+    dplyr::select(x, UQ(rlang::sym(col_name))) %>%
     dplyr::mutate(var = row.names(x)) %>%
     dplyr::left_join(pred_key, by = "var") %>%
     dplyr::mutate(var = factor(row.names(x), 
