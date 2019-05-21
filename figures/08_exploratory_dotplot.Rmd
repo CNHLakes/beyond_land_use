@@ -11,8 +11,9 @@ source("../scripts/99_utils.R")
 ```
 
 ```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE}
-dt     <- readRDS("../data/dt.rds")
-dt_sub <- dt %>% 
+pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
+dt       <- readRDS("../data/dt.rds")
+dt_sub   <- dt %>% 
   dplyr::select(tp, tn, lake_area_ha:wheat, 
                 matches("cultivated_crops")) %>%
   dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>% # rm nlcd
@@ -60,6 +61,16 @@ dt_tp_hmap            <- dt_tp_hmap %>%
   dplyr::select(-rowname) %>%
   mutate_all(abs)
 row.names(dt_tp_hmap) <- dt_tp_rows
+
+# prettyfi variable labels
+pretty_names <- pred_key$pretty[match(names(dt_tp_hmap), pred_key$var)] 
+pretty_names <- pretty_names[!is.na(pretty_names)]
+names(dt_tp_hmap)[which(!is.na(match(names(dt_tp_hmap), pred_key$var)))] <- 
+  pretty_names
+pretty_names <- pred_key$pretty[match(row.names(dt_tp_hmap), pred_key$var)] 
+pretty_names <- pretty_names[!is.na(pretty_names)]
+row.names(dt_tp_hmap)[which(!is.na(match(row.names(dt_tp_hmap), pred_key$var)))] <- 
+  pretty_names
 
 pheatmap::pheatmap(
   t(dt_tp_hmap),
