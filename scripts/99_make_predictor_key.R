@@ -6,7 +6,7 @@ pred_key <- data.frame(var = c(
   "wetland_potential", "corn","nitrogen_livestock_manure", 
   "soil_org_carbon", "soybeans","n_input", 
   "nitrogen_fertilizer_use", "phosphorus_fertilizer_use","p_input", 
-  "phosphorus_livestock_manure", "wheat","pasture"),
+  "phosphorus_livestock_manure", "wheat","pasture", "row_crop_pct"),
                       pretty = c(
     "N deposition", "Max depth", "Watershed-lake ratio", 
     "Baseflow", "Precipitation", "Lake-buffer Ag", 
@@ -15,7 +15,7 @@ pred_key <- data.frame(var = c(
     "Wetland potential", "Corn", "Manure N input", 
     "Soil organic carbon", "Soybeans", "N input",
     "Fertilizer N input", "Fertilizer P input", "P input", 
-    "Manure P input", "Wheat", "Pasture"),
+    "Manure P input", "Wheat", "Pasture", "Row-crop Ag"),
                       category = c(
   "Nutrient sources", "Lake", "Lake", 
   "Transport capacity", "Transport capacity", "Nutrient proxies",
@@ -24,7 +24,7 @@ pred_key <- data.frame(var = c(
   "Transport capacity", "Nutrient proxies","Nutrient sources", 
   "Nutrient proxies", "Nutrient proxies", "Nutrient sources",
   "Nutrient sources", "Nutrient sources", "Nutrient sources", 
-  "Nutrient sources", "Nutrient proxies","Nutrient proxies"),
+  "Nutrient sources", "Nutrient proxies","Nutrient proxies", "Nutrient proxies"),
                       stringsAsFactors = FALSE)
 
 # View(pred_key)

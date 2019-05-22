@@ -14,15 +14,19 @@ source("../scripts/99_utils.R")
 pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
 
 dt       <- readRDS("../data/dt_scaled.rds")
-dt_sub   <- dt %>% 
-  dplyr::select(tp, tn, lake_area_ha:wheat, 
-                matches("cultivated_crops")) %>%
-  dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>% # rm nlcd
-  dplyr::select(-mixed.crop, -matches("other"), -forage, 
-                -hu12_ppt_std, -water, -developed, -forest) %>% # rm junk
-  dplyr::filter(complete.cases(.)) %>%
+dt_sub   <-  dt %>% 
+  dplyr::select(-lagoslakeid) %>%
+  # dplyr::select(tp, tn, lake_area_ha:wheat, 
+  #               matches("cultivated_crops")) %>%
+  # dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>% # rm nlcd
+  # dplyr::select(-mixed.crop, -matches("other"), -forage, 
+  #               -hu12_ppt_std, -water, -developed, -forest) %>% # rm junk
+  # dplyr::filter(complete.cases(.)) %>%
   mutate_all(as.numeric) %>%
+  janitor::remove_empty("cols") %>%
   data.frame(stringsAsFactors = FALSE)
+
+# cor.test(dt_sub$nitrogen_atmospheric_deposition, dt_sub$tp)
 
 dt_tp <- dt_sub %>%
   corrr::correlate() %>%
@@ -84,9 +88,12 @@ pheatmap::pheatmap(
 # ---- dotplot ----
 
 prep_dotplot <- function(x, col_name){
+  # x <- dt_tp
+  # col_name <- "tp"
   pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
-  res      <- 
-    dplyr::select(x, UQ(rlang::sym(col_name))) %>%
+  res      <- x %>%
+    dplyr::select(UQ(rlang::sym(col_name))) %>%
+    # dplyr::filter(!is.na(UQ(rlang::sym(col_name)))) %>%
     dplyr::mutate(var = row.names(x)) %>%
     dplyr::left_join(pred_key, by = "var") %>%
     dplyr::mutate(var = factor(row.names(x), 
@@ -109,12 +116,12 @@ plot_opts <- theme(axis.title.y = element_blank(),
 gg_tp <-  ggplot(data = prep_dotplot(dt_tp, "tp")) + 
     geom_point(aes(x = tp, y = pretty, color = category)) + 
     scale_color_brewer(palette = "Set1") +
-    xlim(0, 0.5) +
+    xlim(0, 0.6) +
     plot_opts
 gg_tn <- ggplot(data = prep_dotplot(dt_tn, "tn")) + 
     geom_point(aes(x = tn, y = pretty, color = category)) +
     scale_color_brewer(palette = "Set1") +
-    xlim(0, 0.5) +
+    xlim(0, 0.6) +
     plot_opts
 legend_b <- get_legend(gg_tp + 
                          theme(legend.position="bottom", 
@@ -130,17 +137,14 @@ plot_grid(
 # ---- densityplots ----
 library(ggforce)
 
-ggplot(data = tidyr::gather(dt_sub)) + 
+ggplot(data = tidyr::gather(dt_sub)) +
   geom_density(aes(value)) +
   facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 1)
-ggplot(data = tidyr::gather(dt_sub)) + 
+ggplot(data = tidyr::gather(dt_sub)) +
   geom_density(aes(value)) +
   facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 2)
-ggplot(data = tidyr::gather(dt_sub)) + 
+ggplot(data = tidyr::gather(dt_sub)) +
   geom_density(aes(value)) +
   facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 3)
-ggplot(data = tidyr::gather(dt_sub)) + 
-  geom_density(aes(value)) +
-  facet_wrap_paginate(~key, scales = "free", ncol = 2, nrow = 4, page = 4)
 
 ```

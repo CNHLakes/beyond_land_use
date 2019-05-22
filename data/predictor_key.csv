@@ -23,3 +23,4 @@
 "phosphorus_livestock_manure","Manure P input","Nutrient sources"
 "wheat","Wheat","Nutrient proxies"
 "pasture","Pasture","Nutrient proxies"
+"row_crop_pct","Row-crop Ag","Nutrient proxies"

@@ -61,15 +61,17 @@ dt <- ep %>%
 
 saveRDS(dt, "data/dt.rds")
 write.csv(dt, "data/dt.csv", row.names = FALSE)
-# dt <- readRDS("data/dt.rds")
+# dt <- readRDS("../data/dt.rds")
 
 dt_scaled <- dt %>% 
   dplyr::select("lagoslakeid", "hu4_zoneid", "hu12_zoneid", 
                 "tp", "tn", "hu12_ppt_mean", "hu12_baseflow_mean",
                 "maxdepth", "iwsla_ratio", "ag", "row_crop_pct", "corn", 
-                "soybeans", "pasture", "p_input", "n_input",
-                "phosphorus_fertilizer_use", "nitrogen_fertilizer_use", 
-                "stream_cultivated_crops") %>% 
+                "soybeans", "pasture", 
+                "nitrogen_atmospheric_deposition", "clay_pct", 
+                "lake_area_ha", "wetland_potential", contains("manure"), 
+                contains("fertilizer"), contains("input"), 
+                contains("cultivated_crops")) %>% 
   dplyr::filter(!is.na(phosphorus_fertilizer_use), 
                 !is.na(soybeans), 
                 !is.na(corn),
@@ -79,8 +81,8 @@ dt_scaled <- dt %>%
   mutate_at(log, .vars = vars(tp, tn)) %>%
   mutate_at(scale, .vars = vars(-lagoslakeid, -hu4_zoneid, -hu12_zoneid))
 
-saveRDS(dt, "data/dt_scaled.rds")
-write.csv(dt, "data/dt_scaled.csv", row.names = FALSE)
+saveRDS(dt_scaled, "data/dt_scaled.rds")
+write.csv(dt_scaled, "data/dt_scaled.csv", row.names = FALSE)
 # dt_scaled <- readRDS("data/dt_scaled.rds")
 
 dt_units <- data.frame(variable = names(dt), stringsAsFactors = FALSE) %>%
