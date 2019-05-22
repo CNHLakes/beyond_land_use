@@ -279,3 +279,5 @@ get_if_not_exists <- function(x, destfile, read_function = readRDS,
     invisible(x)
   }
 }
+
+lg <- LAGOSNE::lagosne_load()
