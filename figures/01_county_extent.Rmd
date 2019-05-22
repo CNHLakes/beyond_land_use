@@ -192,3 +192,15 @@ plot_grid(gg_tp,
           ggplot() + geom_blank(), gg_tn,
           nrow = 1, rel_widths = c(1, 0.1, 1))
 ```
+
+```{r }
+# residual autocorrelation range
+pnt <- LAGOSNE::coordinatize(ep[1,])
+
+ggplot() + 
+  geom_sf(data = state_intersects) +
+  geom_sf(data = st_buffer(pnt, 0.3), color = "red") +
+  geom_sf(data = pnt, size = 0.5) +
+  coord_sf(datum = NA) +
+  plot_opts
+```
