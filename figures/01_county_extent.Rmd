@@ -131,7 +131,7 @@ ggplot() +
 # cat(paste0(nrow(ep), " total lakes"))
 ```
 
-```{r tptn_maps, echo=FALSE}
+```{r tptn_maps, echo=FALSE, fig.width=7}
 ep         <- readRDS("../data/ep.rds")
 
 mround <- function(x, base){
