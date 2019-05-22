@@ -102,6 +102,19 @@ if(!interactive()){
 
 # ---- diagnostics ----
 
+# dotplot of model residuals
+lg <- LAGOSNE::lagosne_load()
+test <- dt %>% 
+  add_residual_draws(re_brms[[5]]) %>%
+  left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
+            by = "lagoslakeid")
+
+
+# autocorrelation plot of model residuals
+dt %>%
+  add_residual_draws(fe_brms[[1]])
+
+
 # look for evidence of interaction effects
 # following shalizi...
 dt %>%
@@ -110,10 +123,6 @@ dt %>%
   geom_point() +
   # stat_pointinterval(alpha = 0.4) +
   theme(axis.text.x = element_text(angle = 90))
-
-# choropleth of model residuals
-
-# autocorrelation plot of model residuals
 
 # ----
 
