@@ -31,6 +31,7 @@ suppressMessages(library(smoothr))
 library(assertr)
 library(HydroData) # install_github("mikejohnson51/HydroData")
 library(kableExtra)
+library(vapour)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
