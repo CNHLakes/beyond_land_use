@@ -119,5 +119,5 @@ gg_hi_ag <- ggplot() +
   theme_void() +
   ggtitle(llids[i])
 
-cowplot::plot_grid(gg_low_ag, gg_hi_ag)
+cowplot::plot_grid(gg_hi_ag, gg_low_ag)
 ```
