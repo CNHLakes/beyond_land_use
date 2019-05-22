@@ -130,12 +130,18 @@ get_residuals <- function(model, threshold = 0.1){
   model
 }
 
-test <- lapply(re_brms, function(x) get_residuals(x))
-hist(test[[4]]$res_med$.residual_median)
-unlist(lapply(test, function(x) x$res_test))
-i <- 2
-plot(test[[i]]$res_med$.value_median, 
-     test[[i]]$res_med$.residual_median)
+re_brms <- lapply(re_brms, function(x) get_residuals(x))
+
+par(mfrow = c(2, 4))
+lapply(re_brms, function(x) hist(x$res_med$.residual_median))
+lapply(re_brms, function(x) plot(x$res_med$.value_median, 
+                                 x$res_med$.residual_median))
+lapply(re_brms, function(x){
+  qqnorm(x$res_med$.residual_median)
+  abline(0, 1)
+  })
+cor.test(dt$streamvcultivatedvcrops, dt$tp)
+cor.test(dt$ag, dt$tp)
   
 test <- get_residuals(fe_brms[[1]])$res
 mapview::mapview(LAGOSNE::coordinatize(test$res_med), 
