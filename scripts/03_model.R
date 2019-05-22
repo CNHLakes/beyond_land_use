@@ -19,7 +19,9 @@ dt        <- dplyr::filter(dt,
                            !is.na(maxdepth), 
                            !is.na(tp), 
                            !is.na(tn))
-dt <- mutate_at(dt, scale, .vars = vars(-lagoslakeid, -hu4vzoneid, -hu12vzoneid))
+dt <- mutate_at(dt, log, .vars = vars(tp, tn))
+dt <- mutate_at(dt, scale, 
+                .vars = vars(-lagoslakeid, -hu4vzoneid, -hu12vzoneid))
 
 good_hu4s <- readRDS("data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
@@ -67,12 +69,16 @@ r2_fe <- dplyr::bind_rows(
 (model_forms <- list(
   "tp_ag" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
                  (1 + ag | hu4vzoneid)),
+  "tp_streamag" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
+                 (1 + streamvcultivatedvcrops | hu4vzoneid)),
   "tp_soybeans" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
                        (1 + soybeans | hu4vzoneid)),
   "tp_re" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
                  (1 + ag + soybeans | hu4vzoneid)), 
   "tn_ag" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
                  (1 + ag | hu4vzoneid)),
+  "tn_streamag" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
+                       (1 + streamvcultivatedvcrops | hu4vzoneid)),
   "tn_corn" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
                        (1 + corn | hu4vzoneid)),
   "tn_re" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
@@ -101,22 +107,43 @@ if(!interactive()){
 }
 
 # ---- diagnostics ----
-
 # dotplot of model residuals
-lg      <- LAGOSNE::lagosne_load()
-res_med <- dt %>% 
-  add_residual_draws(re_brms[[5]]) %>%
-  group_by(lagoslakeid) %>%
-  summarize(.residual_median = median(.residual)) %>%
-  left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
-            by = "lagoslakeid")
 
-if(!interactive()){
-  saveRDS(res_med, "data/mcmc/residual_medians.rds")
+# get median residuals of each model object
+get_residuals <- function(model, threshold = 0.1){
+  # model <- re_brms[[1]]
+  model$res_med <- dt %>% 
+    add_residual_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.residual_median = median(.residual)) %>%
+    left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
+              by = "lagoslakeid")
+  
+  model$res_med <- dt %>% 
+    add_fitted_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.value_median = median(.value)) %>%
+    right_join(model$res_med, by = "lagoslakeid")
+  
+  model$res_test <- abs(
+    median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
+  model
 }
 
-mapview::mapview(LAGOSNE::coordinatize(res_med), 
+test <- lapply(re_brms, function(x) get_residuals(x))
+hist(test[[4]]$res_med$.residual_median)
+unlist(lapply(test, function(x) x$res_test))
+i <- 2
+plot(test[[i]]$res_med$.value_median, 
+     test[[i]]$res_med$.residual_median)
+  
+test <- get_residuals(fe_brms[[1]])$res
+mapview::mapview(LAGOSNE::coordinatize(test$res_med), 
                  zcol = ".residual_median")
+
+# get residual spatial autocorrelation range for each model object
+
+
 
 # autocorrelation plot of model residugals
 coords <- res_med[,c("nhd_long", "nhd_lat")]
