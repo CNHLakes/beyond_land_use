@@ -12,7 +12,8 @@ source("../scripts/99_utils.R")
 
 ```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE}
 pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
-dt       <- readRDS("../data/dt.rds")
+
+dt       <- readRDS("../data/dt_scaled.rds")
 dt_sub   <- dt %>% 
   dplyr::select(tp, tn, lake_area_ha:wheat, 
                 matches("cultivated_crops")) %>%

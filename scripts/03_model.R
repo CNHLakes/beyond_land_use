@@ -4,24 +4,8 @@ library(brms)
 library(tidybayes)
 library(modelr)
 
-dt        <- readRDS("data/dt.rds") %>% 
-  dplyr::select("lagoslakeid", "hu4_zoneid", "hu12_zoneid", 
-                "tp", "tn", "hu12_ppt_mean", "hu12_baseflow_mean",
-                "maxdepth", "iwsla_ratio", "ag", "row_crop_pct", "corn", 
-                "soybeans", "pasture", "p_input", "n_input",
-                "phosphorus_fertilizer_use", "nitrogen_fertilizer_use", 
-                "stream_cultivated_crops")
+dt        <- readRDS("data/dt_scaled.rds") 
 names(dt) <- gsub("_", "v", names(dt))
-dt        <- dplyr::filter(dt, 
-                           !is.na(phosphorusvfertilizervuse), 
-                           !is.na(soybeans), 
-                           !is.na(corn),
-                           !is.na(maxdepth), 
-                           !is.na(tp), 
-                           !is.na(tn))
-dt <- mutate_at(dt, log, .vars = vars(tp, tn))
-dt <- mutate_at(dt, scale, 
-                .vars = vars(-lagoslakeid, -hu4vzoneid, -hu12vzoneid))
 
 good_hu4s <- readRDS("data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
