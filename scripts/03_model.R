@@ -106,11 +106,12 @@ if(!interactive()){
 lg <- LAGOSNE::lagosne_load()
 test <- dt %>% 
   add_residual_draws(re_brms[[5]]) %>%
-  left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
-            by = "lagoslakeid") %>%
   group_by(lagoslakeid) %>%
-  summarize(.residual_median = median(.residual))
-  LAGOSNE::coordinatize() %>%
+  summarize(.residual_median = median(.residual)) %>%
+  left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
+            by = "lagoslakeid")
+
+mapview::mapview(LAGOSNE::coordinatize(test))
 
 ggplot() + 
   geom_sf(data = test, aes(color = .residual))
