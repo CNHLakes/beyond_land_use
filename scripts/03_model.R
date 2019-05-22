@@ -107,7 +107,13 @@ lg <- LAGOSNE::lagosne_load()
 test <- dt %>% 
   add_residual_draws(re_brms[[5]]) %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
-            by = "lagoslakeid")
+            by = "lagoslakeid") %>%
+  group_by(lagoslakeid) %>%
+  summarize(.residual_median = median(.residual))
+  LAGOSNE::coordinatize() %>%
+
+ggplot() + 
+  geom_sf(data = test, aes(color = .residual))
 
 
 # autocorrelation plot of model residuals
