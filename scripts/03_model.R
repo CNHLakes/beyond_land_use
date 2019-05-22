@@ -103,24 +103,31 @@ if(!interactive()){
 # ---- diagnostics ----
 
 # dotplot of model residuals
-lg <- LAGOSNE::lagosne_load()
-test <- dt %>% 
+lg      <- LAGOSNE::lagosne_load()
+res_med <- dt %>% 
   add_residual_draws(re_brms[[5]]) %>%
   group_by(lagoslakeid) %>%
   summarize(.residual_median = median(.residual)) %>%
   left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
             by = "lagoslakeid")
 
-mapview::mapview(LAGOSNE::coordinatize(test))
+if(!interactive()){
+  saveRDS(res_med, "data/mcmc/residual_medians.rds")
+}
 
-ggplot() + 
-  geom_sf(data = test, aes(color = .residual))
+mapview::mapview(LAGOSNE::coordinatize(res_med), 
+                 zcol = ".residual_median")
 
-
-# autocorrelation plot of model residuals
-dt %>%
-  add_residual_draws(fe_brms[[1]])
-
+# autocorrelation plot of model residugals
+coords <- res_med[,c("nhd_long", "nhd_lat")]
+coords <- mutate_all(coords, function(x) abs(as.integer(x * 10)))
+names(coords) <- c("x", "y")
+ac <- spind::acfft(data.frame(coords), 
+                   res_med$.residual_median, 
+                   dmax = 30) 
+plot(ac)
+# each index increment is equal to a tenth of a degree
+# so 20 is 2 degrees
 
 # look for evidence of interaction effects
 # following shalizi...
