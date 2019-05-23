@@ -24,7 +24,7 @@ brm_fit <- function(destfile, formula, data){
 # evaulate fixed effects
 # ag + {maxdepth, baseflow, iwslavratio}
 
-(model_forms <- list(
+(model_forms_fe <- list(
   "tp" = bf(tp ~ ag),
   "tp_depth" = bf(tp ~ ag + maxdepth),
   "tp_bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean),
@@ -36,7 +36,7 @@ brm_fit <- function(destfile, formula, data){
 ))
 
 fe_brms <- 
-  lapply(seq_along(model_forms), function(i) 
+  lapply(seq_along(model_forms_fe), function(i) 
     get_if_not_exists(brm_fit, 
                       paste0("data/mcmc/fe/", names(model_forms)[i]), 
                       formula = model_forms[[i]], 
@@ -51,7 +51,7 @@ r2_fe <- dplyr::bind_rows(
 
 # evaulate spatial random effects
 # {fixed effects} + 1/ag, 1/soybeans, 1/corn
-(model_forms <- list(
+(model_forms_re <- list(
   "tp_ag"       = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
                  (1 + ag | hu4vzoneid)),
   "tp_streamag" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
@@ -76,7 +76,7 @@ r2_fe <- dplyr::bind_rows(
 
 
 re_brms <- 
-  lapply(seq_along(model_forms), function(i) 
+  lapply(seq_along(model_forms_re), function(i) 
     get_if_not_exists(brm_fit, 
                       paste0("data/mcmc/re/", names(model_forms)[i]), 
                       formula = model_forms[[i]], 
@@ -89,8 +89,19 @@ r2_re <- dplyr::bind_rows(
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
 
+r2_fe$`Proxy`     <- c(rep("Ag", 4), 
+                       rep("Ag", 4))
+r2_fe$`Lake`      <- c(NA, rep("maxdepth", 3), 
+                    NA, rep("maxdepth", 3))
+r2_fe$`Transport` <- c(NA, NA, "Baseflow", "Baseflow", 
+                       NA, NA, "Soil Org Carbon", "Soil Org Carbon")
+r2_fe$`Source`    <- c(NA, NA, NA, "N fertilizer", 
+                    NA, NA, NA, "N fertilizer")
+
+r2    <- dplyr::bind_rows(r2_fe, r2_re)
+
 if(!interactive()){
-  write.csv(dplyr::bind_rows(r2_fe, r2_re), 
+  write.csv(r2, 
             "data/mcmc/model_r2.csv",
             row.names = FALSE)
 }
