@@ -86,6 +86,7 @@ pheatmap::pheatmap(
   cellheight = 7)
 ```
 
+\pagebreak
 ```{r dotplot, message=FALSE, echo=FALSE, warning=FALSE}
 # ---- dotplot ----
 
@@ -137,6 +138,7 @@ plot_grid(
  
 ```
 
+\pagebreak
 ```{r densityplots, message=FALSE, echo=FALSE, warning=FALSE}
 # ---- densityplots ----
 library(ggforce)
