@@ -38,14 +38,14 @@ brm_fit <- function(destfile, formula, data){
 fe_brms <- 
   lapply(seq_along(model_forms_fe), function(i) 
     get_if_not_exists(brm_fit, 
-                      paste0("data/mcmc/fe/", names(model_forms)[i]), 
-                      formula = model_forms[[i]], 
+                      paste0("data/mcmc/fe/", names(model_forms_fe)[i]), 
+                      formula = model_forms_fe[[i]], 
                       data = dt))
 
 
 r2_fe <- dplyr::bind_rows(
   lapply(fe_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
-  mutate(Model = names(model_forms), 
+  mutate(Model = names(model_forms_fe), 
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate) 
 
@@ -78,14 +78,14 @@ r2_fe <- dplyr::bind_rows(
 re_brms <- 
   lapply(seq_along(model_forms_re), function(i) 
     get_if_not_exists(brm_fit, 
-                      paste0("data/mcmc/re/", names(model_forms)[i]), 
-                      formula = model_forms[[i]], 
+                      paste0("data/mcmc/re/", names(model_forms_re)[i]), 
+                      formula = model_forms_re[[i]], 
                       data = dt))
 
 
 r2_re <- dplyr::bind_rows(
   lapply(re_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
-  mutate(Model = names(model_forms), 
+  mutate(Model = names(model_forms_re), 
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
 
@@ -97,6 +97,12 @@ r2_fe$`Transport` <- c(NA, NA, "Baseflow", "Baseflow",
                        NA, NA, "Soil Org Carbon", "Soil Org Carbon")
 r2_fe$`Source`    <- c(NA, NA, NA, "N fertilizer", 
                     NA, NA, NA, "N fertilizer")
+
+r2_re$`Proxy`     <- c("Ag", "Stream Ag", "Soybeans", "Pasture", "Row Crop",
+                       "Ag", "Stream Ag", "Corn", "Pasture", "Row Crop") 
+r2_re$`Lake`      <- c(rep("maxdepth", 10))
+r2_re$`Transport` <- c(rep("Baseflow", 5), rep("Soil Org Carbon", 5))
+r2_re$`Source`    <- c(rep("N fertilizer", 10))
 
 r2    <- dplyr::bind_rows(r2_fe, r2_re)
 
