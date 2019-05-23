@@ -33,7 +33,7 @@ ggplot(data = dt) +
   xlim(c(40, 100)) + ylim(c(0, 100))
 ```
 
-```{r satellite, echo=FALSE}
+```{r satellite, echo=FALSE, message=FALSE, warning=FALSE}
 # res_pnt  <- query_gis("LAGOS_NE_All_Lakes_4ha_POINTS", "lagoslakeid", 
 #                       dplyr::filter(dt, diff > 0)$lagoslakeid)
 # ggplot() + 

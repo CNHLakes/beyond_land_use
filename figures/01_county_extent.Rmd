@@ -4,7 +4,7 @@ header-includes:
   - \pagenumbering{gobble}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo=FALSE, message=FALSE, eval=TRUE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
 # setwd("figures")
 source("../scripts/99_utils.R")
@@ -96,7 +96,7 @@ cat(paste(c("Lake Mendota", "Oneida Lake")[which(llids %in% ep$lagoslakeid)], "i
 
 <!-- * Find counties that intersect large numbers of hi ag iws with tp + tn data -->
 
-```{r 01_county_extent, eval=TRUE, echo=FALSE, fig.width = 5.5, fig.height = 3}
+```{r 01_county_extent, eval=TRUE, echo=FALSE, fig.width = 5.5, fig.height = 3, message=FALSE, warning=FALSE}
 # counties that overlap hi ag iws with ep data
 # setwd("_episodes_rmd")
 
@@ -131,7 +131,9 @@ ggplot() +
 # cat(paste0(nrow(ep), " total lakes"))
 ```
 
-```{r tptn_maps, echo=FALSE, fig.width=7}
+\pagebreak
+
+```{r tptn_maps, echo=FALSE, fig.width=7, message=FALSE, eval=TRUE, warning=FALSE}
 ep         <- readRDS("../data/ep.rds")
 
 mround <- function(x, base){
@@ -193,7 +195,8 @@ plot_grid(gg_tp,
           nrow = 1, rel_widths = c(1, 0.1, 1))
 ```
 
-```{r }
+\pagebreak
+```{r autocor_range, echo=FALSE, message=FALSE, eval=TRUE, warning=FALSE}
 # residual autocorrelation range
 pnt <- LAGOSNE::coordinatize(ep[1,])
 

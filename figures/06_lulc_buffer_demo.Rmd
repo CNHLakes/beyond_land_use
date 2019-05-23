@@ -4,13 +4,13 @@ header-includes:
   - \pagenumbering{gobble}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 7, fig.height = 7)
 # setwd("figures")
 source("../scripts/99_utils.R")
 ```
 
-```{r 06_lulc_buffer_demo, echo=FALSE, eval=TRUE}
+```{r 06_lulc_buffer_demo, echo=FALSE, eval=TRUE, message=FALSE}
 # setwd("figures")
 
 dt <- readRDS("../data/dt.rds")
@@ -130,7 +130,7 @@ plot_grid(g_map,
 
 ```
 
-```{r cdl_viewport, fig.height=5}
+```{r cdl_viewport, fig.height=5, echo=FALSE, message=FALSE}
 # pull cdl lulc
 cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
 r  <- raster::raster("../data/cdl/2745.tif")
@@ -201,7 +201,7 @@ cowplot::plot_grid(g_raster, g_bar)
 
 ```
 
-```{r cdl_vs_nlcd}
+```{r cdl_vs_nlcd, echo=FALSE, message=FALSE}
 # mask nlcd lulc
 
 test <- raster::mask(nlcd, iws) %>% 
@@ -241,7 +241,7 @@ cowplot::plot_grid(g_nlcd + ggtitle("NLCD (2011)"),
                    rel_widths = c(0.75, 1))
 ```
 
-```{r raster_resolution}
+```{r raster_resolution, echo=FALSE, message=FALSE}
 library(nadp)
 
 llid  <- 2745

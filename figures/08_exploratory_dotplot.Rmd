@@ -4,13 +4,13 @@ header-includes:
   - \pagenumbering{gobble}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, echo=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 6.5, fig.height = 4.5)
 # setwd("figures")
 source("../scripts/99_utils.R")
 ```
 
-```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE}
+```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE, warning=FALSE}
 pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
 
 dt       <- readRDS("../data/dt_scaled.rds")
@@ -84,7 +84,9 @@ pheatmap::pheatmap(
   cluster_cols = TRUE, cluster_rows = TRUE,
   na.col = "grey",
   cellheight = 7)
+```
 
+```{r dotplot, message=FALSE, echo=FALSE, warning=FALSE}
 # ---- dotplot ----
 
 prep_dotplot <- function(x, col_name){
@@ -133,7 +135,9 @@ plot_grid(
   legend_b, ncol = 1, rel_heights = c(1, 0.1))
 
  
+```
 
+```{r densityplots, message=FALSE, echo=FALSE, warning=FALSE}
 # ---- densityplots ----
 library(ggforce)
 
