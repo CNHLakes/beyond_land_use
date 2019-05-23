@@ -27,6 +27,7 @@ brm_fit <- function(destfile, formula, data){
 (model_forms <- list(
   "tp_depth+bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean),
   "tp_depth+iwsla" = bf(tp ~ ag + maxdepth + iwslavratio), 
+  "tp_ninput" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + nvinput),
   "tp_fe" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + iwslavratio), 
   "tn_depth+bf" = bf(tn ~ ag + maxdepth + hu12vbaseflowvmean),
   "tn_depth+iwsla" = bf(tn ~ ag + maxdepth + iwslavratio), 
@@ -91,8 +92,6 @@ if(!interactive()){
 }
 
 # ---- diagnostics ----
-# dotplot of model residuals
-
 # get median residuals of each model object
 get_residuals <- function(model, threshold = 0.1){
   # model <- re_brms[[1]]
@@ -113,9 +112,10 @@ get_residuals <- function(model, threshold = 0.1){
     median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
   model
 }
-
+lg <- lagosne_load()
 re_brms <- lapply(re_brms, function(x) get_residuals(x))
 
+# qq plots etc
 par(mfrow = c(2, 4))
 lapply(re_brms, function(x) hist(x$res_med$.residual_median))
 lapply(re_brms, function(x) plot(x$res_med$.value_median, 
@@ -124,18 +124,15 @@ lapply(re_brms, function(x){
   qqnorm(x$res_med$.residual_median)
   abline(0, 1)
   })
-cor.test(dt$streamvcultivatedvcrops, dt$tp)
-cor.test(dt$ag, dt$tp)
+par(mfrow = c(1,1))
   
-test <- get_residuals(fe_brms[[1]])$res
-mapview::mapview(LAGOSNE::coordinatize(test$res_med), 
+# dotplot of model residuals
+mapview::mapview(LAGOSNE::coordinatize(re_brms[[1]]$res_med), 
                  zcol = ".residual_median")
 
 # get residual spatial autocorrelation range for each model object
 
-
-
-# autocorrelation plot of model residugals
+# autocorrelation plot of model residuals
 coords <- res_med[,c("nhd_long", "nhd_lat")]
 coords <- mutate_all(coords, function(x) abs(as.integer(x * 10)))
 names(coords) <- c("x", "y")
@@ -148,6 +145,11 @@ plot(ac)
 
 # look for evidence of interaction effects
 # following shalizi...
+re_brms[[1]]$res_med %>%
+  left_join(dt, by = "lagoslakeid") %>%
+  ggplot(aes(x = nvinput, y = .residual_median)) +
+  geom_point()
+
 dt %>%
   add_residual_draws(fe_brms[[1]]) %>%
   ggplot(aes(x = log(maxdepth + abs(min(dt$maxdepth))), y = .residual, color = iwslavratio)) +
