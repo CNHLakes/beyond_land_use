@@ -32,7 +32,7 @@ brm_fit <- function(destfile, formula, data){
   "tn" = bf(tn ~ ag),
   "tn_depth" = bf(tn ~ ag + maxdepth),
   "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon),
-  "tn_nfert" = bf(tn ~ ag + maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse) 
+  "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse) 
 ))
 
 fe_brms <- 
@@ -49,26 +49,29 @@ r2_fe <- dplyr::bind_rows(
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate) 
 
-
 # evaulate spatial random effects
 # {fixed effects} + 1/ag, 1/soybeans, 1/corn
 (model_forms <- list(
-  "tp_ag" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
+  "tp_ag"       = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
                  (1 + ag | hu4vzoneid)),
-  "tp_streamag" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
+  "tp_streamag" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
                  (1 + streamvcultivatedvcrops | hu4vzoneid)),
-  "tp_soybeans" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
-                       (1 + soybeans | hu4vzoneid)),
-  "tp_re" = bf(tp ~  maxdepth + hu12vbaseflowvmean +
-                 (1 + ag + soybeans | hu4vzoneid)), 
-  "tn_ag" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
+  "tp_soybeans" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
+                 (1 + soybeans | hu4vzoneid)),
+  "tp_pasture" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
+                 (1 + pasture | hu4vzoneid)),
+  "tp_rowcrop" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
+                 (1 + rowvcropvpct | hu4vzoneid)),
+  "tn_ag"      = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
                  (1 + ag | hu4vzoneid)),
-  "tn_streamag" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
-                       (1 + streamvcultivatedvcrops | hu4vzoneid)),
-  "tn_corn" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
-                       (1 + corn | hu4vzoneid)),
-  "tn_re" = bf(tn ~  maxdepth + hu12vbaseflowvmean +
-                 (1 + ag + corn | hu4vzoneid))
+  "tn_streamag" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+                 (1 + streamvcultivatedvcrops | hu4vzoneid)),
+  "tn_corn"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+                 (1 + corn | hu4vzoneid)), 
+  "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+                 (1 + pasture | hu4vzoneid)),
+  "tn_rowcrop" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+                 (1 + rowvcropvpct | hu4vzoneid))
 ))
 
 
