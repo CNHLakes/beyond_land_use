@@ -22,7 +22,7 @@ pred_key <- data.frame(var = c(
   "Nutrient proxies","Nutrient proxies","Nutrient proxies",
   "Nutrient proxies", "Transport capacity","Lake",
   "Transport capacity", "Nutrient proxies","Nutrient sources", 
-  "Nutrient proxies", "Nutrient proxies", "Nutrient sources",
+  "Transport capacity", "Nutrient proxies", "Nutrient sources",
   "Nutrient sources", "Nutrient sources", "Nutrient sources", 
   "Nutrient sources", "Nutrient proxies","Nutrient proxies", "Nutrient proxies"),
                       stringsAsFactors = FALSE)

@@ -67,7 +67,7 @@ dt_scaled <- dt %>%
   dplyr::select("lagoslakeid", "hu4_zoneid", "hu12_zoneid", 
                 "tp", "tn", "hu12_ppt_mean", "hu12_baseflow_mean",
                 "maxdepth", "iwsla_ratio", "ag", "row_crop_pct", "corn", 
-                "soybeans", "pasture", 
+                "soybeans", "pasture", "soil_org_carbon",
                 "nitrogen_atmospheric_deposition", "clay_pct", 
                 "lake_area_ha", "wetland_potential", contains("manure"), 
                 contains("fertilizer"), contains("input"), 

@@ -14,7 +14,7 @@
 "wetland_potential","Wetland potential","Transport capacity"
 "corn","Corn","Nutrient proxies"
 "nitrogen_livestock_manure","Manure N input","Nutrient sources"
-"soil_org_carbon","Soil organic carbon","Nutrient proxies"
+"soil_org_carbon","Soil organic carbon","Transport capacity"
 "soybeans","Soybeans","Nutrient proxies"
 "n_input","N input","Nutrient sources"
 "nitrogen_fertilizer_use","Fertilizer N input","Nutrient sources"
