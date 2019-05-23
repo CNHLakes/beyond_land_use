@@ -62,15 +62,15 @@ r2_fe <- dplyr::bind_rows(
                  (1 + pasture | hu4vzoneid)),
   "tp_rowcrop" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
                  (1 + rowvcropvpct | hu4vzoneid)),
-  "tn_ag"      = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+  "tn_ag"      = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
                  (1 + ag | hu4vzoneid)),
-  "tn_streamag" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+  "tn_streamag" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
                  (1 + streamvcultivatedvcrops | hu4vzoneid)),
-  "tn_corn"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+  "tn_corn"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
                  (1 + corn | hu4vzoneid)), 
-  "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+  "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
                  (1 + pasture | hu4vzoneid)),
-  "tn_rowcrop" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse
+  "tn_rowcrop" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
                  (1 + rowvcropvpct | hu4vzoneid))
 ))
 
