@@ -13,14 +13,14 @@ pred_key <- dplyr::filter(pred_key, !(var %in% c("lake_cultivated_crops", "wetla
 # pick _one_ of the "best" t_capacity for n/p
 # pick _one_ of the "best" nut_source for n/p
 
-n_l <- list()
-p_l <- list()
+n_l <- list(lake = "maxdepth", 
+            t_capacity = "soil_org_carbon", 
+            nut_source = "nitrogen_fertilizer_use", 
+            nut_prox = unique(dplyr::filter(pred_key, category == "Nutrient proxies")$var))
+p_l <- list(lake = "maxdepth", 
+            t_capacity = "hu12_baseflow_mean", 
+            nut_source = "nitrogen_fertilizer_use",  
+            nut_prox = unique(dplyr::filter(pred_key, category == "Nutrient proxies")$var))
 
-(l <- list(lake = unique(dplyr::filter(pred_key, category == "Lake")$var), 
-          t_capacity = unique(dplyr::filter(pred_key, category == "Transport capacity")$var),
-          nut_prox = unique(dplyr::filter(pred_key, category == "Nutrient proxies")$var),
-          nut_source = unique(dplyr::filter(pred_key, category == "Nutrient sources")$var)))
-
-expand.grid(l)
-
-
+expand.grid(p_l)
+expand.grid(n_l)

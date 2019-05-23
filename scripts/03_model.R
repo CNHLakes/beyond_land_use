@@ -25,13 +25,14 @@ brm_fit <- function(destfile, formula, data){
 # ag + {maxdepth, baseflow, iwslavratio}
 
 (model_forms <- list(
-  "tp_depth+bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean),
-  "tp_depth+iwsla" = bf(tp ~ ag + maxdepth + iwslavratio), 
-  "tp_ninput" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + nvinput),
-  "tp_fe" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + iwslavratio), 
-  "tn_depth+bf" = bf(tn ~ ag + maxdepth + hu12vbaseflowvmean),
-  "tn_depth+iwsla" = bf(tn ~ ag + maxdepth + iwslavratio), 
-  "tn_fe" = bf(tn ~ ag + maxdepth + hu12vbaseflowvmean + iwslavratio) 
+  "tp" = bf(tp ~ ag),
+  "tp_depth" = bf(tp ~ ag + maxdepth),
+  "tp_bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean),
+  "tp_nfert" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse),
+  "tn" = bf(tn ~ ag),
+  "tn_depth" = bf(tn ~ ag + maxdepth),
+  "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon),
+  "tn_nfert" = bf(tn ~ ag + maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse) 
 ))
 
 fe_brms <- 
@@ -93,69 +94,69 @@ if(!interactive()){
 
 # ---- diagnostics ----
 # get median residuals of each model object
-get_residuals <- function(model, threshold = 0.1){
-  # model <- re_brms[[1]]
-  model$res_med <- dt %>% 
-    add_residual_draws(model) %>%
-    group_by(lagoslakeid) %>%
-    summarize(.residual_median = median(.residual)) %>%
-    left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
-              by = "lagoslakeid")
-  
-  model$res_med <- dt %>% 
-    add_fitted_draws(model) %>%
-    group_by(lagoslakeid) %>%
-    summarize(.value_median = median(.value)) %>%
-    right_join(model$res_med, by = "lagoslakeid")
-  
-  model$res_test <- abs(
-    median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
-  model
-}
-lg <- lagosne_load()
-re_brms <- lapply(re_brms, function(x) get_residuals(x))
-
-# qq plots etc
-par(mfrow = c(2, 4))
-lapply(re_brms, function(x) hist(x$res_med$.residual_median))
-lapply(re_brms, function(x) plot(x$res_med$.value_median, 
-                                 x$res_med$.residual_median))
-lapply(re_brms, function(x){
-  qqnorm(x$res_med$.residual_median)
-  abline(0, 1)
-  })
-par(mfrow = c(1,1))
-  
-# dotplot of model residuals
-mapview::mapview(LAGOSNE::coordinatize(re_brms[[1]]$res_med), 
-                 zcol = ".residual_median")
-
-# get residual spatial autocorrelation range for each model object
-
-# autocorrelation plot of model residuals
-coords <- res_med[,c("nhd_long", "nhd_lat")]
-coords <- mutate_all(coords, function(x) abs(as.integer(x * 10)))
-names(coords) <- c("x", "y")
-ac <- spind::acfft(data.frame(coords), 
-                   res_med$.residual_median, 
-                   dmax = 30) 
-plot(ac)
-# each index increment is equal to a tenth of a degree
-# so 20 is 2 degrees
-
-# look for evidence of interaction effects
-# following shalizi...
-re_brms[[1]]$res_med %>%
-  left_join(dt, by = "lagoslakeid") %>%
-  ggplot(aes(x = nvinput, y = .residual_median)) +
-  geom_point()
-
-dt %>%
-  add_residual_draws(fe_brms[[1]]) %>%
-  ggplot(aes(x = log(maxdepth + abs(min(dt$maxdepth))), y = .residual, color = iwslavratio)) +
-  geom_point() +
-  # stat_pointinterval(alpha = 0.4) +
-  theme(axis.text.x = element_text(angle = 90))
+# get_residuals <- function(model, threshold = 0.1){
+#   # model <- re_brms[[1]]
+#   model$res_med <- dt %>% 
+#     add_residual_draws(model) %>%
+#     group_by(lagoslakeid) %>%
+#     summarize(.residual_median = median(.residual)) %>%
+#     left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
+#               by = "lagoslakeid")
+#   
+#   model$res_med <- dt %>% 
+#     add_fitted_draws(model) %>%
+#     group_by(lagoslakeid) %>%
+#     summarize(.value_median = median(.value)) %>%
+#     right_join(model$res_med, by = "lagoslakeid")
+#   
+#   model$res_test <- abs(
+#     median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
+#   model
+# }
+# lg <- lagosne_load()
+# re_brms <- lapply(re_brms, function(x) get_residuals(x))
+# 
+# # qq plots etc
+# par(mfrow = c(2, 4))
+# lapply(re_brms, function(x) hist(x$res_med$.residual_median))
+# lapply(re_brms, function(x) plot(x$res_med$.value_median, 
+#                                  x$res_med$.residual_median))
+# lapply(re_brms, function(x){
+#   qqnorm(x$res_med$.residual_median)
+#   abline(0, 1)
+#   })
+# par(mfrow = c(1,1))
+#   
+# # dotplot of model residuals
+# mapview::mapview(LAGOSNE::coordinatize(re_brms[[1]]$res_med), 
+#                  zcol = ".residual_median")
+# 
+# # get residual spatial autocorrelation range for each model object
+# 
+# # autocorrelation plot of model residuals
+# coords <- res_med[,c("nhd_long", "nhd_lat")]
+# coords <- mutate_all(coords, function(x) abs(as.integer(x * 10)))
+# names(coords) <- c("x", "y")
+# ac <- spind::acfft(data.frame(coords), 
+#                    res_med$.residual_median, 
+#                    dmax = 30) 
+# plot(ac)
+# # each index increment is equal to a tenth of a degree
+# # so 20 is 2 degrees
+# 
+# # look for evidence of interaction effects
+# # following shalizi...
+# re_brms[[1]]$res_med %>%
+#   left_join(dt, by = "lagoslakeid") %>%
+#   ggplot(aes(x = nvinput, y = .residual_median)) +
+#   geom_point()
+# 
+# dt %>%
+#   add_residual_draws(fe_brms[[1]]) %>%
+#   ggplot(aes(x = log(maxdepth + abs(min(dt$maxdepth))), y = .residual, color = iwslavratio)) +
+#   geom_point() +
+#   # stat_pointinterval(alpha = 0.4) +
+#   theme(axis.text.x = element_text(angle = 90))
 
 # ----
 
