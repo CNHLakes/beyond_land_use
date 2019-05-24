@@ -13,9 +13,23 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path =
 library(kableExtra)
 library(dplyr)
 library(magrittr)
+library(stringr)
 
 # setwd("tables")
-read.csv("../data/mcmc/model_r2.csv", 
-                     stringsAsFactors = FALSE) %>%
-  knitr::kable(digits = 2, format = "markdown", caption = "Model R2")
+dt <- read.csv("../data/mcmc/model_r2.csv", 
+                     stringsAsFactors = FALSE) 
+
+options(knitr.kable.NA = "-")  
+dplyr::filter(dt, str_detect(Model, "tp")) %>%
+  dplyr::select(-Model) %>%
+  dplyr::rename("$R^2$" = Estimate) %>%
+  knitr::kable(digits = 2, format = "markdown", caption = "TP Model R2")
+```
+
+\pagebreak
+```{r tn_results}
+dplyr::filter(dt, str_detect(Model, "tn")) %>%
+  dplyr::select(-Model) %>%
+  dplyr::rename("$R^2$" = Estimate) %>%
+  knitr::kable(digits = 2, format = "markdown", caption = "TN Model R2")
 ```

@@ -111,8 +111,13 @@ if(!interactive()){
             "data/mcmc/model_r2.csv",
             row.names = FALSE)
 }
+# r2 <- read.csv("../data/mcmc/model_r2.csv")
 
 # ---- diagnostics ----
+# loo comparison
+loo_compare(loo(re_brms[[6]]), loo(re_brms[[8]])) # corn model has lowest error
+loo_compare(loo(re_brms[[1]]), loo(re_brms[[5]])) # Ag model has lowest error
+ 
 # get median residuals of each model object
 # get_residuals <- function(model, threshold = 0.1){
 #   # model <- re_brms[[1]]

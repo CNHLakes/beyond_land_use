@@ -1,13 +1,19 @@
-"Model","Estimate"
-"tp_depth+bf",0.27
-"tp_depth+iwsla",0.21
-"tp_fe",0.27
-"tn_depth+bf",0.18
-"tn_depth+iwsla",0.21
-"tn_fe",0.22
-"tp_ag",0.36
-"tp_soybeans",0.36
-"tp_re",0.36
-"tn_ag",0.38
-"tn_corn",0.47
-"tn_re",0.49
+"Model","Estimate","Proxy","Lake","Transport","Source"
+"tp",0.17,"Ag",NA,NA,NA
+"tp_depth",0.4,"Ag","maxdepth",NA,NA
+"tp_bf",0.52,"Ag","maxdepth","Baseflow",NA
+"tp_nfert",0.52,"Ag","maxdepth","Baseflow","N fertilizer"
+"tn",0.2,"Ag",NA,NA,NA
+"tn_depth",0.28,"Ag","maxdepth",NA,NA
+"tn_sc",0.34,"Ag","maxdepth","Soil Org Carbon",NA
+"tn_nfert",0.4,"Ag","maxdepth","Soil Org Carbon","N fertilizer"
+"tp_ag",0.61,"Ag","maxdepth","Baseflow","N fertilizer"
+"tp_streamag",0.6,"Stream Ag","maxdepth","Baseflow","N fertilizer"
+"tp_soybeans",0.6,"Soybeans","maxdepth","Baseflow","N fertilizer"
+"tp_pasture",0.59,"Pasture","maxdepth","Baseflow","N fertilizer"
+"tp_rowcrop",0.61,"Row Crop","maxdepth","Baseflow","N fertilizer"
+"tn_ag",0.52,"Ag","maxdepth","Soil Org Carbon","N fertilizer"
+"tn_streamag",0.41,"Stream Ag","maxdepth","Soil Org Carbon","N fertilizer"
+"tn_corn",0.52,"Corn","maxdepth","Soil Org Carbon","N fertilizer"
+"tn_pasture",0.44,"Pasture","maxdepth","Soil Org Carbon","N fertilizer"
+"tn_rowcrop",0.51,"Row Crop","maxdepth","Soil Org Carbon","N fertilizer"

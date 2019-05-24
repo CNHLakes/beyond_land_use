@@ -9,7 +9,7 @@ header-includes:
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
 ```
 
-```{r summary_table, eval=TRUE}
+```{r cdl_key, eval=TRUE}
 library(kableExtra)
 library(dplyr)
 library(magrittr)
@@ -20,8 +20,14 @@ cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
 cdl_key %>%
   group_by(category) %>%
   sample_n(1) %>%
+  arrange(is_ag, code) %>%
+  dplyr::select(-is_forage) %>%
+  dplyr::select(category, ag = is_ag, example = description, code) %>%
   knitr::kable(digits = 0, format = "markdown", caption = "Example of CDL categorizations.") 
+```
 
+\pagebreak
+```{r cdl_summary}
 # ---- cdl summary ----
 cdl_data <- read.csv("../data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
 
@@ -30,5 +36,7 @@ apply(cdl_data, 2, function(x) quantile(x, c(0.05, 0.5, 0.95),
   data.frame() %>%
   dplyr::select(-llid) %>%
   t() %>%
-  knitr::kable(format = "markdown", caption = "CDL summary statistics")
+  knitr::kable(caption = "CDL summary statistics", format = "latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
+  add_header_above(c(" ", "Quantiles" = 3))
 ```
