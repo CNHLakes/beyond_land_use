@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 source("../scripts/99_utils.R")
 ```
 
-```{r 07_model_selection, fig.height=3, echo=FALSE}
+```{r 07_model_selection, fig.height=3, echo=FALSE,eval=FALSE}
 
 # setwd("figures")
 ids <- readRDS("../data/dt.rds") %>%
@@ -106,11 +106,23 @@ plot_grid(
 ``` 
 
 ```{r residual_dotplot, echo=FALSE}
-fit <- readRDS("data/mcmc/re/tn_corn")
+library(tidybayes)
+library(brms)
+
+fit <- readRDS("../data/mcmc/re/tn_corn")
+
+dt        <- readRDS("../data/dt_scaled.rds") 
+names(dt) <- gsub("_", "v", names(dt))
+
+good_hu4s <- readRDS("../data/dt.rds") %>%
+  group_by(hu4_zoneid) %>% 
+  tally() %>%
+  dplyr::filter(n >= 3)
+dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
 
 
 get_residuals <- function(model, threshold = 0.1){
-  # model <- re_brms[[1]]
+  # model <- fit
   model$res_med <- dt %>%
     add_residual_draws(model) %>%
     group_by(lagoslakeid) %>%
@@ -131,8 +143,10 @@ get_residuals <- function(model, threshold = 0.1){
 lg <- lagosne_load()
 fit <- get_residuals(fit)
 
-states_lg <- 
-  state_sf()[unlist(lapply(st_intersects(state_sf(), LAGOSNE::coordinatize(fit$res_med)), function(x) length(x) > 0)),]
+states_lg <- state_sf()[
+  unlist(lapply(
+    st_intersects(state_sf(), LAGOSNE::coordinatize(fit$res_med)),
+    function(x) length(x) > 0)),]
 
 ggplot() + 
   geom_sf(data = states_lg) +
