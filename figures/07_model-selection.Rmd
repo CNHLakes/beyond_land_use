@@ -35,6 +35,7 @@ lg <- lagosne_load("1.087.1")
 
 # ep <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 
 #                 summarize(
+
 #                   group_by(dplyr::select(lg$epi_nutr, lagoslakeid, tp, chla), 
 #                            lagoslakeid), 
 #                   tp = median(tp, na.rm = TRUE), 
@@ -104,7 +105,47 @@ plot_grid(
 )
 ``` 
 
-```{r model_fitting, echo=FALSE}
+```{r residual_dotplot, echo=FALSE}
+fit <- readRDS("data/mcmc/re/tn_corn")
+
+
+get_residuals <- function(model, threshold = 0.1){
+  # model <- re_brms[[1]]
+  model$res_med <- dt %>%
+    add_residual_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.residual_median = median(.residual)) %>%
+    left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long),
+              by = "lagoslakeid")
+
+  model$res_med <- dt %>%
+    add_fitted_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.value_median = median(.value)) %>%
+    right_join(model$res_med, by = "lagoslakeid")
+
+  model$res_test <- abs(
+    median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
+  model
+}
+lg <- lagosne_load()
+fit <- get_residuals(fit)
+
+states_lg <- 
+  state_sf()[unlist(lapply(st_intersects(state_sf(), LAGOSNE::coordinatize(fit$res_med)), function(x) length(x) > 0)),]
+
+ggplot() + 
+  geom_sf(data = states_lg) +
+  geom_sf(data = LAGOSNE::coordinatize(fit$res_med), 
+          aes(color = .residual_median), size = 0.8) +
+  coord_sf(datum = NA) +
+  theme_void() + 
+  scale_color_gradient2() +
+  labs(color = "tn_corn model residuals")
+
+```
+
+```{r model_fitting, echo=FALSE, eval=FALSE}
 library(brms)
 library(tidybayes)
 library(modelr)
@@ -202,12 +243,12 @@ print(fit2$formula)
 
 ```
 
-```{r model_diagnostics_basics, echo=FALSE, fig.height=2}
+```{r model_diagnostics_basics, echo=FALSE, fig.height=2, eval=FALSE}
 # get_variables(fit0)
 plot(fit0, pars = "ag")
 ```
 
-```{r model_diagnostics_advanced, fig.height=4, echo=FALSE}
+```{r model_diagnostics_advanced, fig.height=4, echo=FALSE, eval=FALSE}
 # pull global distribution (lower, mean, upper)
 # get_variables(fit0)
 global_dist <- spread_draws(fit0, b_ag) %>%
@@ -235,7 +276,7 @@ hu4_signif <-  LAGOSNEgis::query_gis(
   st_cast(to = "MULTIPOLYGON")
 ```
 
-```{r signif_map, echo=FALSE}
+```{r signif_map, echo=FALSE, eval=FALSE}
 ggplot() + 
   geom_sf(data = hu4) +
   geom_sf(data = hu4_signif, color = "red")
