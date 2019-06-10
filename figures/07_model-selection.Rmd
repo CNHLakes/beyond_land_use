@@ -155,14 +155,21 @@ ggplot() +
   coord_sf(datum = NA) +
   theme_void() + 
   scale_color_gradient2() +
-  labs(color = "tn_corn model residuals")
+  labs(color = "tn_corn \n model residuals")
 
 ```
 
-```{r model_fitting, echo=FALSE, eval=FALSE}
+```{r model_fitting, echo=FALSE, eval=TRUE}
 library(brms)
 library(tidybayes)
 library(modelr)
+
+brm_fit <- function(destfile, formula, data){
+  fit <- brm(formula = formula, data = data, 
+             family = gaussian())
+  saveRDS(fit, destfile)
+  return(fit)
+}
 
 # linear
 model_form <- bf(tp ~ ag)
@@ -188,10 +195,10 @@ fit1 <- get_if_not_exists(brm_fit, "../data/mcmc/fit1.rds", formula = model_form
 # plot(fit1)
 # print(fit$formula)
 
-model_form <- bf(tp ~ hu12vbaseflowvmean + 
+model_form <- bf(tp ~ hu12vbaseflowvmean +
                    (1 + ag | hu4vzoneid))
 # unlink("../data/mcmc/fit2.rds")
-fit2 <- get_if_not_exists(brm_fit, "../data/mcmc/fit2.rds", formula = model_form, 
+fit2 <- get_if_not_exists(brm_fit, "../data/mcmc/fit2.rds", formula = model_form,
                          data = dt)
 
 
@@ -220,22 +227,21 @@ loo_compare(loo(fit4), loo(fit5))
 quantile(ranef(fit4)$hu4vzoneid[,,2], c(0, 0.05, 0.5, 0.95, 1))
 plot(fit4)
 
-
 brms::bayes_R2(fit2)
 brms::bayes_R2(fit3)
 brms::bayes_R2(fit4)
-
-
 
 range(dt$iwslavratio)
 
 range((dt$iwslavratio - mean(dt$iwslavratio)) / sd(dt$iwslavratio))
 hist((dt$iwslavratio - mean(dt$iwslavratio)) / sd(dt$iwslavratio))
-test <- mutate_at(dt, scale, .vars = vars(-lagoslakeid, -hu4vzoneid))
+test <- dt %>% mutate_if(function(col) is.numeric(col) & 
+                    !all(col == .$lagoslakeid) &
+                    !all(col == .$hu4vzoneid), scale)
 
 
 # non-linear re
-model_form <- bf(tp ~ bagvpct * agvpct, 
+model_form <- bf(tp ~ bagvpct * ag, 
                  bagvpct ~ 1 + 
                    (1|hu4vzoneid), 
                  nl = TRUE)
@@ -246,14 +252,14 @@ print("random effects")
 print(fit1$formula)
 
 # non-linear re w/ 2nd level coeffs
-model_form2 <- bf(tp ~ bagvpct * agvpct, 
+model_form2 <- bf(tp ~ bagvpct * ag, 
                  bagvpct ~ 1 + phosphorusvfertilizervuse + soybeans +
                    (1|hu4vzoneid), 
                  nl = TRUE)
-fit2 <- get_if_not_exists(brm_fit, "../data/mcmc/fit2.rds", formula = model_form2, 
+fit_nle <- get_if_not_exists(brm_fit, "../data/mcmc/fit_nle.rds", formula = model_form2, 
                           data = dt)
 print("re w/ 2nd level coeffs")
-print(fit2$formula)
+print(fit_nle$formula)
 
 ```
 
@@ -262,7 +268,7 @@ print(fit2$formula)
 plot(fit0, pars = "ag")
 ```
 
-```{r model_diagnostics_advanced, fig.height=4, echo=FALSE, eval=FALSE}
+```{r model_diagnostics_advanced, fig.height=4, echo=FALSE, eval=TRUE}
 # pull global distribution (lower, mean, upper)
 # get_variables(fit0)
 global_dist <- spread_draws(fit0, b_ag) %>%
@@ -300,10 +306,10 @@ ggplot() +
 
 # pull 2nd level covariate distributions
 coef_signif <- bind_rows(
-  spread_draws(fit2, b_bagvpct_soybeans) %>%
+  spread_draws(fit_nle, b_bagvpct_soybeans) %>%
     do(tibble::as_tibble(t(quantile(.$b_bagvpct_soybeans, 
                                     c(0.05, 0.5, 0.95))))), 
-  spread_draws(fit2, b_bagvpct_phosphorusvfertilizervuse) %>%
+  spread_draws(fit_nle, b_bagvpct_phosphorusvfertilizervuse) %>%
     do(tibble::as_tibble(t(quantile(.$b_bagvpct_phosphorusvfertilizervuse, 
                                     c(0.05, 0.5, 0.95)))))
   )
@@ -345,9 +351,9 @@ ran_ef <- as.data.frame(ranef(fit1)$hu4vzoneid) %>%
 #   ylim(0, 450) + xlim(40, 90) + ggtitle(hu4_id)
 
 dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID) %>%
-  modelr::data_grid(agvpct = seq_range(agvpct, n = 101), hu4vzoneid) %>%
+  modelr::data_grid(ag = seq_range(ag, n = 101), hu4vzoneid) %>%
   add_predicted_draws(fit) %>%
-  ggplot(aes(x = agvpct, y = tp)) +
+  ggplot(aes(x = ag, y = tp)) +
   stat_lineribbon(aes(y = .prediction), .width = c(.99, .95, .8, .5), color = "#08519C") +
   geom_point(data = dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID), 
                                   size = 2) +
@@ -356,16 +362,16 @@ dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID) %>%
 
 ```
 
-```{r not_signif, echo=FALSE}
+```{r not_signif, echo=FALSE, eval=FALSE}
 hu4_not_signif_n <- sample(unique(
   pull(
     dplyr::filter(dt, !(hu4vzoneid %in% hu4_signif$ZoneID)),
     hu4vzoneid)), 5)
 
 dplyr::filter(dt, hu4vzoneid %in% hu4_not_signif_n) %>%
-  modelr::data_grid(agvpct = seq_range(agvpct, n = 101), hu4vzoneid) %>%
+  modelr::data_grid(ag = seq_range(ag, n = 101), hu4vzoneid) %>%
   add_predicted_draws(fit) %>%
-  ggplot(aes(x = agvpct, y = tp)) +
+  ggplot(aes(x = ag, y = tp)) +
   stat_lineribbon(aes(y = .prediction), .width = c(.99, .95, .8, .5), color = "#08519C") +
   geom_point(data = dplyr::filter(dt, hu4vzoneid %in% hu4_not_signif_n), 
                                   size = 2) +
