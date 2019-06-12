@@ -87,6 +87,7 @@ data/macroag/crp.rds: scripts/00_get_crp.R
 
 data/dt.rds: scripts/02_aggregate_predictors.R \
 data/ep.rds \
+data/cdl/cdl_summary.csv \
 data/iws_lulc.rds \
 data/usgs/usgs.rds \
 data/gssurgo/gssurgo.rds \
@@ -109,8 +110,7 @@ figures/04_nlcd-versus-cdl-1.pdf \
 figures/05_cafos-1.pdf \
 figures/06_lulc_buffer_demo-1.pdf \
 figures/08_exploratory_dotplot-1.pdf \
-figures/09_stream_buffer-1.pdf \
-figures/residual_dotplot.pdf
+figures/09_stream_buffer-1.pdf 
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
 	-mv manuscript/figures2.pdf manuscript/figures.pdf
