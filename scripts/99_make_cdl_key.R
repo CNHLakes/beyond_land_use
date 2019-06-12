@@ -11,7 +11,7 @@ aggregate_categories <- function(cdl_key){
   res <- mutate(cdl_key, category = case_when(
     grepl("^alfalfa$", tolower(description)) ~ "forage",
     grepl("clover", tolower(description)) ~ "forage",
-    grepl("^sorghum$", tolower(description)) ~ "forage",
+    grepl("^sorghum$", tolower(description)) ~ "sorghum",
     grepl("wheat", tolower(description)) ~ "wheat",
     grepl("wetlands", tolower(description)) ~ "wetlands",
     grepl("developed", tolower(description)) ~ "developed",
@@ -32,6 +32,16 @@ aggregate_categories <- function(cdl_key){
     grepl("other", tolower(description)) ~ "other ag"
   )) %>%
     tidyr::replace_na(list(category = "other ag"))
+  
+  test <- mutate(res, super_category = case_when(
+    grepl("^corn$", tolower(category)) ~ "ag",
+    grepl("^wheat$", tolower(category)) ~ "ag",
+    grepl("^soybeans$", tolower(category)) ~ "ag",
+    grepl("^other ag$", tolower(category)) ~ "ag",
+    grepl("^forage$", tolower(category)) ~ "ag",
+    grepl("^pasture$", tolower(category)) ~ "ag"
+    )) %>%
+    tidyr::replace_na(list(super_category = "nonag"))
 
   res <- mutate(res,
                 is_ag = if_else(category %in% c("corn", "wheat", "other ag",
