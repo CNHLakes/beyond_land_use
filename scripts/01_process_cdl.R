@@ -24,35 +24,38 @@ cdl_summary <- function(llid){
     rename(n = Freq) %>%
     arrange(desc(n)) %>%
     group_by(category) %>%
-    summarize(group_n = sum(n, na.rm = TRUE), is_ag = first(is_ag)) %>%
+    summarize(group_n = sum(n, na.rm = TRUE), 
+              is_ag = first(is_ag), 
+              is_natural = first(is_natural), 
+              is_nfixer = first(is_nfixer), 
+              is_forage = first(is_forage)) %>%
     ungroup() %>%
-    mutate(percent = round((group_n / sum(group_n, na.rm = TRUE)) * 100, 0)) %>%
-    dplyr::filter(percent >= 1) %>%
-    arrange(is_ag, percent)
-  cdl_cat <- add_row(cdl_cat, category = "other", group_n = NA,
-                      percent = 100 - sum(cdl_cat$percent, na.rm = TRUE))
+    mutate(percent = (group_n / sum(group_n, na.rm = TRUE)) * 100) %>%
+    # dplyr::filter(percent >= 1) %>%
+    arrange(is_ag, desc(percent))
+  # cdl_cat <- add_row(cdl_cat, category = "other", group_n = NA,
+  #                     percent = 100 - sum(cdl_cat$percent, na.rm = TRUE))
   category_order <- arrange(cdl_cat, is_ag, percent)$category
-    
-  cdl_isag <- cdl_table %>%
-    filter(description != "Background") %>%
-    rename(n = Freq) %>%
-    arrange(desc(n)) %>%
-    group_by(is_ag) %>%
-    summarize(group_n = sum(n, na.rm = TRUE)) %>%
-    ungroup() %>%
-    mutate(percent = round((group_n / sum(group_n, na.rm = TRUE)) * 100, 0)) %>%
-    arrange(percent)
   
-  cdl_isforage <- cdl_table %>%
-    filter(description != "Background" & !is.na(description)) %>%
-    rename(n = Freq) %>%
-    arrange(desc(n)) %>%
-    group_by(is_forage) %>%
-    summarize(group_n = sum(n, na.rm = TRUE)) %>%
-    ungroup() %>%
-    mutate(percent = round((group_n / sum(group_n, na.rm = TRUE)) * 100, 0)) %>%
-    filter(is_forage %in% c("forage", "pasture")) %>%
-    arrange(percent)
+  calc_cdl_percent <- function(dt, grouping_column){
+    dt %>%
+      dplyr::filter(description != "Background") %>%
+      rename(n = Freq) %>%
+      arrange(desc(n)) %>%
+      group_by(UQ(rlang::sym(grouping_column))) %>%
+      summarize(group_n = sum(n, na.rm = TRUE)) %>%
+      ungroup() %>%
+      mutate(percent = (group_n / sum(group_n, na.rm = TRUE)) * 100) %>%
+      arrange(UQ(rlang::sym(grouping_column)), desc(percent))
+  }
+  
+  cdl_isag         <- calc_cdl_percent(cdl_table, "is_ag")
+  cdl_isforage     <- calc_cdl_percent(cdl_table, "is_forage")
+  cdl_isnatural    <- calc_cdl_percent(cdl_table, "is_natural")
+  cdl_issmallgrain <- calc_cdl_percent(cdl_table, "is_small_grain")
+  cdl_isnfixer     <- calc_cdl_percent(cdl_table, "is_nfixer")
+    
+  
   
   res <- mutate(cdl_cat, llid = llid, variable = category, value = percent) %>%
     dplyr::select(llid, variable, value) %>%
