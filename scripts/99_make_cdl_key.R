@@ -15,7 +15,7 @@ aggregate_categories <- function(cdl_key){
     grepl("wheat", tolower(description)) ~ "wheat",
     grepl("wetlands", tolower(description)) ~ "wetlands",
     grepl("developed", tolower(description)) ~ "developed",
-    grepl("dbl", tolower(description)) ~ "mixed crop",
+    grepl("dbl", tolower(description)) ~ "other ag",
     grepl("background", tolower(description)) ~ "background",
     grepl("barren", tolower(description)) ~ "other non ag",
     grepl("corn", tolower(description)) ~ "corn",
@@ -35,8 +35,8 @@ aggregate_categories <- function(cdl_key){
 
   res <- mutate(res,
                 is_ag = if_else(category %in% c("corn", "wheat", "other ag",
-                                          "soybeans", "mixed crop", "forage", "pasture"), "ag", 
-                                "nonag"))
+                                          "soybeans", "forage",
+                                          "pasture"), "ag", "nonag"))
   
   res <- mutate(res, is_forage = case_when(
                   grepl("^pasture$", tolower(category)) ~ "pasture", 
