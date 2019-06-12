@@ -37,8 +37,11 @@ cdl_summary <- function(llid){
   #                     percent = 100 - sum(cdl_cat$percent, na.rm = TRUE))
   category_order <- arrange(cdl_cat, is_ag, percent)$category
   
-  calc_cdl_percent <- function(dt, grouping_column){
-    dt %>%
+  calc_cdl_percent <- function(dt, grouping_column, group_name = NA){
+    # dt  <- cdl_table
+    # grouping_column <- "is_small_grain"
+    # group_name <- "smallgrain"
+    res <- dt %>%
       dplyr::filter(description != "Background") %>%
       rename(n = Freq) %>%
       arrange(desc(n)) %>%
@@ -46,17 +49,21 @@ cdl_summary <- function(llid){
       summarize(group_n = sum(n, na.rm = TRUE)) %>%
       ungroup() %>%
       mutate(percent = (group_n / sum(group_n, na.rm = TRUE)) * 100) %>%
-      arrange(UQ(rlang::sym(grouping_column)), desc(percent))
+      arrange(UQ(rlang::sym(grouping_column)), desc(percent)) %>%
+      dplyr::filter(!is.na(UQ(rlang::sym(grouping_column))))
+    if(nrow(res) == 0){
+      res <- data.frame(group_name, percent = 0, group_n = 0)
+      res <- setNames(res, c(grouping_column, "percent", "group_n"))
+    }
+    res
   }
   
   cdl_isag         <- calc_cdl_percent(cdl_table, "is_ag")
-  cdl_isforage     <- calc_cdl_percent(cdl_table, "is_forage")
+  cdl_isforage     <- calc_cdl_percent(cdl_table, "is_forage", "forage")
   cdl_isnatural    <- calc_cdl_percent(cdl_table, "is_natural")
-  cdl_issmallgrain <- calc_cdl_percent(cdl_table, "is_small_grain")
-  cdl_isnfixer     <- calc_cdl_percent(cdl_table, "is_nfixer")
+  cdl_issmallgrain <- calc_cdl_percent(cdl_table, "is_small_grain", "smallgrain")
+  cdl_isnfixer     <- calc_cdl_percent(cdl_table, "is_nfixer", "nfixer")
     
-  
-  
   res <- mutate(cdl_cat, llid = llid, variable = category, value = percent) %>%
     dplyr::select(llid, variable, value) %>%
     rbind(
@@ -64,6 +71,15 @@ cdl_summary <- function(llid){
                            value = percent), 
                     llid, variable, value),
       dplyr::select(mutate(cdl_isforage, llid = llid, variable = is_forage, 
+                           value = percent), 
+                    llid, variable, value),
+      dplyr::select(mutate(cdl_isnatural, llid = llid, variable = is_natural, 
+                           value = percent), 
+                    llid, variable, value), 
+      dplyr::select(mutate(cdl_issmallgrain, llid = llid, variable = is_small_grain, 
+                           value = percent), 
+                    llid, variable, value), 
+      dplyr::select(mutate(cdl_isnfixer, llid = llid, variable = is_nfixer, 
                            value = percent), 
                     llid, variable, value)
       )

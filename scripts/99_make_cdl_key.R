@@ -8,6 +8,7 @@ cdl_key <- data.frame(code = 0:255, description = cdlTools::updateNamesCDL(0:255
 cdl_key <- cdl_key[which(nchar(cdl_key$description) > 3),]
 
 aggregate_categories <- function(cdl_key){
+  
   res <- mutate(cdl_key, category = case_when(
     grepl("^alfalfa$", tolower(description)) ~ "forage",
     grepl("clover", tolower(description)) ~ "forage",
@@ -33,25 +34,38 @@ aggregate_categories <- function(cdl_key){
   )) %>%
     tidyr::replace_na(list(category = "other ag"))
   
-  test <- mutate(res, super_category = case_when(
+  res <- mutate(res, is_ag = case_when(
     grepl("^corn$", tolower(category)) ~ "ag",
+    grepl("^sorghum$", tolower(category)) ~ "ag",
     grepl("^wheat$", tolower(category)) ~ "ag",
     grepl("^soybeans$", tolower(category)) ~ "ag",
     grepl("^other ag$", tolower(category)) ~ "ag",
     grepl("^forage$", tolower(category)) ~ "ag",
     grepl("^pasture$", tolower(category)) ~ "ag"
     )) %>%
-    tidyr::replace_na(list(super_category = "nonag"))
+    tidyr::replace_na(list(is_ag = "nonag"))
 
-  res <- mutate(res,
-                is_ag = if_else(category %in% c("corn", "wheat", "other ag",
-                                          "soybeans", "forage",
-                                          "pasture"), "ag", "nonag"))
+  res <- mutate(res, is_natural = case_when( 
+    grepl("^ag$", tolower(is_ag)) ~ "nonnatural",
+    grepl("developed", tolower(description)) ~ "nonnatural"
+  )) %>%
+    tidyr::replace_na(list(is_natural = "natural"))
+  
+  res <- mutate(res, is_small_grain = case_when(
+    grepl("^barley$", tolower(description)) ~ "smallgrain",
+    grepl("^sorghum$", tolower(description)) ~ "smallgrain",
+    grepl("wheat", tolower(description)) ~ "smallgrain"
+  ))
+  
+  res <- mutate(res, is_nfixer = case_when(
+    grepl("^alfalfa$", tolower(description)) ~ "nfixer",
+    grepl("soybeans", tolower(description)) ~ "nfixer"
+  ))
   
   res <- mutate(res, is_forage = case_when(
-                  grepl("^pasture$", tolower(category)) ~ "pasture", 
-                  grepl("^forage$", tolower(category)) ~ "forage"))
-  res$is_forage[is.na(res$is_forage)] <- res$is_ag[is.na(res$is_forage)]
+    grepl("^pasture$", tolower(category)) ~ "forage",
+    grepl("^forage$", tolower(category)) ~ "forage"
+  ))
                   
   res
 }
