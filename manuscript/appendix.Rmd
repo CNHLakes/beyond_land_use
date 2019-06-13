@@ -33,3 +33,7 @@ dt <- readRDS("../data/dt.rds") %>%
 g <- gridExtra::tableGrob(dt, rows = rep("", nrow(dt)))
 grid.draw(g)
 ```
+
+```{r predictor_maps}
+# 
+```

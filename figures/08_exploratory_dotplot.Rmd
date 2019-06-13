@@ -105,12 +105,15 @@ prep_dotplot <- function(x, col_name){
                   category = factor(category, 
                                     levels = c("Lake", "Nutrient sources",
                                                "Nutrient proxies",
-                                               "Transport capacity"))) %>%
-    dplyr::filter(!(var %in% c("tp", "tn")))
+                                               "Transport capacity", 
+                                               "Buffer composition"))) %>%
+    dplyr::filter(!(var %in% c("tp", "tn"))) %>%
+    dplyr::filter(!is.na(category))
   res
 }
 
-plot_opts <- theme(axis.title.y = element_blank(), 
+plot_opts <- theme_cowplot() +
+  theme(axis.title.y = element_blank(), 
                    axis.text = element_text(size = 8), 
                    legend.position = 0)
 

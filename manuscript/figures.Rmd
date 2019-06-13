@@ -35,7 +35,7 @@ knitr::include_graphics("../figures/satellite-1.pdf")
 ```
 
 ```{r exploratory_dotplot, fig.cap = "Exploratory dotplots showing absolute value correlations.", warning=FALSE, echo = FALSE}
-knitr::include_graphics("../figures/08_exploratory_dotplot-2.pdf")
+knitr::include_graphics("../figures/dotplot-1.pdf")
 ```
 
 ```{r exploratory_heatmap, fig.cap = "Exploratory heatmap showing absolute value correlations.", warning=FALSE, echo = FALSE}
