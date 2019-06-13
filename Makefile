@@ -100,7 +100,10 @@ data/buffer_stats.csv: scripts/00_get_buffers.R
 data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds
 	Rscript $<
 
-figures: manuscript/figures.pdf
+figures: manuscript/figures.pdf manuscript/appendix.pdf
+
+manuscript/appendix.pdf: manuscript/appendix.Rmd
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
 figures/01_county_extent-1.pdf \
