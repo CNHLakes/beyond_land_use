@@ -7,6 +7,7 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
+# setwd("figures")
 ```
 
 ```{r summary_table, eval=TRUE}
@@ -14,9 +15,17 @@ library(kableExtra)
 library(dplyr)
 library(magrittr)
 
+cdl_vars <- readRDS("../data/dt.rds") %>%
+  dplyr::select(ag:wheat) %>%
+  summarize_all(median, na.rm = TRUE) %>%
+  tidyr::gather() %>%
+  dplyr::filter(value >= 1.4) %>%
+  arrange(desc(value)) %>%
+  pull(key)
+
 # setwd("tables")
 dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select(tp:clay_pct, -matches("zoneid")) %>%
+  dplyr::select(tp:clay_pct, -matches("zoneid"), -matches("pct"), cdl_vars) %>%
   tidyr::gather(key = "variable") %>%
   group_by(variable) %>%
   mutate(value = as.numeric(value)) %>%

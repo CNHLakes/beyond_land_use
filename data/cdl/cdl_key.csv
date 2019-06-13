@@ -1,139 +1,139 @@
 "code","description","category","is_ag","is_natural","is_small_grain","is_nfixer","is_forage"
-1,"Corn","corn","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-2,"Cotton","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-3,"Rice","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-4,"Sorghum","sorghum","ag","nonnatural","smallgrain","nonnfixer","nonforage"
-5,"Soybeans","soybeans","ag","nonnatural","nonsmallgrain","nfixer","nonforage"
-6,"Sunflower","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-10,"Peanuts","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-11,"Tobacco","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-12,"Sweet Corn","corn","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-13,"Pop or Orn Corn","corn","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-14,"Mint","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-21,"Barley","other ag","ag","nonnatural","smallgrain","nonnfixer","nonforage"
-22,"Durum Wheat","wheat","ag","nonnatural","smallgrain","nonnfixer","nonforage"
-23,"Spring Wheat","wheat","ag","nonnatural","smallgrain","nonnfixer","nonforage"
-24,"Winter Wheat","wheat","ag","nonnatural","smallgrain","nonnfixer","nonforage"
-25,"Other Small Grains","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-26,"Dbl Crop WinWht/Soybeans","other ag","ag","nonnatural","nonsmallgrain","nfixer","nonforage"
-28,"Oats","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-29,"Millet","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-30,"Speltz","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-31,"Canola","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-32,"Flaxseed","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-33,"Safflower","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-34,"Rape Seed","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-35,"Mustard","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-36,"Alfalfa","forage","ag","nonnatural","nonsmallgrain","nfixer","forage"
-37,"Other Hay/Non Alfalfa","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-38,"Camelina","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-39,"Buckwheat","wheat","ag","nonnatural","smallgrain","nonnfixer","nonforage"
-41,"Sugarbeets","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-42,"Dry Beans","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-43,"Potatoes","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-44,"Other Crops","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-45,"Sugarcane","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-46,"Sweet Potatoes","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-47,"Misc Vegs & Fruits","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-48,"Watermelons","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-49,"Onions","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-50,"Cucumbers","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-51,"Chick Peas","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-52,"Lentils","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-53,"Peas","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-54,"Tomatoes","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-55,"Caneberries","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-56,"Hops","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-57,"Herbs","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-58,"Clover/Wildflowers","forage","ag","nonnatural","nonsmallgrain","nonnfixer","forage"
-59,"Sod/Grass Seed","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-60,"Switchgrass","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-61,"Fallow/Idle Cropland","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-62,"Pasture/Grass","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-66,"Cherries","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-67,"Peaches","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-68,"Apples","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-69,"Grapes","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-70,"Christmas Trees","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-71,"Other Tree Crops","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-72,"Citrus","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-74,"Pecans","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-75,"Almonds","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-76,"Walnuts","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-77,"Pears","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-176,"Grass/Pasture","pasture","ag","nonnatural","nonsmallgrain","nonnfixer","forage"
-181,"Pasture/Hay","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-204,"Pistachios","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-205,"Triticale","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-206,"Carrots","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-207,"Asparagus","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-208,"Garlic","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-209,"Cantaloupes","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-210,"Prunes","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-211,"Olives","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-212,"Oranges","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-213,"Honeydew Melons","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-214,"Broccoli","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-216,"Peppers","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-217,"Pomegranates","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-218,"Nectarines","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-219,"Greens","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-220,"Plums","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-221,"Strawberries","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-222,"Squash","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-223,"Apricots","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-224,"Vetch","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-225,"Dbl Crop WinWht/Corn","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-226,"Dbl Crop Oats/Corn","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-227,"Lettuce","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-229,"Pumpkins","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-230,"Dbl Crop Lettuce/Durum Wht","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-231,"Dbl Crop Lettuce/Cantaloupe","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-232,"Dbl Crop Lettuce/Cotton","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-233,"Dbl Crop Lettuce/Barley","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-234,"Dbl Crop Durum Wht/Sorghum","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-235,"Dbl Crop Barley/Sorghum","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-236,"Dbl Crop WinWht/Sorghum","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-237,"Dbl Crop Barley/Corn","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-238,"Dbl Crop WinWht/Cotton","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-239,"Dbl Crop Soybeans/Cotton","other ag","ag","nonnatural","nonsmallgrain","nfixer","nonforage"
-240,"Dbl Crop Soybeans/Oats","other ag","ag","nonnatural","nonsmallgrain","nfixer","nonforage"
-241,"Dbl Crop Corn/Soybeans","other ag","ag","nonnatural","nonsmallgrain","nfixer","nonforage"
-242,"Blueberries","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-243,"Cabbage","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-244,"Cauliflower","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-245,"Celery","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-246,"Radishes","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-247,"Turnips","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-248,"Eggplants","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-249,"Gourds","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-250,"Cranberries","other ag","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-251,"Non-Irrigated Corn","corn","ag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-252,"Non-Irrigated Soybeans","soybeans","ag","nonnatural","nonsmallgrain","nfixer","nonforage"
-253,"Non-Irrigated Winter Wheat","wheat","ag","nonnatural","smallgrain","nonnfixer","nonforage"
-254,"Dbl Crop Barley/Soybeans","other ag","ag","nonnatural","nonsmallgrain","nfixer","nonforage"
-255,"Non-Irrigated Dbl. Crop Winter Wheat Soybeans","wheat","ag","nonnatural","smallgrain","nfixer","nonforage"
-0,"Background","background","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-63,"Forest","forest","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-64,"Shrubland","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-65,"Barren","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-81,"Clouds/No Data","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-82,"Developed","developed","nonag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-83,"Water","water","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-87,"Wetlands","wetlands","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-88,"Nonag/Undefined","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-92,"Aquaculture","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-111,"Open Water","water","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-112,"Perennial Ice/Snow","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-121,"Developed/Open Space","developed","nonag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-122,"Developed/Low Intensity","developed","nonag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-123,"Developed/Med Intensity","developed","nonag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-124,"Developed/High Intensity","developed","nonag","nonnatural","nonsmallgrain","nonnfixer","nonforage"
-131,"Barren","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-141,"Deciduous Forest","forest","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-142,"Evergreen Forest","forest","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-143,"Mixed Forest","forest","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-152,"Shrubland","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-171,"Grassland Herbaceous","other non ag","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-190,"Woody Wetlands","wetlands","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
-195,"Herbaceous Wetlands","wetlands","nonag","natural","nonsmallgrain","nonnfixer","nonforage"
+1,"Corn","corn","ag","nonnatural",NA,NA,NA
+2,"Cotton","other ag","ag","nonnatural",NA,NA,NA
+3,"Rice","other ag","ag","nonnatural",NA,NA,NA
+4,"Sorghum","sorghum","ag","nonnatural","smallgrain",NA,NA
+5,"Soybeans","soybeans","ag","nonnatural",NA,"nfixer",NA
+6,"Sunflower","other ag","ag","nonnatural",NA,NA,NA
+10,"Peanuts","other ag","ag","nonnatural",NA,NA,NA
+11,"Tobacco","other ag","ag","nonnatural",NA,NA,NA
+12,"Sweet Corn","corn","ag","nonnatural",NA,NA,NA
+13,"Pop or Orn Corn","corn","ag","nonnatural",NA,NA,NA
+14,"Mint","other ag","ag","nonnatural",NA,NA,NA
+21,"Barley","other ag","ag","nonnatural","smallgrain",NA,NA
+22,"Durum Wheat","wheat","ag","nonnatural","smallgrain",NA,NA
+23,"Spring Wheat","wheat","ag","nonnatural","smallgrain",NA,NA
+24,"Winter Wheat","wheat","ag","nonnatural","smallgrain",NA,NA
+25,"Other Small Grains","other ag","ag","nonnatural",NA,NA,NA
+26,"Dbl Crop WinWht/Soybeans","other ag","ag","nonnatural",NA,"nfixer",NA
+28,"Oats","other ag","ag","nonnatural",NA,NA,NA
+29,"Millet","other ag","ag","nonnatural",NA,NA,NA
+30,"Speltz","other ag","ag","nonnatural",NA,NA,NA
+31,"Canola","other ag","ag","nonnatural",NA,NA,NA
+32,"Flaxseed","other ag","ag","nonnatural",NA,NA,NA
+33,"Safflower","other ag","ag","nonnatural",NA,NA,NA
+34,"Rape Seed","other ag","ag","nonnatural",NA,NA,NA
+35,"Mustard","other ag","ag","nonnatural",NA,NA,NA
+36,"Alfalfa","forage","ag","nonnatural",NA,"nfixer","forage"
+37,"Other Hay/Non Alfalfa","other ag","ag","nonnatural",NA,NA,NA
+38,"Camelina","other ag","ag","nonnatural",NA,NA,NA
+39,"Buckwheat","wheat","ag","nonnatural","smallgrain",NA,NA
+41,"Sugarbeets","other ag","ag","nonnatural",NA,NA,NA
+42,"Dry Beans","other ag","ag","nonnatural",NA,NA,NA
+43,"Potatoes","other ag","ag","nonnatural",NA,NA,NA
+44,"Other Crops","other ag","ag","nonnatural",NA,NA,NA
+45,"Sugarcane","other ag","ag","nonnatural",NA,NA,NA
+46,"Sweet Potatoes","other ag","ag","nonnatural",NA,NA,NA
+47,"Misc Vegs & Fruits","other ag","ag","nonnatural",NA,NA,NA
+48,"Watermelons","other ag","ag","nonnatural",NA,NA,NA
+49,"Onions","other ag","ag","nonnatural",NA,NA,NA
+50,"Cucumbers","other ag","ag","nonnatural",NA,NA,NA
+51,"Chick Peas","other ag","ag","nonnatural",NA,NA,NA
+52,"Lentils","other ag","ag","nonnatural",NA,NA,NA
+53,"Peas","other ag","ag","nonnatural",NA,NA,NA
+54,"Tomatoes","other ag","ag","nonnatural",NA,NA,NA
+55,"Caneberries","other ag","ag","nonnatural",NA,NA,NA
+56,"Hops","other ag","ag","nonnatural",NA,NA,NA
+57,"Herbs","other ag","ag","nonnatural",NA,NA,NA
+58,"Clover/Wildflowers","forage","ag","nonnatural",NA,NA,"forage"
+59,"Sod/Grass Seed","other ag","ag","nonnatural",NA,NA,NA
+60,"Switchgrass","other ag","ag","nonnatural",NA,NA,NA
+61,"Fallow/Idle Cropland","other ag","ag","nonnatural",NA,NA,NA
+62,"Pasture/Grass","other ag","ag","nonnatural",NA,NA,NA
+66,"Cherries","other ag","ag","nonnatural",NA,NA,NA
+67,"Peaches","other ag","ag","nonnatural",NA,NA,NA
+68,"Apples","other ag","ag","nonnatural",NA,NA,NA
+69,"Grapes","other ag","ag","nonnatural",NA,NA,NA
+70,"Christmas Trees","other ag","ag","nonnatural",NA,NA,NA
+71,"Other Tree Crops","other ag","ag","nonnatural",NA,NA,NA
+72,"Citrus","other ag","ag","nonnatural",NA,NA,NA
+74,"Pecans","other ag","ag","nonnatural",NA,NA,NA
+75,"Almonds","other ag","ag","nonnatural",NA,NA,NA
+76,"Walnuts","other ag","ag","nonnatural",NA,NA,NA
+77,"Pears","other ag","ag","nonnatural",NA,NA,NA
+176,"Grass/Pasture","pasture","ag","nonnatural",NA,NA,"forage"
+181,"Pasture/Hay","other ag","ag","nonnatural",NA,NA,NA
+204,"Pistachios","other ag","ag","nonnatural",NA,NA,NA
+205,"Triticale","other ag","ag","nonnatural",NA,NA,NA
+206,"Carrots","other ag","ag","nonnatural",NA,NA,NA
+207,"Asparagus","other ag","ag","nonnatural",NA,NA,NA
+208,"Garlic","other ag","ag","nonnatural",NA,NA,NA
+209,"Cantaloupes","other ag","ag","nonnatural",NA,NA,NA
+210,"Prunes","other ag","ag","nonnatural",NA,NA,NA
+211,"Olives","other ag","ag","nonnatural",NA,NA,NA
+212,"Oranges","other ag","ag","nonnatural",NA,NA,NA
+213,"Honeydew Melons","other ag","ag","nonnatural",NA,NA,NA
+214,"Broccoli","other ag","ag","nonnatural",NA,NA,NA
+216,"Peppers","other ag","ag","nonnatural",NA,NA,NA
+217,"Pomegranates","other ag","ag","nonnatural",NA,NA,NA
+218,"Nectarines","other ag","ag","nonnatural",NA,NA,NA
+219,"Greens","other ag","ag","nonnatural",NA,NA,NA
+220,"Plums","other ag","ag","nonnatural",NA,NA,NA
+221,"Strawberries","other ag","ag","nonnatural",NA,NA,NA
+222,"Squash","other ag","ag","nonnatural",NA,NA,NA
+223,"Apricots","other ag","ag","nonnatural",NA,NA,NA
+224,"Vetch","other ag","ag","nonnatural",NA,NA,NA
+225,"Dbl Crop WinWht/Corn","other ag","ag","nonnatural",NA,NA,NA
+226,"Dbl Crop Oats/Corn","other ag","ag","nonnatural",NA,NA,NA
+227,"Lettuce","other ag","ag","nonnatural",NA,NA,NA
+229,"Pumpkins","other ag","ag","nonnatural",NA,NA,NA
+230,"Dbl Crop Lettuce/Durum Wht","other ag","ag","nonnatural",NA,NA,NA
+231,"Dbl Crop Lettuce/Cantaloupe","other ag","ag","nonnatural",NA,NA,NA
+232,"Dbl Crop Lettuce/Cotton","other ag","ag","nonnatural",NA,NA,NA
+233,"Dbl Crop Lettuce/Barley","other ag","ag","nonnatural",NA,NA,NA
+234,"Dbl Crop Durum Wht/Sorghum","other ag","ag","nonnatural",NA,NA,NA
+235,"Dbl Crop Barley/Sorghum","other ag","ag","nonnatural",NA,NA,NA
+236,"Dbl Crop WinWht/Sorghum","other ag","ag","nonnatural",NA,NA,NA
+237,"Dbl Crop Barley/Corn","other ag","ag","nonnatural",NA,NA,NA
+238,"Dbl Crop WinWht/Cotton","other ag","ag","nonnatural",NA,NA,NA
+239,"Dbl Crop Soybeans/Cotton","other ag","ag","nonnatural",NA,"nfixer",NA
+240,"Dbl Crop Soybeans/Oats","other ag","ag","nonnatural",NA,"nfixer",NA
+241,"Dbl Crop Corn/Soybeans","other ag","ag","nonnatural",NA,"nfixer",NA
+242,"Blueberries","other ag","ag","nonnatural",NA,NA,NA
+243,"Cabbage","other ag","ag","nonnatural",NA,NA,NA
+244,"Cauliflower","other ag","ag","nonnatural",NA,NA,NA
+245,"Celery","other ag","ag","nonnatural",NA,NA,NA
+246,"Radishes","other ag","ag","nonnatural",NA,NA,NA
+247,"Turnips","other ag","ag","nonnatural",NA,NA,NA
+248,"Eggplants","other ag","ag","nonnatural",NA,NA,NA
+249,"Gourds","other ag","ag","nonnatural",NA,NA,NA
+250,"Cranberries","other ag","ag","nonnatural",NA,NA,NA
+251,"Non-Irrigated Corn","corn","ag","nonnatural",NA,NA,NA
+252,"Non-Irrigated Soybeans","soybeans","ag","nonnatural",NA,"nfixer",NA
+253,"Non-Irrigated Winter Wheat","wheat","ag","nonnatural","smallgrain",NA,NA
+254,"Dbl Crop Barley/Soybeans","other ag","ag","nonnatural",NA,"nfixer",NA
+255,"Non-Irrigated Dbl. Crop Winter Wheat Soybeans","wheat","ag","nonnatural","smallgrain","nfixer",NA
+0,"Background","background","nonag","natural",NA,NA,NA
+63,"Forest","forest","nonag","natural",NA,NA,NA
+64,"Shrubland","other non ag","nonag","natural",NA,NA,NA
+65,"Barren","other non ag","nonag","natural",NA,NA,NA
+81,"Clouds/No Data","other non ag","nonag","natural",NA,NA,NA
+82,"Developed","developed","nonag","nonnatural",NA,NA,NA
+83,"Water","water","nonag","natural",NA,NA,NA
+87,"Wetlands","wetlands","nonag","natural",NA,NA,NA
+88,"Nonag/Undefined","other non ag","nonag","natural",NA,NA,NA
+92,"Aquaculture","other non ag","nonag","natural",NA,NA,NA
+111,"Open Water","water","nonag","natural",NA,NA,NA
+112,"Perennial Ice/Snow","other non ag","nonag","natural",NA,NA,NA
+121,"Developed/Open Space","developed","nonag","nonnatural",NA,NA,NA
+122,"Developed/Low Intensity","developed","nonag","nonnatural",NA,NA,NA
+123,"Developed/Med Intensity","developed","nonag","nonnatural",NA,NA,NA
+124,"Developed/High Intensity","developed","nonag","nonnatural",NA,NA,NA
+131,"Barren","other non ag","nonag","natural",NA,NA,NA
+141,"Deciduous Forest","forest","nonag","natural",NA,NA,NA
+142,"Evergreen Forest","forest","nonag","natural",NA,NA,NA
+143,"Mixed Forest","forest","nonag","natural",NA,NA,NA
+152,"Shrubland","other non ag","nonag","natural",NA,NA,NA
+171,"Grassland Herbaceous","other non ag","nonag","natural",NA,NA,NA
+190,"Woody Wetlands","wetlands","nonag","natural",NA,NA,NA
+195,"Herbaceous Wetlands","wetlands","nonag","natural",NA,NA,NA
