@@ -36,7 +36,7 @@ calculate_tn <- function(lg){
 ep_nutr <- lg$epi_nutr %>%
   fix_wi_lkls() %>%
   calculate_tn() %>%
-  dplyr::select(lagoslakeid, sampledate, tp, tn, no2no3) %>%
+  dplyr::select(lagoslakeid, sampledate, tp, tn, no2no3, chla) %>%
   filter(!is.na(tp) | !is.na(tn) | !is.na(no2no3)) %>%
   group_by(lagoslakeid) %>%
   filter(sampledate > date_start & sampledate < date_end) %>%
@@ -44,7 +44,8 @@ ep_nutr <- lg$epi_nutr %>%
   filter(count > min_sample_n) %>%
   summarize(tp = median(tp, na.rm = TRUE), 
             tn = median(tn, na.rm = TRUE),
-            no2no3 = median(no2no3, na.rm = TRUE)) %>%
+            no2no3 = median(no2no3, na.rm = TRUE), 
+            chla = median(chla, na.rm = TRUE)) %>%
   identity()
 
 # filter ep with ag above cutoff

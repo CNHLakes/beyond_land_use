@@ -63,15 +63,22 @@ saveRDS(dt, "data/dt.rds")
 write.csv(dt, "data/dt.csv", row.names = FALSE)
 # dt <- readRDS("../data/dt.rds")
 
+cdl_vars <- dt %>%
+  dplyr::select(ag:wheat) %>%
+  summarize_all(median, na.rm = TRUE) %>%
+  tidyr::gather() %>%
+  dplyr::filter(value >= 1.4) %>%
+  arrange(desc(value)) %>%
+  pull(key)
+
 dt_scaled <- dt %>% 
   dplyr::select("lagoslakeid", "hu4_zoneid", "hu12_zoneid", 
-                "tp", "tn", "hu12_ppt_mean", "hu12_baseflow_mean",
-                "maxdepth", "iwsla_ratio", "ag", "row_crop_pct", "corn", 
-                "soybeans", "pasture", "soil_org_carbon",
+                "tp", "tn", "chla", "hu12_ppt_mean", "hu12_baseflow_mean",
+                "maxdepth", "iwsla_ratio", "row_crop_pct", "soil_org_carbon",
                 "nitrogen_atmospheric_deposition", "clay_pct", 
                 "lake_area_ha", "wetland_potential", contains("manure"), 
                 contains("fertilizer"), contains("input"), 
-                contains("cultivated_crops")) %>% 
+                contains("cultivated_crops"), cdl_vars) %>% 
   dplyr::filter(!is.na(phosphorus_fertilizer_use), 
                 !is.na(soybeans), 
                 !is.na(corn),
