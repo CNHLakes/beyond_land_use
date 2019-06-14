@@ -33,6 +33,7 @@ suppressMessages(library(HydroData)) # install_github("mikejohnson51/HydroData")
 suppressMessages(library(kableExtra))
 library(vapour)
 library(cdlTools)
+library(unpivotr)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
