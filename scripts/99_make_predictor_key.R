@@ -1,7 +1,8 @@
 pred_key <- data.frame(var = c(
   "nitrogen_atmospheric_deposition","maxdepth","iwsla_ratio",
   "hu12_baseflow_mean","hu12_ppt_mean","lake_cultivated_crops", 
-  "stream_cultivated_crops","wetlands","ag", 
+  "stream_cultivated_crops","wetlands","ag", "forest",
+  "buffer_cultivated_crops", "stream_natural", "buffer_natural",
   "nonag", "nfixer", "clay_pct","lake_area_ha", 
   "wetland_potential", "corn","nitrogen_livestock_manure", 
   "soil_org_carbon", "soybeans","n_input", 
@@ -10,7 +11,8 @@ pred_key <- data.frame(var = c(
                       pretty = c(
     "N deposition", "Max depth", "Watershed-lake ratio", 
     "Baseflow", "Precipitation", "Lake-buffer Ag", 
-    "Stream-buffer Ag", "Wetlands", "Ag",
+    "Stream-buffer Ag", "Wetlands", "Ag", "Forest",
+    "Buffer Ag", "Stream-buffer natural", "Buffer natural",
     "Non-ag", "N-fixer", "Clay", "Lake area",
     "Wetland potential", "Corn", "Manure N input", 
     "Soil organic carbon", "Soybeans", "N input",
@@ -19,7 +21,8 @@ pred_key <- data.frame(var = c(
                       category = c(
   "Nutrient sources", "Lake", "Lake", 
   "Transport capacity", "Transport capacity", "Buffer composition",
-  "Buffer composition","Nutrient proxies","Nutrient proxies",
+  "Buffer composition","Nutrient proxies","Nutrient proxies", "Nutrient proxies",
+  "Buffer composition", "Buffer composition", "Buffer composition",
   "Nutrient proxies", "Nutrient proxies", "Transport capacity","Lake",
   "Transport capacity", "Nutrient proxies","Nutrient sources", 
   "Transport capacity", "Nutrient proxies", "Nutrient sources",

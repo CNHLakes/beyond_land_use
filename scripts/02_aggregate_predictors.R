@@ -19,6 +19,14 @@ lake_buffer_lulc <- read.csv("data/buffer_lulc.csv", stringsAsFactors = FALSE) %
   dplyr::select(llid, description, percent_lake) %>%
   dplyr::mutate(description = snakecase::to_any_case(description)) %>%
   tidyr::spread(description, percent_lake) %>%
+  rowwise() %>%
+  # calculate ag, forest, developed, and "natural"
+  mutate(ag = sum(cultivated_crops, pasture_hay, na.rm = TRUE), 
+         forest = sum(deciduous_forest, evergreen_forest, mixed_forest, na.rm = TRUE), 
+         developed = sum(developed_low_intensity, developed_medium_intensity, 
+                         developed_high_intensity, developed_open_space, na.rm = TRUE), 
+         natural = sum(forest, grassland_herbaceous, barren_land_rock_sand_clay, emergent_herbaceous_wetlands, scrub_shrub, woody_wetlands, na.rm = TRUE)) %>%
+  ungroup() %>%
   # preprend lake to col names 
   setNames(paste0("lake_", names(.))) %>%
   rename(llid = lake_llid) %>%
@@ -28,14 +36,23 @@ lake_buffer_lulc <- read.csv("data/buffer_lulc.csv", stringsAsFactors = FALSE) %
                   lake_barren_land_rock_sand_clay:lake_woody_wetlands), 
     na.rm = TRUE)) %>% 
   assertr::assert(within_bounds(99.999, 100.001), lulc_sum) %>%
-  dplyr::select(-lulc_sum)
+  dplyr::select(-lulc_sum) %>%
+  dplyr::select(llid, lake_ag, lake_forest, lake_developed, lake_natural, 
+                lake_cultivated_crops)
 
 stream_buffer_lulc <- read.csv("data/buffer_lulc.csv", stringsAsFactors = FALSE) %>%
   dplyr::select(llid, description, percent_stream) %>%
   dplyr::mutate(description = snakecase::to_any_case(description)) %>%
   tidyr::spread(description, percent_stream) %>%
-  # preprend stream to col names 
-  setNames(paste0("stream_", names(.))) %>%
+  # calculate ag, forest, developed, and "natural"
+  rowwise() %>%
+  mutate(ag = sum(cultivated_crops, pasture_hay, na.rm = TRUE), 
+         forest = sum(deciduous_forest, evergreen_forest, mixed_forest, na.rm = TRUE), 
+         developed = sum(developed_low_intensity, developed_medium_intensity, 
+                         developed_high_intensity, developed_open_space, na.rm = TRUE), 
+         natural = sum(forest, grassland_herbaceous, barren_land_rock_sand_clay, emergent_herbaceous_wetlands, scrub_shrub, woody_wetlands, na.rm = TRUE)) %>%
+  ungroup() %>%
+  setNames(paste0("stream_", names(.))) %>% # preprend stream to col names 
   rename(llid = stream_llid) %>%
   # assert that lulc adds up to 100%
   mutate(lulc_sum = rowSums(
@@ -47,7 +64,30 @@ stream_buffer_lulc <- read.csv("data/buffer_lulc.csv", stringsAsFactors = FALSE)
     lulc_sum == 100 ~ 100, 
     TRUE ~ NA_real_)) %>%
   assertr::assert(in_set(NA, 100), lulc_sum) %>%
-  dplyr::select(-lulc_sum)
+  dplyr::select(-lulc_sum) %>%
+  dplyr::select(llid, stream_ag, stream_forest, stream_developed, stream_natural, 
+                stream_cultivated_crops)
+
+# create object holding lake buffer lulc if no stream buffer info
+missing_stream_lulc <- stream_buffer_lulc %>% 
+  dplyr::select(-llid) %>%
+  apply(1, function(x) all(is.na(x) | x == 0)) %>%
+  cbind(stream_buffer_lulc$llid) %>%
+  data.frame(stringsAsFactors = FALSE) %>%
+  setNames(c("no_streams", "llid")) %>%
+  mutate(no_streams = as.logical(no_streams))
+
+buffer_lulc <- bind_rows(
+  setNames(dplyr::filter(stream_buffer_lulc, 
+                llid %in% dplyr::filter(missing_stream_lulc, !no_streams)$llid), 
+           c("llid", "ag", "forest", "developed", "natural", "cultivated_crops")),
+  setNames(dplyr::filter(lake_buffer_lulc, 
+                llid %in% dplyr::filter(missing_stream_lulc, no_streams)$llid), 
+           c("llid", "ag", "forest", "developed", "natural", "cultivated_crops"))
+  ) %>% arrange(llid) %>% 
+  # left_join(missing_stream_lulc, by = "llid") %>%
+  setNames(paste0("buffer_", names(.))) %>%
+  rename(llid = buffer_llid)
 
 # ---- collect_response_variables ----
 dt <- ep %>%
@@ -57,14 +97,15 @@ dt <- ep %>%
             by = c("lagoslakeid" = "llid")) %>%
   left_join(cdl, by = c("lagoslakeid" = "llid")) %>%
   left_join(lake_buffer_lulc, by = c("lagoslakeid" = "llid")) %>%
-  left_join(stream_buffer_lulc, by = c("lagoslakeid" = "llid"))
+  left_join(stream_buffer_lulc, by = c("lagoslakeid" = "llid")) %>%
+  left_join(buffer_lulc, by = c("lagoslakeid" = "llid"))
 
 saveRDS(dt, "data/dt.rds")
 write.csv(dt, "data/dt.csv", row.names = FALSE)
 # dt <- readRDS("../data/dt.rds")
 
 cdl_vars <- dt %>%
-  dplyr::select(ag:wheat) %>%
+  dplyr::select(ag:wheat, -natural, -nonnatural) %>%
   summarize_all(median, na.rm = TRUE) %>%
   tidyr::gather() %>%
   dplyr::filter(value >= 1.4) %>%
@@ -78,7 +119,8 @@ dt_scaled <- dt %>%
                 "nitrogen_atmospheric_deposition", "clay_pct", 
                 "lake_area_ha", "wetland_potential", contains("manure"), 
                 contains("fertilizer"), contains("input"), 
-                contains("cultivated_crops"), cdl_vars) %>% 
+                contains("cultivated_crops"), 
+                "stream_natural", "buffer_natural", cdl_vars) %>% 
   dplyr::filter(!is.na(phosphorus_fertilizer_use), 
                 !is.na(soybeans), 
                 !is.na(corn),
