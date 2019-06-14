@@ -34,6 +34,7 @@ suppressMessages(library(kableExtra))
 library(vapour)
 library(cdlTools)
 library(unpivotr)
+library(snakecase)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
