@@ -1,0 +1,53 @@
+---
+output:
+  pdf_document
+header-includes: 
+  - \pagenumbering{gobble}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
+# setwd("figures")
+```
+
+```{r summary_table, eval=TRUE}
+library(kableExtra)
+library(dplyr)
+library(magrittr)
+
+focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
+                                             c("56", "57", "36", "37", "38")), 
+                         stringsAsFactors = FALSE)
+
+lg <- lagosne_load("1.087.1")
+dt <- lg$hu4 %>%
+  left_join(lg$hu4.chag) %>%
+  left_join(lg$hu4.conn) %>%
+  # left_join(lg$hu4.lulc) %>%
+  dplyr::filter(hu4_zoneid %in% unique(readRDS("../data/dt.rds")$hu4_zoneid)) %>%
+  dplyr::select(-matches("count")) %>%
+  dplyr::select(-matches("nwi")) %>%
+  dplyr::select(-matches("lakes10ha")) %>%
+  dplyr::select(-matches("std")) %>%
+  dplyr::select(-matches("min")) %>%
+  dplyr::select(-matches("max")) %>%
+  dplyr::select(-matches("canalditchdensity")) %>%
+  dplyr::select(-matches("wetlandsundissolved")) %>%
+  dplyr::select(-matches("overlapping")) %>%
+  dplyr::select(-matches("contributing")) %>%
+  dplyr::select(-matches("1985|1990|1995|2000|2005")) %>%
+  mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>% 
+  group_by(is_focal) %>%
+  summarize_all(median, na.rm = TRUE) %>%
+  tidyr::gather(key = "key", value = "value", -is_focal) %>%
+  dplyr::filter(!is.na(value)) %>%
+  dplyr::filter(value != 0) %>%
+  tidyr::spread(key, value) %>%
+  t()
+dt <- dt[complete.cases(dt),] 
+View(dt)
+
+knitr::kable(dt, digits = 0, format = "markdown") 
+#%>%
+ # add_header_above(c(" ", " ", Ranges = 3, " ", " "))
+```
