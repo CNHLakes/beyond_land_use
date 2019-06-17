@@ -28,6 +28,7 @@ ggplot(data = dt) +
   geom_abline(aes(slope = 1, intercept = -65)) +
   ggrepel::geom_text_repel(data = dplyr::filter(dt, lagoslakeid %in% llids), 
             aes(x = ag_pct, y = stream_cultivated_crops, label = lagoslakeid)) + 
+  theme_cowplot() +
   theme(legend.position = 0) +
   ylab("Stream buffer Ag (%)") + xlab("IWS Ag (%)") +
   xlim(c(40, 100)) + ylim(c(0, 100))
