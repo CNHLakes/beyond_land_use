@@ -25,14 +25,20 @@ brm_fit <- function(destfile, formula, data){
 # ag + {maxdepth, baseflow, iwslavratio}
 
 (model_forms_fe <- list(
-  "tp" = bf(tp ~ ag),
-  "tp_depth" = bf(tp ~ ag + maxdepth),
-  "tp_bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean),
-  "tp_nfert" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse),
-  "tn" = bf(tn ~ ag),
-  "tn_depth" = bf(tn ~ ag + maxdepth),
-  "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon),
-  "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse) 
+  "tp" = bf(tp ~ ag), # proxy
+  "tp_depth" = bf(tp ~ ag + maxdepth), # lake
+  "tp_bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean), # transport
+  "tp_nfert" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + 
+                    phosphorusvfertilizervuse), # sources
+  "tp_buffer" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean +
+                     phosphorusvfertilizervuse + streamvcultivatedvcrops), # buffer
+  "tn" = bf(tn ~ ag), # proxy
+  "tn_depth" = bf(tn ~ ag + maxdepth), # lake
+  "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon), # transport
+  "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
+                    nitrogenvfertilizervuse), # sources 
+  "tn_buffer" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
+                     nitrogenvfertilizervuse + streamvcultivatedvcrops)# buffer
 ))
 
 fe_brms <- 
