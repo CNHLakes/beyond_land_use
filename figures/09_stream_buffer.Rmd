@@ -12,26 +12,31 @@ source("../scripts/99_utils.R")
 
 ```{r 09_stream_buffer, echo=FALSE, fig.height=3, fig.width=4}
 dt <- readRDS("../data/dt.rds") %>%
-  mutate(diff = stream_cultivated_crops - ag_pct, 
-         category = cut(diff, breaks = c(Inf, 3, -65, -Inf))) %>%
+  dplyr::filter(stream_ag > 0) %>%
+  mutate(diff = stream_ag - ag, 
+         category = cut(diff, breaks = c(Inf, 28, -28, -Inf))) %>%
   drop_na(diff) %>%
-  dplyr::select(lagoslakeid, ag_pct, stream_cultivated_crops, 
-                diff, category)
+  dplyr::select(lagoslakeid, ag, stream_ag, 
+                diff, category, iws_ha) %>%
+  arrange(diff)
 
-# llid 6201 as a low stream ag
-# llid 7026 as a high stream ag
-llids <- c("6201", "7026")
+# first llid is a low stream ag lake
+# second llids is a high stream ag lake
+llids <- c("4532", "96236")
 
 ggplot(data = dt) +
-  geom_point(aes(x = ag_pct, y = stream_cultivated_crops, color = category)) +
-  geom_abline(aes(slope = 1, intercept = 3)) +
-  geom_abline(aes(slope = 1, intercept = -65)) +
+  geom_point(aes(x = ag, y = stream_ag, color = category)) +
+  geom_abline(aes(slope = 1, intercept = 28)) +
+  # geom_abline(aes(slope = 1, intercept = 0)) +
+  geom_abline(aes(slope = 1, intercept = -28)) +
   ggrepel::geom_text_repel(data = dplyr::filter(dt, lagoslakeid %in% llids), 
-            aes(x = ag_pct, y = stream_cultivated_crops, label = lagoslakeid)) + 
+            aes(x = ag, y = stream_ag, label = lagoslakeid), nudge_y = 2) + 
   theme_cowplot() +
   theme(legend.position = 0) +
   ylab("Stream buffer Ag (%)") + xlab("IWS Ag (%)") +
-  xlim(c(40, 100)) + ylim(c(0, 100))
+  ylim(c(1, 100)) # + xlim(c(40, 100))
+
+# dplyr::filter(dt, lagoslakeid %in% llids)
 ```
 
 ```{r satellite, echo=FALSE, message=FALSE, warning=FALSE}
