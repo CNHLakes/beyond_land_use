@@ -14,7 +14,7 @@ source("../scripts/99_utils.R")
 dt <- readRDS("../data/dt.rds") %>%
   dplyr::filter(stream_ag > 0) %>%
   mutate(diff = stream_ag - ag, 
-         category = cut(diff, breaks = c(Inf, 28, -28, -Inf))) %>%
+         category = cut(diff, breaks = c(Inf, 25, -25, -Inf))) %>%
   drop_na(diff) %>%
   dplyr::select(lagoslakeid, ag, stream_ag, 
                 diff, category, iws_ha) %>%
@@ -26,11 +26,11 @@ llids <- c("4532", "96236")
 
 ggplot(data = dt) +
   geom_point(aes(x = ag, y = stream_ag, color = category)) +
-  geom_abline(aes(slope = 1, intercept = 28)) +
+  geom_abline(aes(slope = 1, intercept = 25)) +
   # geom_abline(aes(slope = 1, intercept = 0)) +
-  geom_abline(aes(slope = 1, intercept = -28)) +
+  geom_abline(aes(slope = 1, intercept = -25)) +
   ggrepel::geom_text_repel(data = dplyr::filter(dt, lagoslakeid %in% llids), 
-            aes(x = ag, y = stream_ag, label = lagoslakeid), nudge_y = 2) + 
+            aes(x = ag, y = stream_ag, label = lagoslakeid), nudge_y = 8) + 
   theme_cowplot() +
   theme(legend.position = 0) +
   ylab("Stream buffer Ag (%)") + xlab("IWS Ag (%)") +
