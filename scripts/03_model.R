@@ -122,67 +122,71 @@ if(!interactive()){
 # r2 <- read.csv("../data/mcmc/model_r2.csv")
 
 # ---- diagnostics ----
+if(interactive()){
 # loo comparison
 loo_compare(loo(re_brms[[4]]), loo(re_brms[[5]])) # Corn model has lowest error
 loo_compare(loo(re_brms[[1]]), loo(re_brms[[3]])) # Pasture model has lowest error
- 
+
 # get median residuals of each model object
-# get_residuals <- function(model, threshold = 0.1){
-#   # model <- re_brms[[1]]
-#   model$res_med <- dt %>% 
-#     add_residual_draws(model) %>%
-#     group_by(lagoslakeid) %>%
-#     summarize(.residual_median = median(.residual)) %>%
-#     left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long), 
-#               by = "lagoslakeid")
-#   
-#   model$res_med <- dt %>% 
-#     add_fitted_draws(model) %>%
-#     group_by(lagoslakeid) %>%
-#     summarize(.value_median = median(.value)) %>%
-#     right_join(model$res_med, by = "lagoslakeid")
-#   
-#   model$res_test <- abs(
-#     median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
-#   model
-# }
-# lg <- lagosne_load()
-# re_brms <- lapply(re_brms, function(x) get_residuals(x))
+get_residuals <- function(model, threshold = 0.1){
+  # model <- re_brms[[1]]
+  model$res_med <- dt %>%
+    add_residual_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.residual_median = median(.residual)) %>%
+    left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long),
+              by = "lagoslakeid")
+
+  model$res_med <- dt %>%
+    add_fitted_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.value_median = median(.value)) %>%
+    right_join(model$res_med, by = "lagoslakeid")
+
+  model$res_test <- abs(
+    median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
+  model
+}
+lg <- lagosne_load("1.087.1")
+re_brms <- lapply(re_brms, function(x) get_residuals(x))
 # 
 # # qq plots etc
-# par(mfrow = c(2, 4))
-# lapply(re_brms, function(x) hist(x$res_med$.residual_median))
-# lapply(re_brms, function(x) plot(x$res_med$.value_median, 
-#                                  x$res_med$.residual_median))
-# lapply(re_brms, function(x){
-#   qqnorm(x$res_med$.residual_median)
-#   abline(0, 1)
-#   })
-# par(mfrow = c(1,1))
+par(mfrow = c(2, 3))
+lapply(re_brms, function(x) hist(x$res_med$.residual_median))
+lapply(re_brms, function(x) plot(x$res_med$.value_median,
+                                 x$res_med$.residual_median))
+lapply(re_brms, function(x){
+  qqnorm(x$res_med$.residual_median)
+  abline(0, 1)
+  })
+par(mfrow = c(1,1))
 #   
 # # dotplot of model residuals
-# mapview::mapview(LAGOSNE::coordinatize(re_brms[[1]]$res_med), 
-#                  zcol = ".residual_median")
+mapview::mapview(LAGOSNE::coordinatize(re_brms[[1]]$res_med),
+                 zcol = ".residual_median")
 # 
 # # get residual spatial autocorrelation range for each model object
 # 
 # # autocorrelation plot of model residuals
-# coords <- res_med[,c("nhd_long", "nhd_lat")]
-# coords <- mutate_all(coords, function(x) abs(as.integer(x * 10)))
-# names(coords) <- c("x", "y")
-# ac <- spind::acfft(data.frame(coords), 
-#                    res_med$.residual_median, 
-#                    dmax = 30) 
-# plot(ac)
+res_med <- re_brms[[1]]$res_med
+res_med <- dplyr::filter(res_med, !is.na(.residual_median))
+coords <- res_med[,c("nhd_long", "nhd_lat")]
+coords <- mutate_all(coords, function(x) abs(as.integer(x * 10)))
+names(coords) <- c("x", "y")
+ac <- spind::acfft(data.frame(coords),
+                   res_med$.residual_median,
+                   dmax = 30)
+plot(ac)
 # # each index increment is equal to a tenth of a degree
 # # so 20 is 2 degrees
 # 
 # # look for evidence of interaction effects
 # # following shalizi...
-# re_brms[[1]]$res_med %>%
-#   left_join(dt, by = "lagoslakeid") %>%
-#   ggplot(aes(x = nvinput, y = .residual_median)) +
-#   geom_point()
+re_brms[[1]]$formula
+re_brms[[1]]$res_med %>%
+  left_join(dt, by = "lagoslakeid") %>%
+  ggplot(aes(x = nvinput, y = .residual_median)) +
+  geom_point()
 # 
 # dt %>%
 #   add_residual_draws(fe_brms[[1]]) %>%
@@ -199,13 +203,14 @@ loo_compare(loo(re_brms[[1]]), loo(re_brms[[3]])) # Pasture model has lowest err
 # fe_brms[[1]]$formula
 # re_brms[[5]]$formula
 # 
-# dt %>%
-#   add_residual_draws(fe_brms[[1]]) %>%
-#   ggplot(aes(x = maxdepth, y = .residual)) +
-#   stat_pointinterval() +
-#   theme(axis.text.x = element_text(angle = 90))
+dt %>%
+  add_residual_draws(fe_brms[[1]]) %>%
+  ggplot(aes(x = maxdepth, y = .residual)) +
+  stat_pointinterval() +
+  theme(axis.text.x = element_text(angle = 90))
 # 
 # pairs(~maxdepth + hu12vbaseflowvmean + iwslavratio + , data = dt)
+}
 
 # ---- placeholder ----
 
