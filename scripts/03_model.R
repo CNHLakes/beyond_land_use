@@ -1,3 +1,4 @@
+# setwd("../")
 source("scripts/99_utils.R")
 
 library(brms)
@@ -31,14 +32,14 @@ brm_fit <- function(destfile, formula, data){
   "tp_nfert" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + 
                     phosphorusvfertilizervuse), # sources
   "tp_buffer" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean +
-                     phosphorusvfertilizervuse + streamvcultivatedvcrops), # buffer
+                     phosphorusvfertilizervuse + buffervcultivatedvcrops), # buffer
   "tn" = bf(tn ~ ag), # proxy
   "tn_depth" = bf(tn ~ ag + maxdepth), # lake
   "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon), # transport
   "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
                     nitrogenvfertilizervuse), # sources 
   "tn_buffer" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
-                     nitrogenvfertilizervuse + streamvcultivatedvcrops)# buffer
+                     nitrogenvfertilizervuse + buffervcultivatedvcrops) # buffer
 ))
 
 fe_brms <- 
@@ -55,29 +56,38 @@ r2_fe <- dplyr::bind_rows(
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate) 
 
+r2_fe$`Proxy`     <- c(rep("Ag", 5), 
+                       rep("Ag", 5))
+r2_fe$`Lake`      <- c(NA, rep("maxdepth", 4), 
+                       NA, rep("maxdepth", 4))
+r2_fe$`Transport` <- c(NA, NA, "Baseflow", "Baseflow", "Baseflow",
+                       NA, NA, "Soil Org Carbon", "Soil Org Carbon", "Soil Org Carbon")
+r2_fe$`Source`    <- c(NA, NA, NA, "P fertilizer", "P fertilizer",
+                       NA, NA, NA, "N fertilizer", "N fertilizer")
+r2_fe$`Buffer`    <- c(NA, NA, NA, NA, "Ag",
+                       NA, NA, NA, NA, "Ag")
+
 # evaulate spatial random effects
 # {fixed effects} + 1/ag, 1/soybeans, 1/corn
 (model_forms_re <- list(
-  "tp_ag"       = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
-                 (1 + ag | hu4vzoneid)),
-  "tp_streamag" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
-                 (1 + streamvcultivatedvcrops | hu4vzoneid)),
-  "tp_soybeans" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
-                 (1 + soybeans | hu4vzoneid)),
-  "tp_pasture" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
-                 (1 + pasture | hu4vzoneid)),
-  "tp_rowcrop" = bf(tp ~  maxdepth + hu12vbaseflowvmean + nitrogenvfertilizervuse +
-                 (1 + rowvcropvpct | hu4vzoneid)),
-  "tn_ag"      = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
-                 (1 + ag | hu4vzoneid)),
-  "tn_streamag" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
-                 (1 + streamvcultivatedvcrops | hu4vzoneid)),
-  "tn_corn"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
-                 (1 + corn | hu4vzoneid)), 
-  "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
-                 (1 + pasture | hu4vzoneid)),
-  "tn_rowcrop" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse +
-                 (1 + rowvcropvpct | hu4vzoneid))
+  "tp_ag"       = bf(tp ~  maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse +
+                      buffervcultivatedvcrops + 
+                      (1 + ag | hu4vzoneid)),
+  "tp_soybeans" = bf(tp ~  maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse + 
+                      buffervcultivatedvcrops + 
+                      (1 + soybeans | hu4vzoneid)),
+  "tp_pasture" = bf(tp ~  maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse +
+                      buffervcultivatedvcrops + 
+                      (1 + pasture | hu4vzoneid)),
+  "tn_ag"      = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
+                      buffervcultivatedvcrops + 
+                      (1 + ag | hu4vzoneid)),
+  "tn_corn"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
+                      buffervcultivatedvcrops + 
+                      (1 + corn | hu4vzoneid)), 
+  "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
+                      buffervcultivatedvcrops + 
+                      (1 + pasture | hu4vzoneid))
 ))
 
 
@@ -94,15 +104,6 @@ r2_re <- dplyr::bind_rows(
   mutate(Model = names(model_forms_re), 
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
-
-r2_fe$`Proxy`     <- c(rep("Ag", 4), 
-                       rep("Ag", 4))
-r2_fe$`Lake`      <- c(NA, rep("maxdepth", 3), 
-                    NA, rep("maxdepth", 3))
-r2_fe$`Transport` <- c(NA, NA, "Baseflow", "Baseflow", 
-                       NA, NA, "Soil Org Carbon", "Soil Org Carbon")
-r2_fe$`Source`    <- c(NA, NA, NA, "N fertilizer", 
-                    NA, NA, NA, "N fertilizer")
 
 r2_re$`Proxy`     <- c("Ag", "Stream Ag", "Soybeans", "Pasture", "Row Crop",
                        "Ag", "Stream Ag", "Corn", "Pasture", "Row Crop") 
