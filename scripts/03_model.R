@@ -64,8 +64,8 @@ r2_fe$`Transport` <- c(NA, NA, "Baseflow", "Baseflow", "Baseflow",
                        NA, NA, "Soil Org Carbon", "Soil Org Carbon", "Soil Org Carbon")
 r2_fe$`Source`    <- c(NA, NA, NA, "P fertilizer", "P fertilizer",
                        NA, NA, NA, "N fertilizer", "N fertilizer")
-r2_fe$`Buffer`    <- c(NA, NA, NA, NA, "Ag",
-                       NA, NA, NA, NA, "Ag")
+r2_fe$`Buffer`    <- c(NA, NA, NA, NA, "Row crop",
+                       NA, NA, NA, NA, "Row crop")
 
 # evaulate spatial random effects
 # {fixed effects} + 1/ag, 1/soybeans, 1/corn
@@ -105,11 +105,12 @@ r2_re <- dplyr::bind_rows(
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
 
-r2_re$`Proxy`     <- c("Ag", "Stream Ag", "Soybeans", "Pasture", "Row Crop",
-                       "Ag", "Stream Ag", "Corn", "Pasture", "Row Crop") 
-r2_re$`Lake`      <- c(rep("maxdepth", 10))
-r2_re$`Transport` <- c(rep("Baseflow", 5), rep("Soil Org Carbon", 5))
-r2_re$`Source`    <- c(rep("N fertilizer", 10))
+r2_re$`Proxy`     <- c("Ag", "Soybeans", "Pasture",
+                       "Ag", "Corn", "Pasture") 
+r2_re$`Lake`      <- c(rep("maxdepth", 6))
+r2_re$`Transport` <- c(rep("Baseflow", 3), rep("Soil Org Carbon", 3))
+r2_re$`Source`    <- c(rep("P fertilizer", 3), rep("N fertilizer", 3))
+r2_re$`Buffer`    <- c(rep("Row Crop", 6))
 
 r2    <- dplyr::bind_rows(r2_fe, r2_re)
 
@@ -122,8 +123,8 @@ if(!interactive()){
 
 # ---- diagnostics ----
 # loo comparison
-loo_compare(loo(re_brms[[6]]), loo(re_brms[[8]])) # corn model has lowest error
-loo_compare(loo(re_brms[[1]]), loo(re_brms[[5]])) # Ag model has lowest error
+loo_compare(loo(re_brms[[4]]), loo(re_brms[[5]])) # Corn model has lowest error
+loo_compare(loo(re_brms[[1]]), loo(re_brms[[3]])) # Pasture model has lowest error
  
 # get median residuals of each model object
 # get_residuals <- function(model, threshold = 0.1){
