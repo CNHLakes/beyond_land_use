@@ -117,14 +117,22 @@ plot_opts <- theme_cowplot() +
                    axis.text = element_text(size = 8), 
                    legend.position = 0)
 
+dt_tp <- prep_dotplot(dt_tp, "tp") %>%
+  dplyr::filter(!str_detect(pretty, "^N ")) %>%
+  dplyr::filter(!str_detect(pretty, " N ")) 
+
+dt_tn <- prep_dotplot(dt_tn, "tn") %>%
+  dplyr::filter(!str_detect(pretty, "^P ")) %>%
+  dplyr::filter(!str_detect(pretty, " P ")) 
+
 # head(prep_dotplot(dt_tp, "tp"))
 # show_col(brewer_pal("div", "Set1")(4))                   
-gg_tp <-  ggplot(data = prep_dotplot(dt_tp, "tp")) + 
+gg_tp <-  ggplot(data = dt_tp) + 
     geom_point(aes(x = tp, y = pretty, color = category)) + 
     scale_color_brewer(palette = "Set1") +
     xlim(0, 0.6) +
     plot_opts
-gg_tn <- ggplot(data = prep_dotplot(dt_tn, "tn")) + 
+gg_tn <- ggplot(data = dt_tn) + 
     geom_point(aes(x = tn, y = pretty, color = category)) +
     scale_color_brewer(palette = "Set1") +
     xlim(0, 0.6) +
