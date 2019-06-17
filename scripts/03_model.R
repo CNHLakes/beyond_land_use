@@ -98,6 +98,7 @@ re_brms <-
                       formula = model_forms_re[[i]], 
                       data = dt))
 
+saveRDS(re_brms, "data/mcmc/re_brms.rds")
 
 r2_re <- dplyr::bind_rows(
   lapply(re_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
@@ -126,6 +127,44 @@ if(interactive()){
 # loo comparison
 loo_compare(loo(re_brms[[4]]), loo(re_brms[[5]])) # Corn model has lowest error
 loo_compare(loo(re_brms[[1]]), loo(re_brms[[3]])) # Pasture model has lowest error
+
+# evaluate hu4 re slope significance
+corn_hu4_dist <- re_brms[[5]] %>%
+  spread_draws(r_hu4vzoneid[hu4vzoneid,term]) %>%
+  dplyr::filter(term == "corn") %>%
+  group_by(hu4vzoneid) %>%
+  do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
+  mutate(signif = case_when(`5%` > 0 ~ TRUE, 
+                            TRUE ~ FALSE))
+
+pasture_hu4_dist <- re_brms[[3]] %>%
+  spread_draws(r_hu4vzoneid[hu4vzoneid,term]) %>%
+  dplyr::filter(term == "pasture") %>%
+  group_by(hu4vzoneid) %>%
+  do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
+  mutate(signif = case_when(`5%` > 0 ~ TRUE, 
+                            TRUE ~ FALSE))
+
+# sum(corn_hu4_dist$signif)
+# sum(pasture_hu4_dist$signif)
+
+ggplot(data = corn_hu4_dist) +
+  geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`, color = signif)) +
+  geom_hline(yintercept = 0) +
+  coord_flip()
+
+hu4 <-  LAGOSNEgis::query_gis("HU4", "ZoneID", unique(dt$hu4vzoneid)) %>%
+  st_cast(to = "MULTIPOLYGON") 
+hu4_signif <-  LAGOSNEgis::query_gis(
+  "HU4", "ZoneID", dplyr::filter(corn_hu4_dist, signif)$hu4vzoneid) %>% 
+  st_cast(to = "MULTIPOLYGON")
+
+# mapview::mapview(hu4) + 
+# mapview::mapview(hu4_signif, color = "red")
+
+
+
 
 # get median residuals of each model object
 get_residuals <- function(model, threshold = 0.1){
