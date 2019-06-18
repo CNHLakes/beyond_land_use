@@ -8,6 +8,7 @@ header-includes:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
 # setwd("figures")
+source("../scripts/99_utils.R")
 ```
 
 ```{r summary_table, eval=TRUE}
@@ -15,12 +16,13 @@ library(kableExtra)
 library(dplyr)
 library(magrittr)
 
+lg <- lagosne_load("1.087.1")
 focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
                                              c("56", "57", "36", "37", "38")), 
                          stringsAsFactors = FALSE)
 
-lg <- lagosne_load("1.087.1")
-dt <- lg$hu4 %>%
+
+dt_raw <- lg$hu4 %>%
   left_join(lg$hu4.chag) %>%
   left_join(lg$hu4.conn) %>%
   # left_join(lg$hu4.lulc) %>%
@@ -36,6 +38,7 @@ dt <- lg$hu4 %>%
   dplyr::select(-matches("overlapping")) %>%
   dplyr::select(-matches("contributing")) %>%
   dplyr::select(-matches("1985|1990|1995|2000|2005")) %>%
+  dplyr::select(-matches("_ha")) %>%
   mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>% 
   group_by(is_focal) %>%
   summarize_all(median, na.rm = TRUE) %>%
@@ -44,6 +47,19 @@ dt <- lg$hu4 %>%
   dplyr::filter(value != 0) %>%
   tidyr::spread(key, value) %>%
   t()
+
+row_names <- row.names(dt_raw)
+
+dt <- dt_raw %>%
+  data.frame(stringsAsFactors = FALSE) %>%
+  setNames(c("nonfocal", "focal")) %>%
+  mutate_all(~as.numeric(.)) %>%
+  mutate(var = row_names) %>%
+  mutate(diff = abs(abs(nonfocal - focal)/nonfocal)) %>%
+  mutate_if(is.numeric, ~format(., scientific = FALSE)) %>%
+  dplyr::filter(diff > 0.02) %>%
+  arrange(desc(diff))
+
 dt <- dt[complete.cases(dt),] 
 View(dt)
 
