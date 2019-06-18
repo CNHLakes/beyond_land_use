@@ -47,9 +47,9 @@ ggplot(data = dt) +
 #   geom_sf(data = res_pnt)
 
 library(curl)
-library(glue)
+suppressMessages(library(glue))
 library(slippymath)
-library(rgdal)
+suppressMessages(library(rgdal))
 
 res_iws  <- query_gis("IWS", "lagoslakeid", llids)
 
