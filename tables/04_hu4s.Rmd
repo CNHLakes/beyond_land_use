@@ -21,8 +21,33 @@ focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_",
                                              c("56", "57", "36", "37", "38")), 
                          stringsAsFactors = FALSE)
 
+compare_focal <- function(dt, ids){
+  dt <- dt %>%
+  mutate(is_focal = hu4_zoneid %in% ids) %>% 
+  group_by(is_focal) %>%
+  summarize_all(median, na.rm = TRUE) %>%
+  tidyr::gather(key = "key", value = "value", -is_focal) %>%
+  dplyr::filter(!is.na(value)) %>%
+  dplyr::filter(value != 0) %>%
+  tidyr::spread(key, value) %>%
+  t()
 
-dt_raw <- lg$hu4 %>%
+  row_names <- row.names(dt)
+
+  res <- dt %>%
+    data.frame(stringsAsFactors = FALSE) %>%
+    setNames(c("nonfocal", "focal")) %>%
+    mutate_all(~as.numeric(.)) %>%
+    mutate(var = row_names) %>%
+    mutate(diff = abs(abs(nonfocal - focal)/nonfocal)) %>%
+    mutate_if(is.numeric, ~format(., scientific = FALSE)) %>%
+    # dplyr::filter(diff > 0.02) %>%
+    arrange(desc(diff))
+  
+  res
+}
+
+hu4 <- lg$hu4 %>%
   left_join(lg$hu4.chag) %>%
   left_join(lg$hu4.conn) %>%
   # left_join(lg$hu4.lulc) %>%
@@ -39,28 +64,10 @@ dt_raw <- lg$hu4 %>%
   dplyr::select(-matches("contributing")) %>%
   dplyr::select(-matches("1985|1990|1995|2000|2005")) %>%
   dplyr::select(-matches("_ha")) %>%
-  mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>% 
-  group_by(is_focal) %>%
-  summarize_all(median, na.rm = TRUE) %>%
-  tidyr::gather(key = "key", value = "value", -is_focal) %>%
-  dplyr::filter(!is.na(value)) %>%
-  dplyr::filter(value != 0) %>%
-  tidyr::spread(key, value) %>%
-  t()
+  compare_focal(focal_hu4s$hu4_zoneid)
 
-row_names <- row.names(dt_raw)
-
-dt <- dt_raw %>%
-  data.frame(stringsAsFactors = FALSE) %>%
-  setNames(c("nonfocal", "focal")) %>%
-  mutate_all(~as.numeric(.)) %>%
-  mutate(var = row_names) %>%
-  mutate(diff = abs(abs(nonfocal - focal)/nonfocal)) %>%
-  mutate_if(is.numeric, ~format(., scientific = FALSE)) %>%
-  dplyr::filter(diff > 0.02) %>%
-  arrange(desc(diff))
-
-dt <- dt[complete.cases(dt),] 
+dt        <- compare_focal(readRDS("../data/dt.rds"), focal_hu4s$hu4_zoneid)
+dt_scaled <- compare_focal(readRDS("../data/dt_scaled.rds"), focal_hu4s$hu4_zoneid)                     
 View(dt)
 
 knitr::kable(dt, digits = 0, format = "markdown") 

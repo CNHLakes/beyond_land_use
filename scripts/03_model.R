@@ -39,7 +39,10 @@ brm_fit <- function(destfile, formula, data){
   "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
                     nitrogenvfertilizervuse), # sources 
   "tn_buffer" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
-                     nitrogenvfertilizervuse + buffervcultivatedvcrops) # buffer
+                     nitrogenvfertilizervuse + buffervcultivatedvcrops), # buffer
+  "tn_ndep" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
+                   nitrogenvfertilizervuse + buffervcultivatedvcrops + 
+                   hu4vnitrogenvatmosphericvdeposition)
 ))
 
 fe_brms <- 
@@ -56,16 +59,16 @@ r2_fe <- dplyr::bind_rows(
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate) 
 
-r2_fe$`Proxy`     <- c(rep("Ag", 5), 
-                       rep("Ag", 5))
-r2_fe$`Lake`      <- c(NA, rep("maxdepth", 4), 
-                       NA, rep("maxdepth", 4))
-r2_fe$`Transport` <- c(NA, NA, "Baseflow", "Baseflow", "Baseflow",
-                       NA, NA, "Soil Org Carbon", "Soil Org Carbon", "Soil Org Carbon")
-r2_fe$`Source`    <- c(NA, NA, NA, "P fertilizer", "P fertilizer",
-                       NA, NA, NA, "N fertilizer", "N fertilizer")
-r2_fe$`Buffer`    <- c(NA, NA, NA, NA, "Row crop",
-                       NA, NA, NA, NA, "Row crop")
+# r2_fe$`Proxy`     <- c(rep("Ag", 5), 
+#                        rep("Ag", 5))
+# r2_fe$`Lake`      <- c(NA, rep("maxdepth", 4), 
+#                        NA, rep("maxdepth", 4))
+# r2_fe$`Transport` <- c(NA, NA, "Baseflow", "Baseflow", "Baseflow",
+#                        NA, NA, "Soil Org Carbon", "Soil Org Carbon", "Soil Org Carbon")
+# r2_fe$`Source`    <- c(NA, NA, NA, "P fertilizer", "P fertilizer",
+#                        NA, NA, NA, "N fertilizer", "N fertilizer")
+# r2_fe$`Buffer`    <- c(NA, NA, NA, NA, "Row crop",
+#                        NA, NA, NA, NA, "Row crop")
 
 # evaulate spatial random effects
 # {fixed effects} + 1/ag, 1/soybeans, 1/corn
@@ -83,7 +86,10 @@ r2_fe$`Buffer`    <- c(NA, NA, NA, NA, "Row crop",
                       buffervcultivatedvcrops + 
                       (1 + ag | hu4vzoneid)),
   "tn_corn"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
-                      buffervcultivatedvcrops + 
+                           buffervcultivatedvcrops + hu4vnitrogenvatmosphericvdeposition +
+                           (1 + corn | hu4vzoneid)), 
+  "tn_corn_ndep"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
+                      buffervcultivatedvcrops + hu4vnitrogenvatmosphericvdeposition +
                       (1 + corn | hu4vzoneid)), 
   "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
                       buffervcultivatedvcrops + 
