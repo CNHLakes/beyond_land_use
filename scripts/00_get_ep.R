@@ -99,7 +99,9 @@ ep <- ep %>%
 ep <- ep %>%
   left_join(dplyr::select(lg$hu12.chag, hu12_zoneid,                           hu12_ppt_mean = hu12_prism_ppt_30yr_normal_800mm2_annual_mean, 
     hu12_ppt_std = hu12_prism_ppt_30yr_normal_800mm2_annual_std, 
-    hu12_baseflow_mean = hu12_baseflowindex_mean))
+    hu12_baseflow_mean = hu12_baseflowindex_mean)) %>%
+  left_join(dplyr::select(lg$hu4.chag, hu4_zoneid, 
+                    hu4_nitrogen_atmospheric_deposition = hu4_dep_totaln_2010_mean))
 
 # filter focal predictors
 ep <- dplyr::filter(ep, iws_ha <= max_iws_ha & 
