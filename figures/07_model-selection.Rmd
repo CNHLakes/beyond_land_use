@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 source("../scripts/99_utils.R")
 ```
 
-```{r 07_model_selection, fig.height=3, echo=FALSE,eval=FALSE}
-
+```{r 07_model_selection, fig.height=3, echo=FALSE,eval=TRUE}
+print("07_model_selection")
 # setwd("figures")
 ids <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
@@ -20,28 +20,28 @@ ids <- readRDS("../data/dt.rds") %>%
 hu4 <-  LAGOSNEgis::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
   st_cast(to = "MULTIPOLYGON") %>%
   left_join(ids, by = c("ZoneID" = "hu4_zoneid"))
-
 n_cat  <- 6
-colors <- c("#FFFFFF", viridisLite::viridis(n_cat - 1))
+colors <- c(#"#FFFFFF", 
+            viridisLite::viridis(n_cat))
 hu4    <- mutate(hu4, 
             n_cat = cut(hu4$n, breaks = 
-                          classInt::classIntervals(hu4$n, n = n_cat)$brks))
+                round(classInt::classIntervals(hu4$n, n = n_cat,
+                                               style = "kmeans")$brks, 0)
+                ))
 hu4 <- dplyr::filter(hu4, !is.na(n_cat))
+
+gg_hu4_n <- ggplot() +
+    geom_sf(data = hu4, aes(fill = n_cat)) +
+    # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
+    theme_minimal() + 
+    theme(legend.position = "bottom", 
+          axis.title = element_blank(), 
+          legend.title = element_blank()) + 
+    scale_fill_manual(values = colors, levels(hu4$n_cat)) + 
+    guides(guide_legend(nrow = 2))
 
 # hist(hu4$n, n = 20)
 # table(as.character(dt$hu4_zoneid))
-
-lg <- lagosne_load("1.087.1")
-
-# ep <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 
-#                 summarize(
-
-#                   group_by(dplyr::select(lg$epi_nutr, lagoslakeid, tp, chla), 
-#                            lagoslakeid), 
-#                   tp = median(tp, na.rm = TRUE), 
-#                   chla = median(chla, na.rm = TRUE)), 
-#                 by = "lagoslakeid") %>%
-#   tidyr::drop_na() 
 
 dt <- readRDS("../data/dt.rds") %>%
   dplyr::select("lagoslakeid", "hu4_zoneid", "tp", 
@@ -93,21 +93,16 @@ plot_grid(
     labs(x = "Ag. LULC (pct, NLCD 2011)", 
          y = "TP")  +
     scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 300)),
-  ggplot() +
-    geom_sf(data = hu4, aes(fill = n_cat)) +
-    # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
-    theme_minimal() + 
-    theme(legend.position = "bottom", 
-          axis.title = element_blank(), 
-          legend.title = element_blank()) + 
-    scale_fill_manual(values = colors, levels(hu4$n_cat)), 
+  gg_hu4_n, 
   rel_heights = c(0.6, 1), labels = "AUTO"
 )
 ``` 
 
 ```{r residual_dotplot, echo=FALSE}
-library(tidybayes)
-library(brms)
+suppressMessages(library(tidybayes))
+suppressMessages(library(brms))
+
+lg <- lagosne_load("1.087.1")
 
 fit <- readRDS("../data/mcmc/re/tn_corn")
 
@@ -119,7 +114,6 @@ good_hu4s <- readRDS("../data/dt.rds") %>%
   tally() %>%
   dplyr::filter(n >= 3)
 dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
-
 
 get_residuals <- function(model, threshold = 0.1){
   # model <- fit
@@ -296,7 +290,7 @@ hu4_signif <-  LAGOSNEgis::query_gis(
   st_cast(to = "MULTIPOLYGON")
 ```
 
-```{r signif_map, echo=FALSE, eval=FALSE}
+```{r signif_map, echo=FALSE, eval=TRUE}
 ggplot() + 
   geom_sf(data = hu4) +
   geom_sf(data = hu4_signif, color = "red")
