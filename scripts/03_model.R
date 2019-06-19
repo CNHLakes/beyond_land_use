@@ -107,13 +107,39 @@ re_brms <-
                       formula = model_forms_re[[i]], 
                       data = dt))
 
+# evaluate hu4 re slope significance
+get_re_text <- function(x){
+  # x <- "maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse + buffervcultivatedvcrops + (1 + ag | hu4vzoneid)"
+  res <- strsplit(x, "\\|")[[1]][1]
+  res <- strsplit(res, " ")[[1]]
+  res[length(res)]
+}
+
+get_re_signif <- function(x){
+  # x <- re_brms[[5]]
+  res <- x %>%
+    spread_draws(r_hu4vzoneid[hu4vzoneid,term]) %>%
+    dplyr::filter(term == get_re_text(as.character(x$formula)[1])) %>%
+    group_by(hu4vzoneid) %>%
+    do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
+    mutate(signif = case_when(`5%` > 0 ~ TRUE, 
+                              TRUE ~ FALSE))
+  x$re_signif <- any(res$signif)
+  x$re_signif_ids <- dplyr::filter(res, signif == TRUE)$hu4vzoneid
+  x
+}
+  
+re_brms <- lapply(re_brms, function(x) get_re_signif(x))
+
 saveRDS(re_brms, "data/mcmc/re_brms.rds")
+# re_brms <- readRDS("data/mcmc/re_brms.rds")
 
 r2_re <- dplyr::bind_rows(
   lapply(re_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
   mutate(Model = names(model_forms_re), 
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
+r2_re$re_signif <- unlist(lapply(res_brms, function(x) x$re_signif))
 
 # r2_re$`Proxy`     <- c("Ag", "Soybeans", "Pasture",
 #                        "Ag", "Corn", "Pasture") 
@@ -134,8 +160,11 @@ if(!interactive()){
 # ---- diagnostics ----
 if(interactive()){
 # loo comparison
-loo_compare(loo(re_brms[[4]]), loo(re_brms[[5]])) # Corn model has lowest error
-loo_compare(loo(re_brms[[1]]), loo(re_brms[[3]])) # Pasture model has lowest error
+# r2_re
+loo_compare(loo(re_brms[[4]]), loo(re_brms[[5]]), 
+            loo(re_brms[[6]]), loo(re_brms[[7]])) # Corn model has lowest error
+loo_compare(loo(re_brms[[1]]), loo(re_brms[[2]]), 
+            loo(re_brms[[3]])) # Pasture model has lowest error
 
 # evaluate hu4 re slope significance
 corn_hu4_dist <- re_brms[[5]] %>%

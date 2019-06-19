@@ -13,7 +13,9 @@ source("../scripts/99_utils.R")
 ```{r 07_model_selection, fig.height=3, echo=FALSE,eval=TRUE}
 print("07_model_selection")
 # setwd("figures")
-ids <- readRDS("../data/dt.rds") %>%
+
+dt      <- readRDS("../data/dt.rds")
+ids     <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
   tally()
 
@@ -29,9 +31,19 @@ hu4    <- mutate(hu4,
                                                style = "kmeans")$brks, 0)
                 ))
 hu4 <- dplyr::filter(hu4, !is.na(n_cat))
+hu4 <- dplyr::left_join(hu4, 
+                        distinct(dplyr::select(dt, contains("hu4_")), 
+                                 hu4_zoneid, .keep_all = TRUE), 
+                        by = c("ZoneID" = "hu4_zoneid"))
+
+re_brms <- readRDS("../data/mcmc/re_brms.rds")
+# lapply(re_brms, function(x) x$formula) 
+signif_hu4_ids <- re_brms[[5]]$re_signif_ids # 5 is best tn model with re effects
+signif_hu4 <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
 gg_hu4_n <- ggplot() +
     geom_sf(data = hu4, aes(fill = n_cat)) +
+    geom_sf(data = signif_hu4, color = "red", alpha = 0) +
     # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
     theme_minimal() + 
     theme(legend.position = "bottom", 
@@ -40,12 +52,23 @@ gg_hu4_n <- ggplot() +
     scale_fill_manual(values = colors, levels(hu4$n_cat)) + 
     guides(guide_legend(nrow = 2))
 
+(gg_hu4_ndep <- ggplot() +
+    geom_sf(data = hu4, aes(fill = hu4_nitrogen_atmospheric_deposition)) +
+    geom_sf(data = signif_hu4, color = "red", alpha = 0) +
+    theme_minimal() + 
+    theme(legend.position = "bottom", 
+          axis.title = element_blank(), 
+          legend.title = element_blank()))
+
+# gg_hu4_clay <- ggplot() +
+#     geom_sf(data = hu4, aes(fill = hu4_clay_pct)) +
+#     theme_minimal() + 
+#     theme(legend.position = "bottom", 
+#           axis.title = element_blank(), 
+#           legend.title = element_blank())
+
 # hist(hu4$n, n = 20)
 # table(as.character(dt$hu4_zoneid))
-
-dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select("lagoslakeid", "hu4_zoneid", "tp", 
-                "ag_pct", "phosphorus_fertilizer_use", "soybeans")
 
 # hist(as.vector(table(dt$hu4_zoneid)))  
 # good_hu4s <- group_by(dt, hu4_zoneid) %>% 
@@ -93,8 +116,8 @@ plot_grid(
     labs(x = "Ag. LULC (pct, NLCD 2011)", 
          y = "TP")  +
     scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 300)),
-  gg_hu4_n, 
-  rel_heights = c(0.6, 1), labels = "AUTO"
+  gplot_grid(gg_hu4_n, gg_hu4_ndep, ncol = 1),
+  rel_heights = c(0.6, 1), labels = "AUTO", ncol = 2
 )
 ``` 
 
