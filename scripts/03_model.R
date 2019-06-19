@@ -91,6 +91,9 @@ r2_fe <- dplyr::bind_rows(
   "tn_corn_ndep"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
                       buffervcultivatedvcrops + hu4vnitrogenvatmosphericvdeposition +
                       (1 + corn | hu4vzoneid)), 
+  "tn_corn_clay"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
+                           buffervcultivatedvcrops + hu4vclayvpct +
+                           (1 + corn | hu4vzoneid)), 
   "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
                       buffervcultivatedvcrops + 
                       (1 + pasture | hu4vzoneid))
