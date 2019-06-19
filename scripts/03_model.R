@@ -115,12 +115,12 @@ r2_re <- dplyr::bind_rows(
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
 
-r2_re$`Proxy`     <- c("Ag", "Soybeans", "Pasture",
-                       "Ag", "Corn", "Pasture") 
-r2_re$`Lake`      <- c(rep("maxdepth", 6))
-r2_re$`Transport` <- c(rep("Baseflow", 3), rep("Soil Org Carbon", 3))
-r2_re$`Source`    <- c(rep("P fertilizer", 3), rep("N fertilizer", 3))
-r2_re$`Buffer`    <- c(rep("Row Crop", 6))
+# r2_re$`Proxy`     <- c("Ag", "Soybeans", "Pasture",
+#                        "Ag", "Corn", "Pasture") 
+# r2_re$`Lake`      <- c(rep("maxdepth", 6))
+# r2_re$`Transport` <- c(rep("Baseflow", 3), rep("Soil Org Carbon", 3))
+# r2_re$`Source`    <- c(rep("P fertilizer", 3), rep("N fertilizer", 3))
+# r2_re$`Buffer`    <- c(rep("Row Crop", 6))
 
 r2    <- dplyr::bind_rows(r2_fe, r2_re)
 
