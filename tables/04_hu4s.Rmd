@@ -21,7 +21,7 @@ focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_",
                                              c("56", "57", "36", "37", "38")), 
                          stringsAsFactors = FALSE)
 
-compare_focal <- function(dt, ids){
+compare_focal <- function(dt, ids, threshold = 0){
   dt <- dt %>%
   mutate(is_focal = hu4_zoneid %in% ids) %>% 
   group_by(is_focal) %>%
@@ -40,9 +40,10 @@ compare_focal <- function(dt, ids){
     mutate_all(~as.numeric(.)) %>%
     mutate(var = row_names) %>%
     mutate(diff = abs(abs(nonfocal - focal)/nonfocal)) %>%
-    mutate_if(is.numeric, ~format(., scientific = FALSE)) %>%
-    # dplyr::filter(diff > 0.02) %>%
-    arrange(desc(diff))
+    dplyr::filter(!is.na(diff)) %>%
+    dplyr::filter(diff > threshold) %>%
+    arrange(desc(diff)) %>%
+    mutate_if(is.numeric, ~format(., scientific = FALSE)) 
   
   res
 }
@@ -64,10 +65,18 @@ hu4 <- lg$hu4 %>%
   dplyr::select(-matches("contributing")) %>%
   dplyr::select(-matches("1985|1990|1995|2000|2005")) %>%
   dplyr::select(-matches("_ha")) %>%
-  compare_focal(focal_hu4s$hu4_zoneid)
+  compare_focal(focal_hu4s$hu4_zoneid, threshold = 0.011)
+  
 
-dt        <- compare_focal(readRDS("../data/dt.rds"), focal_hu4s$hu4_zoneid)
-dt_scaled <- compare_focal(readRDS("../data/dt_scaled.rds"), focal_hu4s$hu4_zoneid)                     
+dt        <- suppressWarnings(
+  compare_focal(readRDS("../data/dt.rds"), focal_hu4s$hu4_zoneid, threshold = 0.28))
+dt_scaled <- suppressWarnings(
+  compare_focal(readRDS("../data/dt_scaled.rds"), focal_hu4s$hu4_zoneid, threshold = 0.9))
+
+jsta::pdf_table(dt, "../tables/dt.pdf")
+jsta::pdf_table(dt_scaled, "../tables/dt_scaled.pdf")
+jsta::pdf_table(hu4, "../tables/hu4.pdf")
+
 View(dt)
 
 knitr::kable(dt, digits = 0, format = "markdown") 
