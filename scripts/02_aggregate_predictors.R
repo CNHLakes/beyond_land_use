@@ -115,7 +115,7 @@ cdl_vars <- dt %>%
 dt_scaled <- dt %>% 
   dplyr::select("lagoslakeid", "hu4_zoneid", "hu12_zoneid", 
                 "tp", "tn", "chla", "hu12_ppt_mean", "hu12_baseflow_mean", 
-                "hu4_nitrogen_atmospheric_deposition",
+                "hu4_nitrogen_atmospheric_deposition", "hu4_clay_pct",
                 "maxdepth", "iwsla_ratio", "row_crop_pct", "soil_org_carbon",
                 "nitrogen_atmospheric_deposition", "clay_pct", 
                 "lake_area_ha", "wetland_potential", contains("manure"), 
