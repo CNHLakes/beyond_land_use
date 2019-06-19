@@ -35,6 +35,8 @@ library(vapour)
 library(cdlTools)
 suppressMessages(library(unpivotr))
 library(snakecase)
+suppressMessages(library(brms))
+suppressMessages(library(tidybayes))
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),

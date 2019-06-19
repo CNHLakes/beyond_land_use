@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 source("../scripts/99_utils.R")
 ```
 
-```{r 07_model_selection, fig.height=3, echo=FALSE,eval=TRUE}
+```{r 07_model_selection, fig.height=3, echo=FALSE, fig.width=6, eval=TRUE}
 print("07_model_selection")
 # setwd("figures")
 
@@ -38,9 +38,11 @@ hu4 <- dplyr::left_join(hu4,
 
 re_brms <- readRDS("../data/mcmc/re_brms.rds")
 # lapply(re_brms, function(x) x$formula) 
-signif_hu4_ids <- re_brms[[5]]$re_signif_ids # 5 is best tn model with re effects
+fit_tn <- re_brms[[5]] # 5 is best tn model with re effects
+signif_hu4_ids <- fit_tn$re_signif_ids 
 signif_hu4 <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
+# plotting
 gg_hu4_n <- ggplot() +
     geom_sf(data = hu4, aes(fill = n_cat)) +
     geom_sf(data = signif_hu4, color = "red", alpha = 0) +
@@ -50,15 +52,17 @@ gg_hu4_n <- ggplot() +
           axis.title = element_blank(), 
           legend.title = element_blank()) + 
     scale_fill_manual(values = colors, levels(hu4$n_cat)) + 
-    guides(guide_legend(nrow = 2))
+    guides(guide_legend(nrow = 2)) + 
+  ggtitle("# of lakes")
 
-(gg_hu4_ndep <- ggplot() +
+gg_hu4_ndep <- ggplot() +
     geom_sf(data = hu4, aes(fill = hu4_nitrogen_atmospheric_deposition)) +
     geom_sf(data = signif_hu4, color = "red", alpha = 0) +
     theme_minimal() + 
     theme(legend.position = "bottom", 
           axis.title = element_blank(), 
-          legend.title = element_blank()))
+          legend.title = element_blank()) +
+  ggtitle("N Deposition")
 
 # gg_hu4_clay <- ggplot() +
 #     geom_sf(data = hu4, aes(fill = hu4_clay_pct)) +
@@ -104,9 +108,8 @@ coords <- data.frame(matrix(
 names(coords) <- c("x", "y")
 coords$ZoneID <- gsub("HU4_", "", hu4[,"ZoneID"]$ZoneID)
 
-plot_grid(
-  ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha = n)) + 
-    # geom_point() +
+gg_smooth <- ggplot(data = dt, 
+                    aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha = n)) + 
     geom_line(stat = "smooth", method = lm, se = FALSE, aes(alpha = n))  +
     geom_smooth(aes(group = 1), method = lm, se = FALSE, 
                 color = "black", linetype = "dashed") +
@@ -115,13 +118,63 @@ plot_grid(
     theme(legend.position = "") +
     labs(x = "Ag. LULC (pct, NLCD 2011)", 
          y = "TP")  +
-    scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 300)),
-  gplot_grid(gg_hu4_n, gg_hu4_ndep, ncol = 1),
-  rel_heights = c(0.6, 1), labels = "AUTO", ncol = 2
-)
+    scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 300))
+    
+plot_grid(gg_hu4_n, gg_hu4_ndep)
 ``` 
 
-```{r residual_dotplot, echo=FALSE}
+```{r prediction_lines, echo=FALSE, eval=TRUE}
+# plot prediction lines
+# corn vs tn
+
+# hu4_signif$ZoneID
+dt        <- readRDS("../data/dt_scaled.rds") 
+names(dt) <- gsub("_", "v", names(dt))
+
+hu4_id               <- signif_hu4_ids[1]
+conditions           <- data.frame(hu4vzoneid = hu4_id)
+rownames(conditions) <- hu4_id
+
+me_zone <- marginal_effects(fit_tn, conditions = conditions, 
+                            re_formula = NULL, method = "predict")
+
+ran_ef <- as.data.frame(ranef(fit_tn)$hu4vzoneid) %>%
+  mutate(zoneid = rownames(.)) %>%
+  dplyr::filter(zoneid == hu4_id)
+
+# plot(me_zone, ncol = 1)$agvpct # + 
+  # geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
+  #               broom::tidy(fit)$estimate[3]) + 
+  # ggtitle(hu4_id)
+  
+# ggplot() + 
+#     geom_point(data = dplyr::filter(dt, 
+#                                   hu4vzoneid == hu4_id), 
+#              aes(x = agvpct, y = tp)) + 
+#   geom_abline(intercept = 0, slope = ran_ef$Estimate.bagvpct_Intercept + 
+#                 broom::tidy(fit)$estimate[3]) +
+#   ylim(0, 450) + xlim(40, 90) + ggtitle(hu4_id)
+
+dplyr::filter(dt, hu4vzoneid %in% signif_hu4$ZoneID) %>%
+  modelr::data_grid(corn = modelr::seq_range(corn, n = 101), 
+                    maxdepth = modelr::seq_range(corn, n = 101), 
+                    soilvorgvcarbon = modelr::seq_range(soilvorgvcarbon, n = 101), 
+                    nitrogenvfertilizervuse = modelr::seq_range(nitrogenvfertilizervuse, n = 101), 
+                    buffervcultivatedvcrops = modelr::seq_range(buffervcultivatedvcrops, n = 101), 
+                    hu4vzoneid) %>%
+  tidybayes::add_predicted_draws(fit_tn) %>%
+  ggplot(aes(x = corn, y = tn)) +
+  stat_lineribbon(aes(y = .prediction), 
+                  .width = c(.99, .95, .8, .5), color = "#08519C") +
+  geom_point(data = dplyr::filter(dt, hu4vzoneid %in% hu4_signif$ZoneID), 
+                                  size = 2) +
+  scale_fill_brewer() +
+  facet_wrap(~ hu4vzoneid)
+
+```
+
+
+```{r residual_dotplot, echo=FALSE, eval=FALSE}
 suppressMessages(library(tidybayes))
 suppressMessages(library(brms))
 
@@ -176,7 +229,7 @@ ggplot() +
 
 ```
 
-```{r model_fitting, echo=FALSE, eval=TRUE}
+```{r model_fitting, echo=FALSE, eval=FALSE}
 library(brms)
 library(tidybayes)
 library(modelr)
@@ -285,7 +338,7 @@ print(fit_nle$formula)
 plot(fit0, pars = "ag")
 ```
 
-```{r model_diagnostics_advanced, fig.height=4, echo=FALSE, eval=TRUE}
+```{r model_diagnostics_advanced, fig.height=4, echo=FALSE, eval=FALSE}
 # pull global distribution (lower, mean, upper)
 # get_variables(fit0)
 global_dist <- spread_draws(fit0, b_ag) %>%
@@ -313,13 +366,13 @@ hu4_signif <-  LAGOSNEgis::query_gis(
   st_cast(to = "MULTIPOLYGON")
 ```
 
-```{r signif_map, echo=FALSE, eval=TRUE}
+```{r signif_map, echo=FALSE, eval=FALSE}
 ggplot() + 
   geom_sf(data = hu4) +
   geom_sf(data = hu4_signif, color = "red")
 ```
 
-```{r model_summary, echo=FALSE, fig.height=3}
+```{r model_summary, echo=FALSE, fig.height=3, eval=FALSE}
 
 # pull 2nd level covariate distributions
 coef_signif <- bind_rows(
@@ -339,7 +392,7 @@ ggplot(data = coef_signif) +
 
 ```
 
-```{r asdf, echo=FALSE}
+```{r asdf, echo=FALSE, eval=FALSE}
 
 # plot prediction lines
 # hu4_signif$ZoneID
