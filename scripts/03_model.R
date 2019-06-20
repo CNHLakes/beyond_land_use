@@ -124,7 +124,8 @@ get_re_signif <- function(x){
     do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
     mutate(signif = case_when(`5%` > 0 ~ TRUE, 
                               TRUE ~ FALSE))
-  x$re_signif <- any(res$signif)
+  x$re            <- res
+  x$re_signif     <- any(res$signif)
   x$re_signif_ids <- dplyr::filter(res, signif == TRUE)$hu4vzoneid
   x
 }
