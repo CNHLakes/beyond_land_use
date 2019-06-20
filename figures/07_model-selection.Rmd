@@ -123,7 +123,21 @@ gg_smooth <- ggplot(data = dt,
 plot_grid(gg_hu4_n, gg_hu4_ndep)
 ``` 
 
-```{r prediction_lines, echo=FALSE, eval=TRUE}
+```{r signif_hu4_lakes}
+# compare lakes in signif hu4s
+dt        <- readRDS("../data/dt_scaled.rds") %>%
+  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
+  tidyr::gather(key = "key", value = "value", 
+                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4)
+
+ggplot(data = dt) + 
+  geom_histogram(aes(x = value, fill = signif_hu4)) +
+  geom_vline(aes(xintercept = median(value, na.rm = TRUE), color = signif_hu4)) +
+  facet_wrap(~key)
+
+```
+
+```{r prediction_lines, echo=FALSE, eval=FALSE}
 # plot prediction lines
 # corn vs tn
 
@@ -131,15 +145,40 @@ plot_grid(gg_hu4_n, gg_hu4_ndep)
 dt        <- readRDS("../data/dt_scaled.rds") 
 names(dt) <- gsub("_", "v", names(dt))
 
-hu4_id               <- signif_hu4_ids[1]
+hu4_id               <- unique(dt$hu4vzoneid)
 conditions           <- data.frame(hu4vzoneid = hu4_id)
 rownames(conditions) <- hu4_id
 
 me_zone <- marginal_effects(fit_tn, conditions = conditions, 
                             re_formula = NULL, method = "predict")
+plot(me_zone, points = TRUE)
+
+n_predict <- 3
+reps      <- length(unique(dt$hu4vzoneid)) / 3
+reps      <- 2
+new_data <- data.frame(
+      maxdepth = rep(modelr::seq_range(dt$maxdepth, n = n_predict), reps), 
+      soilvorgvcarbon = rep(modelr::seq_range(dt$maxdepth, n = n_predict), reps), 
+      nitrogenvfertilizervuse = rep(modelr::seq_range(dt$nitrogenvfertilizervuse, 
+                                                  n = n_predict), reps), 
+      buffervcultivatedvcrops = rep(modelr::seq_range(dt$buffervcultivatedvcrops, 
+                                                  n = n_predict), reps), 
+      corn = rep(modelr::seq_range(dt$corn, n = n_predict), reps), 
+      hu4vzoneid = unique(dt$hu4vzoneid)[1:2],
+      stringsAsFactors = FALSE)
+new_data <- expand.grid(new_data)
+
+test <- add_predicted_draws()
+
+test <- predict(fit_tn, newdata = new_data, allow_new_levels = TRUE)
+test2 <- cbind(new_data, test)
+plot(test2$corn, test2$Estimate)
+
 
 ran_ef <- as.data.frame(ranef(fit_tn)$hu4vzoneid) %>%
   mutate(zoneid = rownames(.)) %>%
+  arrange(desc(Estimate.corn))
+%>%
   dplyr::filter(zoneid == hu4_id)
 
 # plot(me_zone, ncol = 1)$agvpct # + 
