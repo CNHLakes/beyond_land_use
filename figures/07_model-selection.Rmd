@@ -128,12 +128,32 @@ plot_grid(gg_hu4_n, gg_hu4_ndep)
 dt        <- readRDS("../data/dt_scaled.rds") %>%
   mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
   tidyr::gather(key = "key", value = "value", 
-                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4)
+                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4) %>%
+  group_by(key, signif_hu4) %>%
+  mutate(median = median(value, na.rm = TRUE))
 
-ggplot(data = dt) + 
-  geom_histogram(aes(x = value, fill = signif_hu4)) +
-  geom_vline(aes(xintercept = median(value, na.rm = TRUE), color = signif_hu4)) +
+dt_predictors <- dplyr::filter(dt, key %in% 
+                                 c("wetland_potential", "tp",
+                                   "nitrogen_atmospheric_deposition",
+                                   "hu12_baseflow_mean", "clay_pct"))
+dt_modelled <- dplyr::filter(dt, key %in% 
+                               c("maxdepth", "tn", "soil_org_carbon",
+                                 "buffer_cultivated_crops", "corn",
+                                 "nitrogen_fertilizer_use"))
+
+ggplot(data = dt_predictors) + 
+  geom_histogram(aes(x = value, fill = signif_hu4), alpha = 0.7) +
+  geom_vline(aes(xintercept = median, color = signif_hu4), 
+             linetype = "dashed") +
   facet_wrap(~key)
+
+ggplot(data = dt_modelled) + 
+  geom_histogram(aes(x = value, fill = signif_hu4), alpha = 0.7) +
+  geom_vline(aes(xintercept = median, color = signif_hu4), 
+             linetype = "dashed") +
+  facet_wrap(~key)
+
+fit_tn$formula
 
 ```
 
