@@ -155,6 +155,35 @@ ggplot(data = dt_modelled) +
 
 fit_tn$formula
 
+
+dt        <- readRDS("../data/dt_scaled.rds") %>%
+  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
+  tidyr::gather(key = "key", value = "value", 
+                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4, -tn) %>%
+  dplyr::filter(key %in% c("maxdepth", "tn", "soil_org_carbon",
+                                 "buffer_cultivated_crops", "corn",
+                                 "nitrogen_fertilizer_use"))
+
+ggplot(data = dt) + 
+  geom_point(aes(x = tn, y = value, color = signif_hu4)) +
+  geom_line(stat = "smooth", method = lm, se = FALSE, 
+            aes(x = tn, y = value, color = signif_hu4)) +
+  facet_wrap(~key)
+
+dt        <- readRDS("../data/dt_scaled.rds") %>%
+  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
+  tidyr::gather(key = "key", value = "value", 
+                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4, -tn) %>%
+  dplyr::filter(key %in% c("wetland_potential", "tp",
+                                   "nitrogen_atmospheric_deposition",
+                                   "hu12_baseflow_mean", "clay_pct"))
+
+ggplot(data = dt) + 
+  geom_point(aes(x = tn, y = value, color = signif_hu4)) +
+  geom_line(stat = "smooth", method = lm, se = FALSE, 
+            aes(x = tn, y = value, color = signif_hu4)) +
+  facet_wrap(~key)
+
 ```
 
 ```{r prediction_lines, echo=FALSE, eval=FALSE}
