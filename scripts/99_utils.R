@@ -37,6 +37,7 @@ suppressMessages(library(unpivotr))
 library(snakecase)
 suppressMessages(library(brms))
 suppressMessages(library(tidybayes))
+library(ggforce)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
