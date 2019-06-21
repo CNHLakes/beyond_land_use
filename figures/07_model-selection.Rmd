@@ -185,6 +185,47 @@ plot_grid(gg_hist, gg_tp, nrow = 2)
 
 ```
 
+```{r model_summary, echo=FALSE}
+fit_tp <- re_brms[[3]] # 3 is best tp model with re effects
+
+# plot(fit_tp)
+
+gg_tp <- spread_draws(fit_tp, 
+                     b_maxdepth, 
+                     b_hu12vbaseflowvmean, 
+                     b_phosphorusvfertilizervuse, 
+                     b_buffervcultivatedvcrops) %>%
+  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  ggplot(aes(x = value)) +
+  geom_histogram(alpha = 0.8) +
+  theme_cowplot() +
+  xlab("") + ylab("") +
+  facet_wrap(~key, nrow = 1, scales = "free")
+
+# summary(fit_tn)
+
+spread_draws(fit_tn, 
+                     b_maxdepth, 
+                     b_soilvorgvcarbon, 
+                     b_nitrogenvfertilizervuse, 
+                     b_buffervcultivatedvcrops) %>%
+  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  mutate(key = factor(key, levels = c("b_maxdepth", 
+                     "b_soilvorgvcarbon", 
+                     "b_nitrogenvfertilizervuse", 
+                     "b_buffervcultivatedvcrops"))) %>%
+  ggplot(aes(x = value)) +
+  geom_histogram(alpha = 0.8) +
+  theme_cowplot() +
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank()) +
+  xlab("") + ylab("") +
+  facet_wrap(~key, nrow = 1, scales = "free")
+
+plot_grid(gg_tp, gg_tn, nrow = 2)
+
+```
+
 ```{r prediction_lines, echo=FALSE, eval=FALSE}
 # plot prediction lines
 # corn vs tn
