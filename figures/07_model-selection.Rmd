@@ -133,7 +133,8 @@ gg_tn_fe <- ggplot(data = gg_tn) +
 gg_tn_fe
 ```
 
-```{r tn_re}
+```{r tn_re_hu4}
+
 # map significant random effects hu4s
 gg_hu4 <- ggplot() +
     geom_sf(data = hu4) +
@@ -146,7 +147,11 @@ gg_hu4 <- ggplot() +
     scale_fill_manual(values = colors, levels(hu4$n_cat)) + 
     guides(guide_legend(nrow = 2))
 
-# dotplot tn hu4 randome effects
+gg_hu4
+```
+
+```{r tn_re}
+# dotplot tn hu4 random effects
 fit_tn$re$hu4vzoneid <- gsub("HU4_", "", fit_tn$re$hu4vzoneid)
 gg_tn_re <- ggplot(data = fit_tn$re) +
   geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
@@ -156,7 +161,7 @@ gg_tn_re <- ggplot(data = fit_tn$re) +
   coord_flip() +
   ylab("TN model, corn RE slope") + theme(legend.position = 0)
 
-plot_grid(gg_hu4, gg_tn_re)
+gg_tn_re
 ```
 
 ```{r tn_re_compare}
