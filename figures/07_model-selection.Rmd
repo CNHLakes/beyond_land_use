@@ -5,15 +5,12 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 5, eval = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 5, eval = TRUE, warning = FALSE, message = FALSE)
 # setwd("figures")
 source("../scripts/99_utils.R")
 ```
 
-```{r 07_model_selection, fig.height=3, echo=FALSE, fig.width=6, eval=TRUE}
-print("07_model_selection")
-# setwd("figures")
-
+```{r gis_setup}
 dt      <- readRDS("../data/dt.rds")
 ids     <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
@@ -37,12 +34,94 @@ hu4 <- dplyr::left_join(hu4,
                         by = c("ZoneID" = "hu4_zoneid"))
 
 re_brms        <- readRDS("../data/mcmc/re_brms.rds")
+pred_key       <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
+```
+
+```{r tp_summary, fig.height=4}
 # lapply(re_brms, function(x) x$formula) 
-fit_tn         <- re_brms[[5]] # 5 is best tn model with re effects
+fit_tp   <- re_brms[[3]] # 3 is best tp model with random effects
+signif_hu4_ids <- fit_tp$re_signif_ids 
+signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
+
+# plot tp model fixed effects summary
+# summary(fit_tp)
+gg_tp <- spread_draws(fit_tp, 
+                     b_maxdepth, 
+                     b_hu12vbaseflowvmean, 
+                     b_phosphorusvfertilizervuse, 
+                     b_buffervcultivatedvcrops) %>%
+  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  mutate(key = stringr::str_replace(key, "b_", "")) %>%
+  left_join(pred_key, by = c("key" = "varv")) %>%
+  mutate(key = factor(pretty, levels = c("Max depth", 
+                     "Baseflow", 
+                     "Fertilizer P input", 
+                     "Buffer Ag"))) %>%
+  group_by(key) %>%
+  summarize(value = list(tibble::enframe(quantile(value, probs=c(0.05,0.5,0.95))))) %>% 
+  unnest() %>%
+  tidyr::spread(name, value) %>%
+  rowwise() %>%
+  mutate(signif = `5%` & `95%` > 0 | `5%` & `95%` < 0)
+
+gg_tp_fe <- ggplot(data = gg_tp) + 
+  geom_pointrange(aes(x = key, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`, color = signif)) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  theme_cowplot() +
+  ylim(-0.6, 0.4) +
+  ylab("Standardized FE slope") + theme(legend.position = 0) +
+  xlab("") 
+
+gg_tp_fe
+
+```
+
+```{r tn_summary, fig.height=4}
+# lapply(re_brms, function(x) x$formula) 
+fit_tn         <- re_brms[[5]] # 5 is best tn model with random effects
 signif_hu4_ids <- fit_tn$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
-# plotting
+# plot tn model fixed effects summary
+# summary(fit_tn)
+gg_tn <- spread_draws(fit_tn, 
+                     b_maxdepth, 
+                     b_soilvorgvcarbon, 
+                     b_nitrogenvfertilizervuse, 
+                     b_buffervcultivatedvcrops) %>%
+  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  mutate(key = stringr::str_replace(key, "b_", "")) %>%
+  left_join(pred_key, by = c("key" = "varv")) %>%
+  mutate(key = factor(pretty, levels = c("Max depth", 
+                     "Soil organic carbon", 
+                     "Fertilizer N input", 
+                     "Buffer Ag"))) %>%
+  group_by(key) %>%
+  summarize(value = list(tibble::enframe(quantile(value, probs=c(0.05,0.5,0.95))))) %>% 
+  unnest() %>%
+  tidyr::spread(name, value) %>%
+  rowwise() %>%
+  mutate(signif = `5%` & `95%` > 0 | `5%` & `95%` < 0)
+
+gg_tn_fe <- ggplot(data = gg_tn) + 
+  geom_pointrange(aes(x = key, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`, color = signif)) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  theme_cowplot() +
+  ylim(-0.6, 0.4) +
+  ylab("Standardized FE slope") + theme(legend.position = 0) +
+  xlab("") 
+
+gg_tn_fe
+```
+
+```{r tn_re}
+# map significant random effects hu4s
 gg_hu4 <- ggplot() +
     geom_sf(data = hu4) +
     geom_sf(data = signif_hu4, color = "red", alpha = 0) +
@@ -54,7 +133,8 @@ gg_hu4 <- ggplot() +
     scale_fill_manual(values = colors, levels(hu4$n_cat)) + 
     guides(guide_legend(nrow = 2))
 
-gg_corn_re <- ggplot(data = fit_tn$re) +
+# dotplot tn hu4 randome effects
+gg_tn_re <- ggplot(data = fit_tn$re) +
   geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
@@ -62,8 +142,57 @@ gg_corn_re <- ggplot(data = fit_tn$re) +
   coord_flip() +
   ylab("TN model, corn RE slope") + theme(legend.position = 0)
 
-plot_grid(gg_corn_re, gg_hu4)
+plot_grid(gg_hu4, gg_tn_re)
+```
 
+```{r tn_re_compare}
+# compare lakes in signif hu4s
+dt        <- readRDS("../data/dt_scaled.rds") %>%
+  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
+  tidyr::gather(key = "key", value = "value", 
+                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4) %>%
+  group_by(key, signif_hu4) %>%
+  mutate(median = median(value, na.rm = TRUE))
+
+dt_predictors <- dplyr::filter(dt, key %in% 
+                                 c("tp",
+                                   "nitrogen_atmospheric_deposition",
+                                   "clay_pct"))
+dt_modelled <- dplyr::filter(dt, key %in% 
+                               c("maxdepth", "tn", "soil_org_carbon",
+                                 "buffer_cultivated_crops", "corn",
+                                 "nitrogen_fertilizer_use"))
+
+gg_hist <- ggplot(data = dt_predictors) + 
+  geom_histogram(aes(x = value, fill = signif_hu4), alpha = 0.7) +
+  geom_vline(aes(xintercept = median, color = signif_hu4), 
+             linetype = "dashed") +
+  scale_fill_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  theme(legend.position = 0) +
+  facet_wrap(~key)
+
+# line graph tn vs tp
+dt        <- readRDS("../data/dt_scaled.rds") %>%
+  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
+  tidyr::gather(key = "key", value = "value", 
+                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4, -tn) %>%
+  dplyr::filter(key %in% c(c("tp"))) %>%
+  tidyr::spread(key, value)
+
+gg_tp <- ggplot(data = dt) + 
+  geom_point(aes(x = tn, y = tp, color = signif_hu4)) +
+  geom_line(stat = "smooth", method = lm, se = FALSE, 
+            aes(x = tn, y = tp, color = signif_hu4)) +
+  scale_fill_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  theme(legend.position = 0)
+
+plot_grid(gg_hist, gg_tp, nrow = 2)
+```
+
+
+```{r 07_model_selection, fig.height=3, echo=FALSE, fig.width=6, eval=FALSE}
 # gg_hu4_ndep <- ggplot() +
 #     geom_sf(data = hu4, aes(fill = hu4_nitrogen_atmospheric_deposition)) +
 #     geom_sf(data = signif_hu4, color = "red", alpha = 0) +
@@ -131,101 +260,6 @@ plot_grid(gg_corn_re, gg_hu4)
 #     
 # plot_grid(gg_hu4_n, gg_hu4_ndep)
 ``` 
-
-```{r signif_hu4_lakes, echo=FALSE}
-# compare lakes in signif hu4s
-dt        <- readRDS("../data/dt_scaled.rds") %>%
-  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
-  tidyr::gather(key = "key", value = "value", 
-                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4) %>%
-  group_by(key, signif_hu4) %>%
-  mutate(median = median(value, na.rm = TRUE))
-
-dt_predictors <- dplyr::filter(dt, key %in% 
-                                 c("tp",
-                                   "nitrogen_atmospheric_deposition",
-                                   "clay_pct"))
-dt_modelled <- dplyr::filter(dt, key %in% 
-                               c("maxdepth", "tn", "soil_org_carbon",
-                                 "buffer_cultivated_crops", "corn",
-                                 "nitrogen_fertilizer_use"))
-
-gg_hist <- ggplot(data = dt_predictors) + 
-  geom_histogram(aes(x = value, fill = signif_hu4), alpha = 0.7) +
-  geom_vline(aes(xintercept = median, color = signif_hu4), 
-             linetype = "dashed") +
-  scale_fill_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  theme(legend.position = 0) +
-  facet_wrap(~key)
-
-# ggplot(data = dt_modelled) + 
-#   geom_histogram(aes(x = value, fill = signif_hu4), alpha = 0.7) +
-#   geom_vline(aes(xintercept = median, color = signif_hu4), 
-#              linetype = "dashed") +
-#   facet_wrap(~key)
-
-dt        <- readRDS("../data/dt_scaled.rds") %>%
-  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
-  tidyr::gather(key = "key", value = "value", 
-                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4, -tn) %>%
-  dplyr::filter(key %in% c(c("tp"))) %>%
-  tidyr::spread(key, value)
-
-gg_tp <- ggplot(data = dt) + 
-  geom_point(aes(x = tn, y = tp, color = signif_hu4)) +
-  geom_line(stat = "smooth", method = lm, se = FALSE, 
-            aes(x = tn, y = tp, color = signif_hu4)) +
-  scale_fill_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  # facet_wrap(~key) +
-  theme(legend.position = 0)
-
-plot_grid(gg_hist, gg_tp, nrow = 2)
-
-```
-
-```{r model_summary, echo=FALSE}
-fit_tp <- re_brms[[3]] # 3 is best tp model with re effects
-
-# plot(fit_tp)
-
-gg_tp <- spread_draws(fit_tp, 
-                     b_maxdepth, 
-                     b_hu12vbaseflowvmean, 
-                     b_phosphorusvfertilizervuse, 
-                     b_buffervcultivatedvcrops) %>%
-  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
-  ggplot(aes(x = value)) +
-  geom_histogram(alpha = 0.8) +
-  theme_cowplot() +
-  xlab("") + ylab("") +
-  facet_wrap(~key, nrow = 1, scales = "free")
-
-# summary(fit_tn)
-
-spread_draws(fit_tn, 
-                     b_maxdepth, 
-                     b_soilvorgvcarbon, 
-                     b_nitrogenvfertilizervuse, 
-                     b_buffervcultivatedvcrops) %>%
-  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
-  mutate(key = factor(key, levels = c("b_maxdepth", 
-                     "b_soilvorgvcarbon", 
-                     "b_nitrogenvfertilizervuse", 
-                     "b_buffervcultivatedvcrops"))) %>%
-  ggplot(aes(x = value)) +
-  geom_histogram(alpha = 0.8) +
-  theme_cowplot() +
-  theme(axis.text.y = element_blank(), 
-        axis.ticks.y = element_blank()) +
-  xlab("") + ylab("") +
-  facet_wrap(~key, nrow = 1, scales = "free")
-
-plot_grid(gg_tp, gg_tn, nrow = 2)
-
-```
-
 ```{r prediction_lines, echo=FALSE, eval=FALSE}
 # plot prediction lines
 # corn vs tn

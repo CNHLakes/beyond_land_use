@@ -29,6 +29,8 @@ pred_key <- data.frame(var = c(
   "Nutrient sources", "Nutrient sources", "Nutrient sources", 
   "Nutrient sources", "Nutrient proxies","Nutrient proxies", "Nutrient proxies"),
                       stringsAsFactors = FALSE)
+  
+pred_key$varv <- gsub("_", "v", pred_key$var)
 
 # View(pred_key)
 write.csv(pred_key, "data/predictor_key.csv", row.names = FALSE)
