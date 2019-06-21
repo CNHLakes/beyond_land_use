@@ -79,6 +79,19 @@ gg_tp_fe
 
 ```
 
+```{r tp_re}
+fit_tp$re$hu4vzoneid <- gsub("HU4_", "", fit_tp$re$hu4vzoneid)
+gg_tp_re <- ggplot(data = fit_tp$re) +
+  geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`, color = signif)) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  ylab("TP model, pasture RE slope") + theme(legend.position = 0)
+
+gg_tp_re
+```
+
 ```{r tn_summary, fig.height=4}
 # lapply(re_brms, function(x) x$formula) 
 fit_tn         <- re_brms[[5]] # 5 is best tn model with random effects
@@ -134,6 +147,7 @@ gg_hu4 <- ggplot() +
     guides(guide_legend(nrow = 2))
 
 # dotplot tn hu4 randome effects
+fit_tn$re$hu4vzoneid <- gsub("HU4_", "", fit_tn$re$hu4vzoneid)
 gg_tn_re <- ggplot(data = fit_tn$re) +
   geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
