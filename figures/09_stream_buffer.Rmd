@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 7, fig.
 source("../scripts/99_utils.R")
 ```
 
-```{r 09_stream_buffer, echo=FALSE, fig.height=3, fig.width=4}
+```{r 09_stream_buffer, echo=FALSE, fig.height=3, fig.width=4, warning=FALSE}
 dt <- readRDS("../data/dt.rds") %>%
   dplyr::filter(stream_ag > 0) %>%
   mutate(diff = stream_ag - ag, 
@@ -21,8 +21,9 @@ dt <- readRDS("../data/dt.rds") %>%
   arrange(diff)
 
 # first llid is a low stream ag lake
-# second llids is a high stream ag lake
-llids <- c("4532", "96236")
+# second llid is a high stream ag lake
+
+llids <- c("6992", "7026")
 
 ggplot(data = dt) +
   geom_point(aes(x = ag, y = stream_ag, color = category)) +

@@ -114,7 +114,7 @@ figures/05_cafos-1.pdf \
 figures/06_lulc_buffer_demo-1.pdf \
 figures/08_exploratory_dotplot-1.pdf \
 figures/09_stream_buffer-1.pdf \
-figures/signif_map-1.pdf
+figures/tn_re-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
 	-mv manuscript/figures2.pdf manuscript/figures.pdf
@@ -137,10 +137,7 @@ figures/05_cafos-1.pdf: figures/05_cafos.Rmd
 figures/06_lulc_buffer_demo-1.pdf: figures/06_lulc_buffer_demo.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
-figures/residual_dotplot-1.pdf: figures/07_model-selection.Rmd
-	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
-	
-figures/signif_map-1.pdf: figures/07_model-selection.Rmd
+figures/tn_re-1.pdf: figures/07_model-selection.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt.rds data/predictor_key.csv
