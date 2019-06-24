@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 6.5, fi
 source("../scripts/99_utils.R")
 ```
 
-```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE, warning=FALSE, fig.height=5.5}
+```{r 08_exploratory_dotplot, echo=FALSE, message=TRUE, eval=TRUE, warning=FALSE, fig.height=5.5, fig.width=6.9}
 pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
 
 dt       <- readRDS("../data/dt_scaled.rds")
