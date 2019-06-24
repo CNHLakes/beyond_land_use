@@ -208,6 +208,23 @@ gg_tp <- ggplot(data = dt) +
   theme(legend.position = 0)
 
 plot_grid(gg_hist, gg_tp, nrow = 2)
+
+lg <- lagosne_load("1.087.1")
+gg_line <- fit_tn$re %>%
+  ungroup() %>%
+  mutate(hu4vzoneid = paste0("HU4_", hu4vzoneid)) %>%
+  left_join(dplyr::select(lg$hu4.chag, 
+                          hu4_zoneid, hu4_dep_totaln_2010_mean), 
+            by = c("hu4vzoneid" = "hu4_zoneid")) %>%
+ggplot() +
+  geom_point(aes(x = hu4_dep_totaln_2010_mean, y = `50%`, color = signif)) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  theme_cowplot() +
+  ylab("TN model, corn RE slope") + xlab("N deposition") +
+  theme(legend.position = 0)
+
+gg_tn_re
+
 ```
 
 
