@@ -1,10 +1,6 @@
 # setwd("../")
 source("scripts/99_utils.R")
 
-library(brms)
-library(tidybayes)
-library(modelr)
-
 dt        <- readRDS("data/dt_scaled.rds") 
 names(dt) <- gsub("_", "v", names(dt))
 
@@ -131,6 +127,28 @@ get_re_signif <- function(x){
 }
   
 re_brms <- lapply(re_brms, function(x) get_re_signif(x))
+
+# save model residuals
+get_residuals <- function(model, threshold = 0.1){
+  # model <- re_brms[[1]]
+  model$res_med <- dt %>%
+    add_residual_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.residual_median = median(.residual)) %>%
+    left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long),
+              by = "lagoslakeid")
+  
+  model$res_med <- dt %>%
+    add_fitted_draws(model) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.value_median = median(.value)) %>%
+    right_join(model$res_med, by = "lagoslakeid")
+  
+  model$res_test <- abs(
+    median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
+  model
+}
+re_brms <- lapply(re_brms, function(x) get_residuals(x))
 
 saveRDS(re_brms, "data/mcmc/re_brms.rds")
 # re_brms <- readRDS("data/mcmc/re_brms.rds")
@@ -259,7 +277,7 @@ plot(ac)
 # # so 20 is 2 degrees
 # 
 # # look for evidence of interaction effects
-# # following shalizi...
+# # following shalizi 2019...
 re_brms[[1]]$formula
 re_brms[[1]]$res_med %>%
   left_join(dt, by = "lagoslakeid") %>%
