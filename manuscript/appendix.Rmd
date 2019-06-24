@@ -20,6 +20,10 @@ source("../scripts/99_utils.R")
 
 ```{r trophic_state, fig.cap="Lake trophic state", fig.width = 5.5, fig.height = 4, warning=FALSE, message=FALSE}
 
+focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
+                                             c("56", "57", "36", "37", "38")), 
+                         stringsAsFactors = FALSE)
+
 dt <- readRDS("../data/dt.rds") %>%
   dplyr::filter(!is.na(chla)) %>%
   mutate(trophic_state = cut(chla, 
@@ -32,6 +36,19 @@ dt <- readRDS("../data/dt.rds") %>%
 
 g <- gridExtra::tableGrob(dt, rows = rep("", nrow(dt)))
 grid.draw(g)
+
+
+test <- readRDS("../data/dt.rds") %>%
+  mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>%
+  dplyr::filter(!is.na(chla)) %>%
+  mutate(trophic_state = cut(chla, 
+                             breaks = c(-Inf, 2.6, 20, 56, Inf), 
+                             labels = c("oligotrophic", "mesotrophic", 
+                                        "eutrophic", "hypereutrophic"))) %>%
+  dplyr::select(lagoslakeid, is_focal, chla, hu4_zoneid, trophic_state) %>%
+  group_by(is_focal, trophic_state) %>%
+  count() %>%
+  tidyr::spread(trophic_state, n)
 ```
 
 ```{r predictor_maps}
