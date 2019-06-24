@@ -217,7 +217,8 @@ gg_line <- fit_tn$re %>%
                           hu4_zoneid, hu4_dep_totaln_2010_mean), 
             by = c("hu4vzoneid" = "hu4_zoneid")) %>%
 ggplot() +
-  geom_point(aes(x = hu4_dep_totaln_2010_mean, y = `50%`, color = signif)) +
+  geom_pointrange(aes(x = hu4_dep_totaln_2010_mean, y = `50%`,
+                      ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
   theme_cowplot() +
   ylab("TN model, corn RE slope") + xlab("N deposition") +
@@ -225,6 +226,23 @@ ggplot() +
 
 gg_tn_re
 
+gg_line
+
+```
+
+```{r tn_interaction, eval=FALSE}
+# lapply(re_brms, function(x) x$formula) 
+fit <- re_brms[[6]]
+fit$formula
+head(fit$res_med)
+test <- readRDS("../data/dt_scaled.rds") %>%
+  dplyr::select(lagoslakeid, hu4_nitrogen_atmospheric_deposition, corn, 
+                maxdepth, soil_org_carbon, 
+                nitrogen_fertilizer_use, buffer_cultivated_crops) %>%
+  left_join(fit$res_med)
+
+cor.test(test$.residual_median, test$hu4_nitrogen_atmospheric_deposition * test$soil_org_carbon)
+abline(0, 1)
 ```
 
 
