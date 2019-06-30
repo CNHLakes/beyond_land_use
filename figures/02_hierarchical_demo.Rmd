@@ -85,18 +85,20 @@ cowplot::plot_grid(
     geom_smooth(aes(group = 1), method = lm, se = FALSE, 
                 color = "black", linetype = "dashed") +
     # scale_y_log10() + scale_x_log10() +
+    theme_cowplot() +
     theme(legend.position = "") +
     labs(x = "Ag. LULC (pct, NLCD 2011)", 
-         y = "TP")  +
-    scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 300)),
+         y = "TP (ug/L)")  +
+    scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 150)) + 
+    scale_color_manual(values = rep("black", 26)),
   ggplot() +
-    geom_sf(data = hu4, aes(fill = n_cat)) +
+    geom_sf(data = hu4, aes(fill = n_cat, alpha = n)) +
     # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +
     theme_minimal() +
     theme(legend.position = "bottom",
           axis.title = element_blank(),
           legend.title = element_blank()) +
-    scale_fill_manual(values = colors, levels(hu4$n_cat)),
+    scale_fill_manual(values = rep("black", 5)),
   rel_heights = c(0.6, 1), labels = "AUTO"
 )
 ``` 
