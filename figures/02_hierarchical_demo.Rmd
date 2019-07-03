@@ -78,8 +78,7 @@ coords <- data.frame(matrix(
 names(coords) <- c("x", "y")
 coords$ZoneID <- gsub("HU4_", "", hu4[,"ZoneID"]$ZoneID)
 
-cowplot::plot_grid(
-  ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha = n)) + 
+gg_lines <- ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha = n)) + 
     # geom_point() +
     geom_line(stat = "smooth", method = lm, se = FALSE, aes(alpha = n))  +
     geom_smooth(aes(group = 1), method = lm, se = FALSE, 
@@ -87,18 +86,21 @@ cowplot::plot_grid(
     # scale_y_log10() + scale_x_log10() +
     theme_cowplot() +
     theme(legend.position = "") +
-    labs(x = "Ag. LULC (pct, NLCD 2011)", 
+    labs(x = "Ag. LULC (pct)", # , NLCD 2011
          y = "TP (ug/L)")  +
     scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 150)) + 
-    scale_color_manual(values = rep("black", 26)),
-  ggplot() +
+    scale_color_manual(values = rep("black", 26))
+gg_hu4 <- ggplot() +
     geom_sf(data = hu4, aes(fill = n_cat, alpha = n)) +
     # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +
     theme_minimal() +
-    theme(legend.position = "bottom",
+    theme(legend.position = 0,
           axis.title = element_blank(),
           legend.title = element_blank()) +
-    scale_fill_manual(values = rep("black", 5)),
-  rel_heights = c(0.6, 1), labels = "AUTO"
-)
+    scale_fill_manual(values = rep("black", 5))
+
+cowplot::plot_grid(
+  plot_grid(nullGrob(), gg_lines, nullGrob(), 
+            ncol = 1, rel_heights = c(0.33, 1, 0.33)), 
+  gg_hu4)
 ``` 
