@@ -3,6 +3,9 @@
 png:
 	-mogrify -density 300 -format png -resize 2500x2500\> *.pdf
 	echo done
+
+pnglatest:
+	mogrifylatest
 	
 tiff:
 	-mogrify -density 300 -format tiff -resize 2500x2500\> *.pdf
