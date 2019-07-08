@@ -37,7 +37,7 @@ re_brms        <- readRDS("../data/mcmc/re_brms.rds")
 pred_key       <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
 ```
 
-```{r tp_summary, fig.width=3.25, fig.height=4}
+```{r tp_summary, fig.width=4, fig.height=4.25}
 # lapply(re_brms, function(x) x$formula) 
 fit_tp   <- re_brms[[3]] # 3 is best tp model with random effects
 signif_hu4_ids <- fit_tp$re_signif_ids 
@@ -96,7 +96,7 @@ gg_tp_re <- ggplot(data = fit_tp$re) +
 gg_tp_re
 ```
 
-```{r tn_summary, fig.height=4, fig.width=3.25}
+```{r tn_summary, fig.height=4, fig.width=4.25}
 # lapply(re_brms, function(x) x$formula) 
 fit_tn         <- re_brms[[5]] # 5 is best tn model with random effects
 signif_hu4_ids <- fit_tn$re_signif_ids 
