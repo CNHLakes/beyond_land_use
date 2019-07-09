@@ -14,8 +14,12 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 knitr::include_graphics("../figures/01_county_extent-1.pdf")
 ```
 
-```{r maps, fig.cap = "Quanitle map of lake nutrients.", warning=FALSE, echo = FALSE}
+```{r maps, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/tptn_maps-1.pdf")
+```
+
+```{r maps2, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
 ```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD (2011) derived and CDL (2010) derived total watershed ag and watershed pasture cover. Line is 1:1 not regression.", warning=FALSE, echo = FALSE}

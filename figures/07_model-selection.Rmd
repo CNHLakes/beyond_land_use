@@ -215,9 +215,9 @@ dt        <- readRDS("../data/dt_scaled.rds") %>%
   tidyr::spread(key, value)
 
 gg_tp <- ggplot(data = dt) + 
-  geom_point(aes(x = tn, y = tp, color = signif_hu4)) +
+  geom_point(aes(x = tp, y = tn, color = signif_hu4)) +
   geom_line(stat = "smooth", method = lm, se = FALSE, 
-            aes(x = tn, y = tp, color = signif_hu4)) +
+            aes(x = tp, y = tn, color = signif_hu4)) +
   scale_fill_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
   cowplot::theme_cowplot() +
