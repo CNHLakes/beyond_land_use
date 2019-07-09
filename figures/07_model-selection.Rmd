@@ -224,7 +224,8 @@ gg_tp <- ggplot(data = dt) +
   theme(legend.position = 0) + 
   theme(rect = element_rect(fill = "transparent"))
 
-plot_grid(gg_hist, gg_tp, nrow = 2)
+plot_grid(gg_hist, nrow = 1)
+# plot_grid(gg_hist, gg_tp, nrow = 2)
 
 lg <- lagosne_load("1.087.1")
 gg_line <- fit_tn$re %>%
