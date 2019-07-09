@@ -171,7 +171,7 @@ gg_tn_re <- ggplot(data = fit_tn$re) +
 gg_tn_re
 ```
 
-```{r tn_re_compare}
+```{r tn_re_compare, fig.height=3}
 # compare lakes in signif hu4s
 dt        <- readRDS("../data/dt_scaled.rds") %>%
   mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
