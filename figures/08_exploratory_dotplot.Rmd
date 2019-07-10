@@ -114,8 +114,7 @@ prep_dotplot <- function(x, col_name){
 
 plot_opts <- theme_cowplot() +
   theme(axis.title.y = element_blank(), 
-                   axis.text = element_text(size = 8), 
-                   legend.position = 0)
+                   axis.text = element_text(size = 8))
 
 dt_tp <- prep_dotplot(dt_tp, "tp") %>%
   dplyr::filter(!str_detect(pretty, "^N ")) %>%
@@ -131,20 +130,20 @@ gg_tp <-  ggplot(data = dt_tp) +
     geom_point(aes(x = tp, y = pretty, color = category)) + 
     scale_color_brewer(palette = "Set1") +
     xlim(0, 0.6) +
-    plot_opts
+    plot_opts +
+  theme(legend.text = element_text(size = 8), 
+        legend.position = c(0.53, 0.23), 
+        legend.box.background = element_rect(color = "black"), 
+        legend.title = element_blank())
 gg_tn <- ggplot(data = dt_tn) + 
     geom_point(aes(x = tn, y = pretty, color = category)) +
     scale_color_brewer(palette = "Set1") +
     xlim(0, 0.6) +
-    plot_opts
-legend_b <- get_legend(gg_tp + 
-                         theme(legend.position="bottom", 
-                               legend.justification = "center", 
-                               legend.text = element_text(size = 10), 
-                               legend.title = element_blank()))
-plot_grid(
-  plot_grid(gg_tp, gg_tn), 
-  legend_b, ncol = 1, rel_heights = c(1, 0.1))
+    plot_opts +
+  theme(legend.position = 0)
+
+plot_grid(gg_tp, ggplot() + geom_blank(),
+          gg_tn, rel_widths = c(1, 0.2, 1), nrow = 1)
 
  
 ```
