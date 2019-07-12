@@ -112,10 +112,6 @@ prep_dotplot <- function(x, col_name){
   res
 }
 
-plot_opts <- theme_cowplot() +
-  theme(axis.title.y = element_blank(), 
-                   axis.text = element_text(size = 8))
-
 dt_tp <- prep_dotplot(dt_tp, "tp") %>%
   dplyr::filter(!str_detect(pretty, "^N ")) %>%
   dplyr::filter(!str_detect(pretty, " N ")) 
@@ -126,6 +122,11 @@ dt_tn <- prep_dotplot(dt_tn, "tn") %>%
 
 # head(prep_dotplot(dt_tp, "tp"))
 # show_col(brewer_pal("div", "Set1")(4))                   
+plot_opts <- theme_cowplot() +
+  theme(axis.title.y = element_blank(), 
+        axis.text = element_text(size = 8), 
+        axis.title.x = element_blank())
+
 gg_tp <-  ggplot(data = dt_tp) + 
     geom_point(aes(x = tp, y = pretty, color = category)) + 
     scale_color_brewer(palette = "Set1") +
@@ -142,8 +143,13 @@ gg_tn <- ggplot(data = dt_tn) +
     plot_opts +
   theme(legend.position = 0)
 
-plot_grid(gg_tp, ggplot() + geom_blank(),
-          gg_tn, rel_widths = c(1, 0.2, 1), nrow = 1)
+plot_grid(NULL, 
+plot_grid(gg_tp, NULL,
+          gg_tn, rel_widths = c(1, 0.2, 1), nrow = 1, 
+          labels = c("TP", "", "TN"), 
+          label_x = c(0.6, 0.5, 0.6), 
+          label_y = c(1.05, 1.1, 1.05)), 
+ncol = 1, rel_heights = c(0.07, 1))
 
  
 ```
