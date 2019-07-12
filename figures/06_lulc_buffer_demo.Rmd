@@ -262,7 +262,7 @@ g_cdl <- ggplot() +
 
 cowplot::plot_grid(
   g_nlcd_agg + ggtitle("Total Ag"), 
-  g_nlcd + ggtitle("Row Crops"), 
+  g_nlcd + ggtitle("Ag Cover Type"), 
   g_cdl + ggtitle("Individual Crops"), 
                    rel_widths = c(0.95, 1, 0.95), nrow = 1)
 ```
