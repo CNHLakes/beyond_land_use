@@ -54,7 +54,8 @@ suppressMessages(library(glue))
 library(slippymath)
 suppressMessages(library(rgdal))
 
-res_iws  <- query_gis("IWS", "lagoslakeid", llids)
+res_iws    <- query_gis("IWS", "lagoslakeid", llids)
+res_lakes  <- query_gis("LAGOS_NE_All_Lakes_4ha", "lagoslakeid", llids)
 
 get_image <- function(outpath, iws){
   tile_grid <- bbox_to_tile_grid(st_bbox(
@@ -108,22 +109,47 @@ prep_ggplot_raster <- function(r, iws){
   tab
 }
 
+### draw forest outlines
+# i <- 2
+# forest_outline <- mapedit::editMap(
+#   mapview(images[[i]])
+#   )
+# forest_outline <- smoothr::smooth(forest_outline$drawn)
+# forest_outline <- st_intersection(
+#   st_transform(forest_outline, st_crs(res_iws[i,])),
+#   res_iws[i,])
+# mapview(forest_outline)
+# saveRDS(forest_outline, "../data/res_forest_outline_2.rds")
+forest_outline_1 <- readRDS("../data/res_forest_outline_1.rds")
+forest_outline_2 <- readRDS("../data/res_forest_outline_2.rds")
+
 i <- 1
 gg_low_ag <- ggplot() + 
   geom_raster(data = prep_ggplot_raster(images[[i]], res_iws[i,]), 
               aes(x, y, fill = I(hex))) +
   geom_sf(data = res_iws[i,], alpha = 0, color = "red") +
-  geom_sf(data = res_streams[[i]], color = "cyan") +
+  geom_sf(data = res_lakes[i,], alpha = 0, color = "cyan") +
+  geom_sf(data = forest_outline_1, color = "green3") +
+  geom_sf(data = st_difference(
+      st_transform(res_streams[[i]], st_crs(res_lakes[i,])), 
+      res_lakes[i,]), 
+    color = "cyan") +
   coord_sf(datum = NA) +
   theme_void() +
   ggtitle(llid_callouts[i])
+
 
 i <- 2
 gg_hi_ag <- ggplot() + 
   geom_raster(data = prep_ggplot_raster(images[[i]], res_iws[i,]), 
               aes(x, y, fill = I(hex))) +
   geom_sf(data = res_iws[i,], alpha = 0, color = "red") +
-  geom_sf(data = res_streams[[i]], color = "cyan") +
+  geom_sf(data = res_lakes[i,], alpha = 0, color = "cyan") +
+  geom_sf(data = forest_outline_2, color = "green3") +
+  geom_sf(data = st_difference(
+      st_transform(res_streams[[i]], st_crs(res_lakes[i,])), 
+      res_lakes[i,]), 
+    color = "cyan") +
   coord_sf(datum = NA) +
   theme_void() +
   ggtitle(llid_callouts[i])
