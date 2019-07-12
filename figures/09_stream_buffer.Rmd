@@ -23,7 +23,9 @@ dt <- readRDS("../data/dt.rds") %>%
 # first llid is a low stream ag lake
 # second llid is a high stream ag lake
 
-llids <- c("6992", "7026")
+llids         <- c("6992", "7026")
+llid_metadata <- lake_info(llids)
+llid_callouts <- paste(llid_metadata$gnis_name, "-", llid_metadata$state)
 
 ggplot(data = dt) +
   geom_point(aes(x = ag, y = stream_ag, color = category)) +
@@ -114,7 +116,7 @@ gg_low_ag <- ggplot() +
   geom_sf(data = res_streams[[i]], color = "cyan") +
   coord_sf(datum = NA) +
   theme_void() +
-  ggtitle(llids[i])
+  ggtitle(llid_callouts[i])
 
 i <- 2
 gg_hi_ag <- ggplot() + 
@@ -124,7 +126,7 @@ gg_hi_ag <- ggplot() +
   geom_sf(data = res_streams[[i]], color = "cyan") +
   coord_sf(datum = NA) +
   theme_void() +
-  ggtitle(llids[i])
+  ggtitle(llid_callouts[i])
 
 cowplot::plot_grid(gg_hi_ag, gg_low_ag)
 ```
