@@ -18,7 +18,7 @@ knitr::read_chunk("../scripts/99_utils.R")
 source("../scripts/99_utils.R")
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state", fig.width = 5.5, fig.height = 4, warning=FALSE, message=FALSE}
+```{r trophic_state, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
 lg <- lagosne_load("1.087.1")
 focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
                                              c("56", "57", "36", "37", "38")), 
@@ -67,9 +67,14 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 library(waffle)
 library(hrbrthemes)
 
-ggplot(tidyr::gather(dt, key = "key", value = "value", -`Trophic State`),
+dt_waffle <- tidyr::gather(dt, key = "key", value = "value", -`Trophic State`) %>%
+  add_row(`Trophic State` = "oligotrophic", `key` = "All Lakes", `value` = 2) %>%
+  add_row(`Trophic State` = "oligotrophic", `key` = "This Study", `value` = 2) %>%
+  arrange(`Trophic State`)
+
+ggplot(dt_waffle,
        aes(fill=`Trophic State`, values = `value`)) +
-  geom_waffle(color = "white", size=1.125, n_rows = 7) +
+  geom_waffle(color = "white", size=0.7, n_rows = 5) +
   facet_wrap(~key, ncol=1) +
   scale_x_discrete(expand=c(0,0)) +
   scale_y_discrete(expand=c(0,0)) +
@@ -79,7 +84,13 @@ ggplot(tidyr::gather(dt, key = "key", value = "value", -`Trophic State`),
 #   theme_ipsum_rc(grid="") +
    theme_enhance_waffle() + 
   theme(strip.background = element_blank(), 
-        rect = element_rect(fill = "transparent"))
+        rect = element_rect(fill = "transparent"), 
+        legend.position = "bottom", 
+        title = element_text(size = 18), 
+        strip.text = element_text(size = 16), 
+        legend.text = element_text(size = 10), 
+        legend.key.size = unit(0.5, "line")) + 
+  guides(fill = guide_legend(nrow = 2))
 
 # highlighted regions
 test <- readRDS("../data/dt.rds") %>%
