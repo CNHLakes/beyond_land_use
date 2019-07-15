@@ -101,6 +101,7 @@ data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds
 	Rscript $<
 
 figures: manuscript/figures.pdf manuscript/appendix.pdf
+	cd figures && make pnglatest
 
 manuscript/appendix.pdf: manuscript/appendix.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
