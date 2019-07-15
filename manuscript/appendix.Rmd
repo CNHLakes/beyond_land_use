@@ -78,7 +78,8 @@ ggplot(tidyr::gather(dt, key = "key", value = "value", -`Trophic State`),
   labs(title = "Trophic State")  +
 #   theme_ipsum_rc(grid="") +
    theme_enhance_waffle() + 
-  theme(strip.background = element_blank())
+  theme(strip.background = element_blank(), 
+        rect = element_rect(fill = "transparent"))
 
 # highlighted regions
 test <- readRDS("../data/dt.rds") %>%
