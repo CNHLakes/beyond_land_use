@@ -19,7 +19,7 @@ source("../scripts/99_utils.R")
 ```
 
 ```{r trophic_state, fig.cap="Lake trophic state", fig.width = 5.5, fig.height = 4, warning=FALSE, message=FALSE}
-
+lg <- lagosne_load("1.087.1")
 focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
                                              c("56", "57", "36", "37", "38")), 
                          stringsAsFactors = FALSE)
@@ -32,12 +32,55 @@ dt <- readRDS("../data/dt.rds") %>%
                                         "eutrophic", "hypereutrophic"))) %>%
   dplyr::select(chla, trophic_state) %>%
   group_by(trophic_state) %>%
-  count()
+  count() %>%
+  ungroup() %>% # rowwise() %>%
+  mutate(frac = (n / sum(n)) * 100)
 
-g <- gridExtra::tableGrob(dt, rows = rep("", nrow(dt)))
-grid.draw(g)
+lg_trophic_state <- dplyr::filter(lg$epi_nutr, 
+                                  !(lagoslakeid %in%
+                                      readRDS("../data/dt.rds")$lagoslakeid)) %>%
+  dplyr::filter(!is.na(chla)) %>%
+  dplyr::select(chla, lagoslakeid, sampledate) %>%
+  group_by(lagoslakeid) %>%
+  summarise(chla = median(chla)) %>%
+  mutate(trophic_state = cut(chla, 
+                             breaks = c(-Inf, 2.6, 20, 56, Inf), 
+                             labels = c("oligotrophic", "mesotrophic", 
+                                        "eutrophic", "hypereutrophic"))) %>%
+  dplyr::select(chla, trophic_state) %>%
+  group_by(trophic_state) %>%
+  count() %>%
+  ungroup() %>% # rowwise() %>%
+  mutate(frac = (n / sum(n)) * 100)
+
+dt <- data.frame(`Trophic State` = dt$trophic_state, 
+           `Study` = round(dt$frac, 1), 
+           `All` = round(lg_trophic_state$frac, 1), 
+           stringsAsFactors = FALSE)
+dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 
 
+# g <- gridExtra::tableGrob(dt, rows = rep("", nrow(dt)))
+# grid.draw(g)
+
+# waffle
+library(waffle)
+library(hrbrthemes)
+
+ggplot(tidyr::gather(dt, key = "key", value = "value", -`Trophic State`),
+       aes(fill=`Trophic State`, values = `value`)) +
+  geom_waffle(color = "white", size=1.125, n_rows = 7) +
+  facet_wrap(~key, ncol=1) +
+  scale_x_discrete(expand=c(0,0)) +
+  scale_y_discrete(expand=c(0,0)) +
+  ggthemes::scale_fill_tableau(name=NULL) +
+  coord_equal() +
+  labs(title = "Trophic State")  +
+#   theme_ipsum_rc(grid="") +
+   theme_enhance_waffle() + 
+  theme(strip.background = element_blank())
+
+# highlighted regions
 test <- readRDS("../data/dt.rds") %>%
   mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>%
   dplyr::filter(!is.na(chla)) %>%
