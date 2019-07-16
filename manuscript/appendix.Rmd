@@ -18,7 +18,7 @@ knitr::read_chunk("../scripts/99_utils.R")
 source("../scripts/99_utils.R")
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r data_prep, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
 lg <- lagosne_load("1.087.1")
 focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
                                              c("56", "57", "36", "37", "38")), 
@@ -62,7 +62,9 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 
 # g <- gridExtra::tableGrob(dt, rows = rep("", nrow(dt)))
 # grid.draw(g)
+```
 
+```{r trophic_state, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
 # waffle
 library(waffle)
 library(hrbrthemes)
@@ -75,18 +77,17 @@ dt_waffle <- tidyr::gather(dt, key = "key", value = "value", -`Trophic State`) %
 ggplot(dt_waffle,
        aes(fill=`Trophic State`, values = `value`)) +
   geom_waffle(color = "white", size=0.7, n_rows = 5) +
-  facet_wrap(~key, ncol=1) +
-  scale_x_discrete(expand=c(0,0)) +
-  scale_y_discrete(expand=c(0,0)) +
-  ggthemes::scale_fill_tableau(name=NULL) +
+  facet_wrap(~key, ncol = 1) +
+  scale_x_discrete(expand = c(0,0)) +
+  scale_y_discrete(expand = c(0,0)) +
+  shades::lightness(scale_fill_brewer(palette = "Greens", type = "seq"), 
+                    shades::delta(-10)) +
   coord_equal() +
-  labs(title = "Trophic State")  +
-#   theme_ipsum_rc(grid="") +
-   theme_enhance_waffle() + 
+  theme_enhance_waffle() + 
   theme(strip.background = element_blank(), 
         rect = element_rect(fill = "transparent"), 
         legend.position = "bottom", 
-        title = element_text(size = 18), 
+        title = element_blank(), 
         strip.text = element_text(size = 16), 
         legend.text = element_text(size = 10), 
         legend.key.size = unit(0.5, "line")) + 
