@@ -1,6 +1,7 @@
 # setwd("../")
 source("scripts/99_utils.R")
 
+lg <- lagosne_load("1.087.1")
 dt        <- readRDS("data/dt_scaled.rds") 
 names(dt) <- gsub("_", "v", names(dt))
 
@@ -112,7 +113,17 @@ get_re_text <- function(x){
 }
 
 get_re_signif <- function(x){
-  # x <- re_brms[[5]]
+  # x <- re_brms[[1]]
+  # tidybayes::get_variables(x)
+  print(as.character(x$formula)[1])
+  
+  re_global <- x %>%
+    spread_draws(!!rlang::parse_expr(
+      paste0("sd_hu4vzoneid__", get_re_text(as.character(x$formula)[1])))) %>%
+    dplyr::select(tail(names(.), 1)) %>%
+    pull(names(.)[1]) %>%
+    quantile(c(0.05, 0.5, 0.95))
+  
   res <- x %>%
     spread_draws(r_hu4vzoneid[hu4vzoneid,term]) %>%
     dplyr::filter(term == get_re_text(as.character(x$formula)[1])) %>%
@@ -121,6 +132,7 @@ get_re_signif <- function(x){
     mutate(signif = case_when(`5%` > 0 ~ TRUE, 
                               TRUE ~ FALSE))
   x$re            <- res
+  x$re_global     <- re_global
   x$re_signif     <- any(res$signif)
   x$re_signif_ids <- dplyr::filter(res, signif == TRUE)$hu4vzoneid
   x
@@ -130,6 +142,7 @@ re_brms <- lapply(re_brms, function(x) get_re_signif(x))
 
 # save model residuals
 get_residuals <- function(model, threshold = 0.1){
+  lg <- parent.env(environment())$lg
   # model <- re_brms[[1]]
   model$res_med <- dt %>%
     add_residual_draws(model) %>%
@@ -151,6 +164,7 @@ get_residuals <- function(model, threshold = 0.1){
 re_brms <- lapply(re_brms, function(x) get_residuals(x))
 
 saveRDS(re_brms, "data/mcmc/re_brms.rds")
+# unlink("data/mcmc/re_brms.rds")
 # re_brms <- readRDS("data/mcmc/re_brms.rds")
 
 r2_re <- dplyr::bind_rows(
@@ -221,10 +235,9 @@ hu4_signif <-  LAGOSNEgis::query_gis(
 # mapview::mapview(hu4_signif, color = "red")
 
 
-
-
 # get median residuals of each model object
 get_residuals <- function(model, threshold = 0.1){
+  lg <- parent.env(environment())$lg
   # model <- re_brms[[1]]
   model$res_med <- dt %>%
     add_residual_draws(model) %>%
@@ -243,7 +256,6 @@ get_residuals <- function(model, threshold = 0.1){
     median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
   model
 }
-lg <- lagosne_load("1.087.1")
 re_brms <- lapply(re_brms, function(x) get_residuals(x))
 # 
 # # qq plots etc

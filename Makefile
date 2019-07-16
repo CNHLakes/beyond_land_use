@@ -15,7 +15,8 @@ data/macroag/tillage.gpkg \
 data/macroag/crp.rds \
 data/gis.gpkg \
 data/llids.txt \
-data/buffer_lulc.csv 
+data/buffer_lulc.csv \
+data/mcmc/re_brms.rds
 # data/mcmc/model_r2.csv
 
 gssurgo: data/gssurgo/gssurgo.rds
@@ -95,6 +96,9 @@ data/buffer_lulc.csv
 	Rscript $<
 	
 data/buffer_stats.csv: scripts/00_get_buffers.R
+	Rscript $<
+
+data/mcmc/re_brms.rds: scripts/03_model.R
 	Rscript $<
 
 data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds

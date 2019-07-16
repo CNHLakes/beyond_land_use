@@ -82,11 +82,16 @@ gg_tp_fe
 
 ```{r tp_re, fig.width=3.25, fig.height=4.5}
 fit_tp$re$hu4vzoneid <- gsub("HU4_", "", fit_tp$re$hu4vzoneid)
+fit_tp$re <- fit_tp$re %>%
+  mutate_at(vars(matches("%")), function(x) x + 
+              as.numeric(fit_tp$re_global["50%"]))
+
+
 gg_tp_re <- ggplot(data = fit_tp$re) +
   geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  geom_hline(yintercept = 0) +
+  geom_hline(yintercept = as.numeric(fit_tp$re_global["50%"])) +
   coord_flip() +
   cowplot::theme_cowplot() +
   theme(rect = element_rect(fill = "transparent")) +
@@ -157,11 +162,15 @@ gg_hu4
 ```{r tn_re, fig.width=3.25, fig.height=4.5}
 # dotplot tn hu4 random effects
 fit_tn$re$hu4vzoneid <- gsub("HU4_", "", fit_tn$re$hu4vzoneid)
+fit_tn$re <- fit_tn$re %>%
+  mutate_at(vars(matches("%")), function(x) x + 
+              as.numeric(fit_tn$re_global["50%"]))
+
 gg_tn_re <- ggplot(data = fit_tn$re) +
   geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  geom_hline(yintercept = 0) +
+  geom_hline(yintercept = as.numeric(fit_tn$re_global["50%"])) +
   coord_flip() +
   cowplot::theme_cowplot() +
   theme(rect = element_rect(fill = "transparent")) +
