@@ -19,15 +19,15 @@ pred_key <- data.frame(var = c(
     "Fertilizer N input", "Fertilizer P input", "P input", 
     "Manure P input", "Wheat", "Pasture", "Row-crop Ag"),
                       category = c(
-  "Nutrient sources", "Lake", "Lake", 
-  "Transport capacity", "Transport capacity", "Buffer composition",
-  "Buffer composition","Nutrient proxies","Nutrient proxies", "Nutrient proxies",
+  "Nutrient inputs", "Lake", "Lake", 
+  "Nutrient transport", "Nutrient transport", "Buffer composition",
+  "Buffer composition","Land-use cover","Land-use cover", "Land-use cover",
   "Buffer composition", "Buffer composition", "Buffer composition",
-  "Nutrient proxies", "Nutrient proxies", "Transport capacity","Lake",
-  "Transport capacity", "Nutrient proxies","Nutrient sources", 
-  "Transport capacity", "Nutrient proxies", "Nutrient sources",
-  "Nutrient sources", "Nutrient sources", "Nutrient sources", 
-  "Nutrient sources", "Nutrient proxies","Nutrient proxies", "Nutrient proxies"),
+  "Land-use cover", "Land-use cover", "Nutrient transport","Lake",
+  "Nutrient transport", "Land-use cover","Nutrient inputs", 
+  "Nutrient transport", "Land-use cover", "Nutrient inputs",
+  "Nutrient inputs", "Nutrient inputs", "Nutrient inputs", 
+  "Nutrient inputs", "Land-use cover","Land-use cover", "Land-use cover"),
                       stringsAsFactors = FALSE)
   
 pred_key$varv <- gsub("_", "v", pred_key$var)

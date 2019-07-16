@@ -103,10 +103,11 @@ prep_dotplot <- function(x, col_name){
                             levels = rev(row.names(x))), 
                   pretty = factor(pretty, levels = rev(pretty)),
                   category = factor(category, 
-                                    levels = c("Lake", "Nutrient sources",
-                                               "Nutrient proxies",
-                                               "Transport capacity", 
-                                               "Buffer composition"))) %>%
+                                    levels = c("Nutrient inputs",
+                                               "Nutrient transport", 
+                                               "Land-use cover",
+                                               "Buffer composition", 
+                                               "Lake"))) %>%
     dplyr::filter(!(var %in% c("tp", "tn"))) %>%
     dplyr::filter(!is.na(category))
   res
