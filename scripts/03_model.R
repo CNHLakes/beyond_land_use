@@ -120,6 +120,20 @@ r2_fe <- dplyr::bind_rows(
                       (1 + pasture | hu4vzoneid))
 ))
 
+re_brms <- list()
+for(i in seq_along(model_forms_re)){
+  # i <- 2
+  print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
+  if(!file.exists(paste0("data/mcmc/re/", names(model_forms_re)[i]))){
+    re_brms[[i]] <- brm(formula = model_forms_re[[i]], data = dt, 
+                        prior = set_prior("horseshoe(1)"), family = gaussian(), 
+                        control = list(adapt_delta = 0.99))
+    saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
+  }else{
+    re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
+  }
+}
+
 re_brms <- 
   lapply(seq_along(model_forms_re), function(i) 
     get_if_not_exists(brm_fit, 
@@ -139,11 +153,13 @@ if(!interactive()){
                             nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
                             phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                             buffervcultivatedvcrops + buffervnatural +
-                        (1 + corn | hu4vzoneid))
+                        (1 + ag | hu4vzoneid))
   horse_fit_all <- brm(formula = tn_horse_form_all, data = dt, 
                    prior = set_prior("horseshoe(1)"), family = gaussian(), 
                    control = list(adapt_delta = 0.99))
+  test <- brm_fit("data/mcmc/re/test.rds", tn_horse_form_all, data = dt)
   
+  summary(horse_fit_all)
   test <- get_re_signif(horse_fit_all)
 }
 
