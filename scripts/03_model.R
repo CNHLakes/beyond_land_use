@@ -12,8 +12,9 @@ good_hu4s <- readRDS("data/dt.rds") %>%
 dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
 
 brm_fit <- function(destfile, formula, data){
-  fit <- brm(formula = formula, data = data, 
-             family = gaussian())
+  fit <- brm(formula = formula, data = data, prior = set_prior("horseshoe(2)"), 
+             family = gaussian(), control = list(adapt_delta = 0.99))
+  
   saveRDS(fit, destfile)
   return(fit)
 }
@@ -70,29 +71,52 @@ r2_fe <- dplyr::bind_rows(
 # evaulate spatial random effects
 # {fixed effects} + 1/ag, 1/soybeans, 1/corn
 (model_forms_re <- list(
-  "tp_ag"       = bf(tp ~  maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse +
-                      buffervcultivatedvcrops + 
+  "tp_ag"       = bf(tp ~  
+                       maxdepth + iwslavratio +
+                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                       clayvpct + hu12vbaseflowvmean +
+                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
-  "tp_soybeans" = bf(tp ~  maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse + 
-                      buffervcultivatedvcrops + 
+  "tp_soybeans" = bf(tp ~  
+                       maxdepth + iwslavratio +
+                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                       clayvpct + hu12vbaseflowvmean +
+                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       buffervcultivatedvcrops + buffervnatural +
                       (1 + soybeans | hu4vzoneid)),
-  "tp_pasture" = bf(tp ~  maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse +
-                      buffervcultivatedvcrops + 
+  "tp_pasture" = bf(tp ~  
+                      maxdepth + iwslavratio +
+                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                      clayvpct + hu12vbaseflowvmean +
+                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      buffervcultivatedvcrops + buffervnatural +
                       (1 + pasture | hu4vzoneid)),
-  "tn_ag"      = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
-                      buffervcultivatedvcrops + 
+  "tn_ag"      = bf(tn ~  maxdepth + iwslavratio +
+                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                      clayvpct + hu12vbaseflowvmean +
+                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
-  "tn_corn"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
-                           buffervcultivatedvcrops +
+  "tn_corn"    = bf(tn ~  
+                      maxdepth + iwslavratio +
+                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                      clayvpct + hu12vbaseflowvmean +
+                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      buffervcultivatedvcrops + buffervnatural +
                            (1 + corn | hu4vzoneid)), 
-  "tn_corn_ndep"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
-                      buffervcultivatedvcrops + hu4vnitrogenvatmosphericvdeposition +
-                      (1 + corn | hu4vzoneid)), 
-  "tn_corn_clay"    = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
-                           buffervcultivatedvcrops + hu4vclayvpct +
-                           (1 + corn | hu4vzoneid)), 
-  "tn_pasture" = bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
-                      buffervcultivatedvcrops + 
+  "tn_pasture" = bf(tn ~  
+                      maxdepth + iwslavratio +
+                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                      clayvpct + hu12vbaseflowvmean +
+                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      buffervcultivatedvcrops + buffervnatural +
                       (1 + pasture | hu4vzoneid))
 ))
 
@@ -108,17 +132,12 @@ if(!interactive()){
   # fit_tn <- re_brms[[5]] # 5 is best tn model with random effects
   # tidybayes::get_variables(fit_tn)
   # model_forms_re[[5]]
-  tn_horse_form <- bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
-                        buffervcultivatedvcrops +
-                        (1 + corn | hu4vzoneid))
-  horse_fit <- brm(formula = tn_horse_form, data = dt, 
-                   prior = set_prior("horseshoe(1)"), family = gaussian(), 
-                   control = list(adapt_delta = 0.99))
-  
-  
-  tn_horse_form_all <- bf(tn ~  maxdepth + iwslavratio +
-                            soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + clayvpct + hu12vbaseflowvmean +
+  tn_horse_form_all <- bf(tn ~ 
+                            maxdepth + iwslavratio +
+                            soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                            clayvpct + hu12vbaseflowvmean +
                             nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                            phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                             buffervcultivatedvcrops + buffervnatural +
                         (1 + corn | hu4vzoneid))
   horse_fit_all <- brm(formula = tn_horse_form_all, data = dt, 
