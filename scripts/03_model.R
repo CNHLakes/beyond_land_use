@@ -105,16 +105,27 @@ re_brms <-
 
 if(!interactive()){
   # investigate horseshoe prior
-  fit_tn <- re_brms[[5]] # 5 is best tn model with random effects
+  # fit_tn <- re_brms[[5]] # 5 is best tn model with random effects
   # tidybayes::get_variables(fit_tn)
   # model_forms_re[[5]]
-  horse_fit <- brm(formula = model_forms_re[[5]], data = dt, 
-                   prior = set_prior("horseshoe(1)"), family = gaussian())
+  tn_horse_form <- bf(tn ~  maxdepth + soilvorgvcarbon + nitrogenvfertilizervuse + 
+                        buffervcultivatedvcrops +
+                        (1 + corn | hu4vzoneid))
+  horse_fit <- brm(formula = tn_horse_form, data = dt, 
+                   prior = set_prior("horseshoe(1)"), family = gaussian(), 
+                   control = list(adapt_delta = 0.99))
   
-
   
+  tn_horse_form_all <- bf(tn ~  maxdepth + iwslavratio +
+                            soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + clayvpct + hu12vbaseflowvmean +
+                            nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                            buffervcultivatedvcrops + buffervnatural +
+                        (1 + corn | hu4vzoneid))
+  horse_fit_all <- brm(formula = tn_horse_form_all, data = dt, 
+                   prior = set_prior("horseshoe(1)"), family = gaussian(), 
+                   control = list(adapt_delta = 0.99))
   
-     
+  test <- get_re_signif(horse_fit_all)
 }
 
 
