@@ -96,13 +96,27 @@ r2_fe <- dplyr::bind_rows(
                       (1 + pasture | hu4vzoneid))
 ))
 
-
 re_brms <- 
   lapply(seq_along(model_forms_re), function(i) 
     get_if_not_exists(brm_fit, 
                       paste0("data/mcmc/re/", names(model_forms_re)[i]), 
                       formula = model_forms_re[[i]], 
                       data = dt))
+
+if(!interactive()){
+  # investigate horseshoe prior
+  fit_tn <- re_brms[[5]] # 5 is best tn model with random effects
+  # tidybayes::get_variables(fit_tn)
+  # model_forms_re[[5]]
+  horse_fit <- brm(formula = model_forms_re[[5]], data = dt, 
+                   prior = set_prior("horseshoe(1)"), family = gaussian())
+  
+
+  
+  
+     
+}
+
 
 # evaluate hu4 re slope significance
 get_re_text <- function(x){
