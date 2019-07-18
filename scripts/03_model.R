@@ -125,18 +125,18 @@ r2_fe <- dplyr::bind_rows(
                       (1 + pasture | hu4vzoneid))
 ))
 
-re_brms <- list()
+# re_brms <- list()
 # for(i in seq_along(model_forms_re)){
   # i <- 1
-  print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
-  if(!file.exists(paste0("data/mcmc/re/", names(model_forms_re)[i]))){
-    re_brms[[i]] <- brm(formula = model_forms_re[[i]], data = dt,
-                        prior = set_prior("horseshoe(1)"), family = gaussian(),
-                        control = list(adapt_delta = 0.99))
-    saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
-  }else{
-    re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
-  }
+  # print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
+  # if(!file.exists(paste0("data/mcmc/re/", names(model_forms_re)[i]))){
+  #   re_brms[[i]] <- brm(formula = model_forms_re[[i]], data = dt,
+  #                       prior = set_prior("horseshoe(1)"), family = gaussian(),
+  #                       control = list(adapt_delta = 0.99))
+  #   saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
+  # }else{
+  #   re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
+  # }
 # }
 
 re_brms <- 
