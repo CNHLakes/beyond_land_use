@@ -5,7 +5,7 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 5, eval = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, fig.path = "../figures/", eval = TRUE, warning = FALSE, message = FALSE)
 # setwd("figures")
 source("../scripts/99_utils.R")
 ```
@@ -37,7 +37,7 @@ re_brms        <- readRDS("../data/mcmc/re_brms.rds")
 pred_key       <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
 ```
 
-```{r tp_summary, fig.width=4, fig.height=4.25}
+```{r tp_summary, out.width="3.25in", out.height="4in"}
 # lapply(re_brms, function(x) x$formula) 
 fit_tp   <- re_brms[[1]] # 1 is best tp model with random effects
 signif_hu4_ids <- fit_tp$re_signif_ids 
@@ -45,19 +45,17 @@ signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
 # plot tp model fixed effects summary
 # summary(fit_tp)
-gg_tp <- spread_draws(fit_tp, 
-                     b_maxdepth, 
-                     b_hu12vbaseflowvmean, 
-                     b_phosphorusvfertilizervuse, 
-                     b_buffervcultivatedvcrops) %>%
+
+b_vars <- stringr::str_subset(
+  tidybayes::get_variables(fit_tp), 
+  c("^(b_)(?!.*Intercept).*$"))
+
+gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
   tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  dplyr::filter(key != "b_Intercept") %>%
   mutate(key = stringr::str_replace(key, "b_", "")) %>%
   left_join(pred_key, by = c("key" = "varv")) %>%
-  mutate(key = factor(pretty, levels = c("Max depth", 
-                     "Baseflow", 
-                     "Fertilizer P input", 
-                     "Buffer Ag"))) %>%
-  group_by(key) %>%
+  group_by(pretty) %>%
   summarize(value = list(tibble::enframe(quantile(value, probs=c(0.05,0.5,0.95))))) %>% 
   unnest() %>%
   tidyr::spread(name, value) %>%
@@ -66,7 +64,7 @@ gg_tp <- spread_draws(fit_tp,
 
 
 gg_tp_fe <- ggplot(data = gg_tp) + 
-  geom_pointrange(aes(x = key, y = `50%`, 
+  geom_pointrange(aes(x = pretty, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
   geom_hline(yintercept = 0) +
@@ -77,7 +75,6 @@ gg_tp_fe <- ggplot(data = gg_tp) +
   xlab("") 
 
 gg_tp_fe
-
 ```
 
 ```{r tp_re, fig.width=3.25, fig.height=4.5}
@@ -101,7 +98,7 @@ gg_tp_re <- ggplot(data = fit_tp$re) +
 gg_tp_re
 ```
 
-```{r tn_summary, fig.height=4, fig.width=4.25}
+```{r tn_summary, out.width="3.25in", out.height="4in"}
 # lapply(re_brms, function(x) x$formula) 
 fit_tn         <- re_brms[[5]] # 5 is best tn model with random effects
 signif_hu4_ids <- fit_tn$re_signif_ids 
@@ -109,27 +106,21 @@ signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
 # plot tn model fixed effects summary
 # summary(fit_tn)
-gg_tn <- spread_draws(fit_tn, 
-                     b_maxdepth, 
-                     b_soilvorgvcarbon, 
-                     b_nitrogenvfertilizervuse, 
-                     b_buffervcultivatedvcrops) %>%
+gg_tn <- spread_draws(fit_tn, `b_.*`, regex = TRUE) %>%
   tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  dplyr::filter(key != "b_Intercept") %>%
   mutate(key = stringr::str_replace(key, "b_", "")) %>%
   left_join(pred_key, by = c("key" = "varv")) %>%
-  mutate(key = factor(pretty, levels = c("Max depth", 
-                     "Soil organic carbon", 
-                     "Fertilizer N input", 
-                     "Buffer Ag"))) %>%
-  group_by(key) %>%
-  summarize(value = list(tibble::enframe(quantile(value, probs=c(0.05,0.5,0.95))))) %>% 
+  group_by(pretty) %>%
+  summarize(value = list(tibble::enframe(
+    quantile(value, probs=c(0.05,0.5,0.95))))) %>% 
   unnest() %>%
   tidyr::spread(name, value) %>%
   rowwise() %>%
   mutate(signif = (`5%` > 0 & `95%` > 0)| (`5%` < 0 & `95%` < 0))
 
 gg_tn_fe <- ggplot(data = gg_tn) + 
-  geom_pointrange(aes(x = key, y = `50%`, 
+  geom_pointrange(aes(x = pretty, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
   geom_hline(yintercept = 0) +
