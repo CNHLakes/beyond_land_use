@@ -25,6 +25,7 @@
 "nitrogen_fertilizer_use","Fertilizer N input","Nutrient inputs","nitrogenvfertilizervuse"
 "phosphorus_fertilizer_use","Fertilizer P input","Nutrient inputs","phosphorusvfertilizervuse"
 "p_input","P input","Nutrient inputs","pvinput"
+"hu4vnitrogenvatmosphericvdeposition","N Deposition","Nutrient inputs","hu4vnitrogenvatmosphericvdeposition"
 "phosphorus_livestock_manure","Manure P input","Nutrient inputs","phosphorusvlivestockvmanure"
 "wheat","Wheat","Land-use cover","wheat"
 "pasture","Pasture","Land-use cover","pasture"
