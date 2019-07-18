@@ -120,19 +120,19 @@ r2_fe <- dplyr::bind_rows(
                       (1 + pasture | hu4vzoneid))
 ))
 
-re_brms <- list()
-for(i in seq_along(model_forms_re)){
-  # i <- 2
-  print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
-  if(!file.exists(paste0("data/mcmc/re/", names(model_forms_re)[i]))){
-    re_brms[[i]] <- brm(formula = model_forms_re[[i]], data = dt, 
-                        prior = set_prior("horseshoe(1)"), family = gaussian(), 
-                        control = list(adapt_delta = 0.99))
-    saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
-  }else{
-    re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
-  }
-}
+# re_brms <- list()
+# for(i in seq_along(model_forms_re)){
+#   # i <- 6
+#   print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
+#   if(!file.exists(paste0("data/mcmc/re/", names(model_forms_re)[i]))){
+#     re_brms[[i]] <- brm(formula = model_forms_re[[i]], data = dt, 
+#                         prior = set_prior("horseshoe(1)"), family = gaussian(), 
+#                         control = list(adapt_delta = 0.99))
+#     saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
+#   }else{
+#     re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
+#   }
+# }
 
 re_brms <- 
   lapply(seq_along(model_forms_re), function(i) 
@@ -140,29 +140,6 @@ re_brms <-
                       paste0("data/mcmc/re/", names(model_forms_re)[i]), 
                       formula = model_forms_re[[i]], 
                       data = dt))
-
-if(!interactive()){
-  # investigate horseshoe prior
-  # fit_tn <- re_brms[[5]] # 5 is best tn model with random effects
-  # tidybayes::get_variables(fit_tn)
-  # model_forms_re[[5]]
-  tn_horse_form_all <- bf(tn ~ 
-                            maxdepth + iwslavratio +
-                            soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
-                            clayvpct + hu12vbaseflowvmean +
-                            nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
-                            phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
-                            buffervcultivatedvcrops + buffervnatural +
-                        (1 + ag | hu4vzoneid))
-  horse_fit_all <- brm(formula = tn_horse_form_all, data = dt, 
-                   prior = set_prior("horseshoe(1)"), family = gaussian(), 
-                   control = list(adapt_delta = 0.99))
-  test <- brm_fit("data/mcmc/re/test.rds", tn_horse_form_all, data = dt)
-  
-  summary(horse_fit_all)
-  test <- get_re_signif(horse_fit_all)
-}
-
 
 # evaluate hu4 re slope significance
 get_re_text <- function(x){
@@ -232,7 +209,7 @@ r2_re <- dplyr::bind_rows(
   mutate(Model = names(model_forms_re), 
          Estimate = round(Estimate, 2)) %>%
   dplyr::select(Model, Estimate)
-r2_re$re_signif <- unlist(lapply(res_brms, function(x) x$re_signif))
+r2_re$re_signif <- unlist(lapply(re_brms, function(x) x$re_signif))
 
 # r2_re$`Proxy`     <- c("Ag", "Soybeans", "Pasture",
 #                        "Ag", "Corn", "Pasture") 
@@ -255,9 +232,9 @@ if(interactive()){
 # loo comparison
 # r2_re
 loo_compare(loo(re_brms[[4]]), loo(re_brms[[5]]), 
-            loo(re_brms[[6]]), loo(re_brms[[7]])) # Corn model has lowest error
+            loo(re_brms[[6]])) # Corn model has lowest error
 loo_compare(loo(re_brms[[1]]), loo(re_brms[[2]]), 
-            loo(re_brms[[3]])) # Pasture model has lowest error
+            loo(re_brms[[3]], reloo = TRUE)) # Ag model has lowest error
 
 # evaluate hu4 re slope significance
 corn_hu4_dist <- re_brms[[5]] %>%
