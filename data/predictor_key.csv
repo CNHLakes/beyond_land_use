@@ -11,7 +11,6 @@
 "buffer_cultivated_crops","Buffer Ag","Buffer composition","buffervcultivatedvcrops"
 "buffer_natural","Buffer natural","Buffer composition","buffervnatural"
 "clay_pct","Clay","Nutrient transport","clayvpct"
-"lake_area_ha","Lake area","Lake","lakevareavha"
 "wetland_potential","Wetland potential","Nutrient transport","wetlandvpotential"
 "corn","Corn","Land-use cover","corn"
 "nitrogen_livestock_manure","Manure N input","Nutrient inputs","nitrogenvlivestockvmanure"

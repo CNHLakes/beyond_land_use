@@ -77,7 +77,7 @@ dt_waffle <- tidyr::gather(dt, key = "key", value = "value", -`Trophic State`) %
 
 ggplot(dt_waffle,
        aes(fill=`Trophic State`, values = `value`)) +
-  geom_waffle(color = "white", size=0.7, n_rows = 5, flip = TRUE) +
+  geom_waffle(color = "white", size=0.7, n_rows = 10, flip = TRUE) +
   # facet_wrap(~key, ncol = 1) +
   scale_x_discrete(expand = c(0,0)) +
   scale_y_discrete(expand = c(0,0)) +

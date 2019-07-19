@@ -38,8 +38,8 @@ pred_key <- data.frame(var = c(
 pred_key$varv <- gsub("_", "v", pred_key$var)
 
 pred_key <- dplyr::filter(pred_key, 
-                          !(tolower(pretty) %in% c("lake depth", "n-fixer", 
-                                                   "non-ag")))
+                          !(pretty %in% c("Lake area", "N-fixer", 
+                                                   "Non-ag")))
 
 
 # View(pred_key)
