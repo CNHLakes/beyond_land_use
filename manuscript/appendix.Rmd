@@ -72,12 +72,13 @@ library(hrbrthemes)
 dt_waffle <- tidyr::gather(dt, key = "key", value = "value", -`Trophic State`) %>%
   add_row(`Trophic State` = "oligotrophic", `key` = "All Lakes", `value` = 2) %>%
   add_row(`Trophic State` = "oligotrophic", `key` = "This Study", `value` = 2) %>%
-  arrange(`Trophic State`)
+  arrange(`Trophic State`) %>%
+  dplyr::filter(key == "This Study")
 
 ggplot(dt_waffle,
        aes(fill=`Trophic State`, values = `value`)) +
-  geom_waffle(color = "white", size=0.7, n_rows = 5) +
-  facet_wrap(~key, ncol = 1) +
+  geom_waffle(color = "white", size=0.7, n_rows = 5, flip = TRUE) +
+  # facet_wrap(~key, ncol = 1) +
   scale_x_discrete(expand = c(0,0)) +
   scale_y_discrete(expand = c(0,0)) +
   shades::lightness(scale_fill_brewer(palette = "Greens", type = "seq"), 

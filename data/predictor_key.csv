@@ -10,8 +10,6 @@
 "forest","Forest","Land-use cover","forest"
 "buffer_cultivated_crops","Buffer Ag","Buffer composition","buffervcultivatedvcrops"
 "buffer_natural","Buffer natural","Buffer composition","buffervnatural"
-"nonag","Non-ag","Land-use cover","nonag"
-"nfixer","N-fixer","Land-use cover","nfixer"
 "clay_pct","Clay","Nutrient transport","clayvpct"
 "lake_area_ha","Lake area","Lake","lakevareavha"
 "wetland_potential","Wetland potential","Nutrient transport","wetlandvpotential"

@@ -1,3 +1,5 @@
+suppressMessages(library(dplyr))
+
 pred_key <- data.frame(var = c(
   "nitrogen_atmospheric_deposition","maxdepth","iwsla_ratio",
   "hu12_baseflow_mean","hu12_ppt_mean",
@@ -34,6 +36,11 @@ pred_key <- data.frame(var = c(
                       stringsAsFactors = FALSE)
   
 pred_key$varv <- gsub("_", "v", pred_key$var)
+
+pred_key <- dplyr::filter(pred_key, 
+                          !(tolower(pretty) %in% c("lake depth", "n-fixer", 
+                                                   "non-ag")))
+
 
 # View(pred_key)
 write.csv(pred_key, "data/predictor_key.csv", row.names = FALSE)
