@@ -92,6 +92,7 @@ gg_lines <- ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha 
     scale_color_manual(values = rep("black", 26))
 gg_hu4 <- ggplot() +
     geom_sf(data = hu4, aes(fill = n_cat, alpha = n)) +
+    coord_sf(datum = NA) +
     # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +
     theme_minimal() +
     theme(legend.position = 0,
@@ -101,6 +102,6 @@ gg_hu4 <- ggplot() +
 
 cowplot::plot_grid(
   plot_grid(nullGrob(), gg_lines, nullGrob(), 
-            ncol = 1, rel_heights = c(0.33, 1, 0.33)), 
-  gg_hu4)
+            ncol = 1, rel_heights = c(0.53, 1, 0.53)), 
+  gg_hu4, rel_widths = c(0.7, 1))
 ``` 
