@@ -67,21 +67,44 @@ gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
                                       "Land-use cover", "Buffer composition", 
                                       "Lake")))) %>%
   arrange(category) %>%
-  ungroup() %>% mutate(pretty = factor(pretty, levels = pretty))
+  ungroup() %>% mutate(pretty = factor(pretty, levels = pretty)) %>%
+  arrange(category, pretty)
 
-text_colors <- ifelse(gg_tp$signif == 0, "black", "red")
-(gg_tp_fe <- ggplot(data = gg_tp) + 
+text_colors <- rev(ifelse(gg_tp$signif == 0, "black", "red"))
+# cbind(text_colors, as.character(gg_tp$pretty))
+
+gg_tp_fe <- ggplot(data = gg_tp) + 
   geom_pointrange(aes(x = pretty, y = `50%`, 
-                      ymin = `5%`, ymax = `95%`, color = signif)) +
+                      ymin = `5%`, ymax = `95%`, color = signif)) + 
+  expand_limits(y = -1.2) +
+  geom_rect(ymin = -0.6, ymax = -1.5, xmin = 0, xmax = nrow(gg_tp) + 1, 
+              fill = "white") +
+  geom_text(aes(x = pretty, label = pretty, color = signif), 
+            y = -0.65, vjust = 1.1, hjust = "right") + 
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0) +
+  scale_y_continuous(breaks = seq(from = -0.6, to  = 0.4, by = 0.2), 
+                     labels = scales::format_format(scientific = FALSE)) +
   coord_flip() +
-  theme_cowplot() +
-  theme(axis.text.y = element_text(size = 12, color = text_colors)) +
-  ylim(-0.6, 0.4) +
-  ylab("Standardized FE slope") + theme(legend.position = 0) + 
-  ggtitle("TP ~ Slope") +
-  xlab(""))
+  theme(axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        axis.title.y = element_blank()) + 
+    facet_wrap(~category, strip.position = "left", ncol = 1, scales = "free_y",
+               as.table = FALSE) +
+    theme(panel.spacing = unit(0, "lines"), 
+          strip.placement = "outside", 
+          strip.background = element_blank(), 
+          axis.title.y = element_blank()) + 
+        ylab("Standardized FE slope") + theme(legend.position = 0) + 
+        ggtitle("TP ~ Slope") + xlab("")
+
+gp <- ggplotGrob(gg_tp_fe)
+facet.columns <- gp$layout$t[grepl("panel", gp$layout$name)]
+x.var         <- sapply(ggplot_build(gg_tp_fe)$layout$panel_scales_x,
+                function(l) length(l$range$range))
+gp$heights[facet.columns] <- gp$heights[facet.columns] * rev(x.var)
+gg_tp_fe <- ggplotify::as.ggplot(gp)
+gg_tp_fe
 ```
 
 ```{r tp_re, fig.width=3.25, fig.height=4.5}
