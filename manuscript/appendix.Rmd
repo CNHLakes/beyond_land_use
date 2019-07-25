@@ -64,20 +64,23 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 # grid.draw(g)
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r trophic_state, fig.cap="Lake trophic state", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
 # waffle
 library(waffle)
-library(hrbrthemes)
 
-dt_waffle <- tidyr::gather(dt, key = "key", value = "value", -`Trophic State`) %>%
-  add_row(`Trophic State` = "oligotrophic", `key` = "All Lakes", `value` = 2) %>%
-  add_row(`Trophic State` = "oligotrophic", `key` = "This Study", `value` = 2) %>%
-  arrange(`Trophic State`) %>%
-  dplyr::filter(key == "This Study")
+total_cells <- 41.5
+dt_waffle <- dt %>% 
+  dplyr::rename(trophic_state = `Trophic State`) %>%
+  tidyr::gather(key = "key", value = "value", -trophic_state) %>%
+  dplyr::filter(key == "This Study") %>%
+  mutate(value = floor((value / 100) * total_cells)) %>%
+  arrange(trophic_state)
+# sum(dt_waffle$value)
+# add_row(`Trophic State` = "oligotrophic", `key` = "This Study", `value` = 2) %>%
 
 ggplot(dt_waffle,
-       aes(fill=`Trophic State`, values = `value`)) +
-  geom_waffle(color = "white", size=0.7, n_rows = 5, flip = FALSE) +
+       aes(fill = trophic_state, values = value)) +
+  geom_waffle(color = "white", size = 3, n_rows = 4, flip = FALSE) +
   # facet_wrap(~key, ncol = 1) +
   scale_x_discrete(expand = c(0,0)) +
   scale_y_discrete(expand = c(0,0)) +

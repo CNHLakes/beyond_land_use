@@ -12,7 +12,7 @@ source("../scripts/99_utils.R")
 
 ```{r 02_hierarchical_demo, echo=FALSE, message=TRUE, eval=TRUE}
 # setwd("figures")
-ids <- test <- readRDS("../data/dt.rds") %>%
+ids <- readRDS("../data/dt.rds") %>%
   group_by(hu4_zoneid) %>% 
   tally()
 
@@ -89,7 +89,8 @@ gg_lines <- ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha 
     labs(x = "Ag. LULC (pct)", # , NLCD 2011
          y = "TP (ug/L)")  +
     scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 150)) + 
-    scale_color_manual(values = rep("black", 26))
+    scale_color_manual(values = rep("black", 26)) 
+
 gg_hu4 <- ggplot() +
     geom_sf(data = hu4, aes(fill = n_cat, alpha = n)) +
     coord_sf(datum = NA) +
@@ -98,10 +99,11 @@ gg_hu4 <- ggplot() +
     theme(legend.position = 0,
           axis.title = element_blank(),
           legend.title = element_blank()) +
-    scale_fill_manual(values = rep("black", 5))
+    scale_fill_manual(values = rep("black", 5)) +
+  ggtitle("# of lakes per region")
 
 cowplot::plot_grid(
   plot_grid(nullGrob(), gg_lines, nullGrob(), 
-            ncol = 1, rel_heights = c(0.53, 1, 0.53)), 
+            ncol = 1, rel_heights = c(0.52, 1, 0.51)), 
   gg_hu4, rel_widths = c(0.7, 1))
 ``` 
