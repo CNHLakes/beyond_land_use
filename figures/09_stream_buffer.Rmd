@@ -24,7 +24,8 @@ dt <- readRDS("../data/dt.rds") %>%
 # second llid is a high stream ag lake
 
 llids         <- c("6992", "7026")
-llid_metadata <- lake_info(llids)
+lg            <- lagosne_load("1.087.1")
+llid_metadata <- lake_info(llids, dt = lg)
 llid_callouts <- paste(llid_metadata$gnis_name, "-", llid_metadata$state)
 
 ggplot(data = dt) +
@@ -120,39 +121,43 @@ prep_ggplot_raster <- function(r, iws){
 #   res_iws[i,])
 # mapview(forest_outline)
 # saveRDS(forest_outline, "../data/res_forest_outline_2.rds")
-forest_outline_1 <- readRDS("../data/res_forest_outline_1.rds")
-forest_outline_2 <- readRDS("../data/res_forest_outline_2.rds")
+# forest_outline_1 <- readRDS("../data/res_forest_outline_1.rds")
+# forest_outline_2 <- readRDS("../data/res_forest_outline_2.rds")
 
 i <- 1
+rs <- prep_ggplot_raster(images[[i]], res_iws[i,])
 gg_low_ag <- ggplot() + 
-  geom_raster(data = prep_ggplot_raster(images[[i]], res_iws[i,]), 
+  geom_raster(data = rs, 
               aes(x, y, fill = I(hex))) +
   geom_sf(data = res_iws[i,], alpha = 0, color = "red") +
   geom_sf(data = res_lakes[i,], alpha = 0, color = "cyan") +
-  geom_sf(data = forest_outline_1, color = "green3") +
+  # geom_sf(data = forest_outline_1, color = "green3") +
   geom_sf(data = st_difference(
       st_transform(res_streams[[i]], st_crs(res_lakes[i,])), 
       res_lakes[i,]), 
     color = "cyan") +
   coord_sf(datum = NA) +
   theme_void() +
-  ggtitle(llid_callouts[i])
+  annotate("text", label = llid_callouts[i], x = median(rs$x), 
+           y = min(rs$y))
 
 
 i <- 2
+rs <- prep_ggplot_raster(images[[i]], res_iws[i,])
 gg_hi_ag <- ggplot() + 
-  geom_raster(data = prep_ggplot_raster(images[[i]], res_iws[i,]), 
+  geom_raster(data = rs, 
               aes(x, y, fill = I(hex))) +
   geom_sf(data = res_iws[i,], alpha = 0, color = "red") +
   geom_sf(data = res_lakes[i,], alpha = 0, color = "cyan") +
-  geom_sf(data = forest_outline_2, color = "green3") +
+  # geom_sf(data = forest_outline_2, color = "green3") +
   geom_sf(data = st_difference(
       st_transform(res_streams[[i]], st_crs(res_lakes[i,])), 
       res_lakes[i,]), 
     color = "cyan") +
   coord_sf(datum = NA) +
   theme_void() +
-  ggtitle(llid_callouts[i])
+  annotate("text", label = llid_callouts[i], x = median(rs$x), 
+           y = min(rs$y))
 
 cowplot::plot_grid(gg_hi_ag, gg_low_ag)
 ```

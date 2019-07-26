@@ -530,7 +530,7 @@ get_residuals <- function(model, threshold = 0.1){
     median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
   model
 }
-lg <- lagosne_load()
+lg <- lagosne_load("1.087.1")
 fit <- get_residuals(fit)
 
 states_lg <- state_sf()[
