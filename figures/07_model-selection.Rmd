@@ -204,16 +204,15 @@ gg_tn_fe
 ```
 
 ```{r tn_re_hu4, fig.width = 3.77, fig.height = 4.5}
-cl            <- cart_layers()
-states        <- cl$states
-study_bbox    <- cl$study_bbox
+study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)
+states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
 
 # map significant random effects hu4s
 gg_hu4 <- 
   ggplot() +
     geom_sf(data = study_bbox, alpha = 1, size = 0.6, 
               color = "black", fill = "#1D9DCF") +
-    geom_sf(data = states, fill = "gray", color = "black", size = 0.3) +
+    geom_sf(data = states_all, fill = "gray", color = "black", size = 0.3) +
     geom_sf(data = hu4, fill = "white", color = "black", size = 0.4) +
     geom_sf(data = signif_hu4, color = "red", alpha = 0) +
     # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
@@ -223,7 +222,8 @@ gg_hu4 <-
           axis.title = element_blank(), 
           legend.title = element_blank()) + 
     scale_fill_manual(values = colors, levels(hu4$n_cat)) + 
-    guides(guide_legend(nrow = 2))
+    guides(guide_legend(nrow = 2))  +
+  ggtitle("Ag sensitive regions")
 
 gg_hu4
 ```

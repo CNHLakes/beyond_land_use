@@ -12,27 +12,30 @@ source("../scripts/99_utils.R")
 
 ```{r 02_hierarchical_demo, echo=FALSE, message=TRUE, eval=TRUE}
 # setwd("figures")
-cl            <- cart_layers()
-ep            <- cl$ep
-states        <- cl$states
-study_bbox    <- cl$study_bbox
+# cl            <- cart_layers()
+# ep            <- cl$ep
+# states        <- cl$states
+# study_bbox    <- cl$study_bbox
+
+study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)
+ep            <- st_read("../data/gis.gpkg", "ep", quiet = TRUE)
+states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
+hu4           <- st_read("../data/gis.gpkg", "hu4s", quiet = TRUE)
 
 dt            <- readRDS("../data/dt.rds")
-
-ids <- dt %>%
+ids           <- dt %>%
   group_by(hu4_zoneid) %>% 
   tally()
 
-hu4 <-  LAGOSNEgis::query_gis("HU4", "ZoneID", ids$hu4_zoneid) %>%
-  st_cast(to = "MULTIPOLYGON") %>%
+hu4    <-  hu4 %>%
+  # st_cast(to = "MULTIPOLYGON") %>%
   left_join(ids, by = c("ZoneID" = "hu4_zoneid"))
-
 n_cat  <- 6
 colors <- c("#FFFFFF", viridisLite::viridis(n_cat - 1))
 hu4    <- mutate(hu4, 
             n_cat = cut(hu4$n, breaks = 
                           classInt::classIntervals(hu4$n, n = n_cat)$brks))
-hu4 <- dplyr::filter(hu4, !is.na(n_cat))
+hu4    <- dplyr::filter(hu4, !is.na(n_cat))
 
 # hist(hu4$n, n = 20)
 # table(as.character(dt$hu4_zoneid))
@@ -101,7 +104,7 @@ gg_hu4 <-
   ggplot() +
     geom_sf(data = study_bbox, alpha = 1, size = 0.6, 
               color = "black", fill = "#1D9DCF") +
-    geom_sf(data = states, fill = "gray", color = "black", size = 0.3) +
+    geom_sf(data = states_all, fill = "gray", color = "black", size = 0.3) +
     geom_sf(data = hu4, aes(fill = n_cat), color = "black", size = 0.4) +
   scale_fill_manual(values = c("#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15")) +
     coord_sf(datum = NA) +
@@ -112,8 +115,8 @@ gg_hu4 <-
           legend.title = element_blank()) +
   ggtitle("# of lakes per region")
 
-cowplot::plot_grid(
+cowplot::plot_grid(gg_hu4,
   plot_grid(nullGrob(), gg_lines, nullGrob(), 
             ncol = 1, rel_heights = c(0.52, 1, 0.51)), 
-  gg_hu4, rel_widths = c(0.7, 1))
+  rel_widths = c(1, 0.7))
 ``` 

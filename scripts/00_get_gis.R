@@ -9,19 +9,24 @@ knitr::opts_chunk$set(eval = FALSE)
 source("scripts/99_utils.R")
 
 # ---- size_comparison ----
-lg   <- lagosne_load()
-gpkg_path <- "data/gis.gpkg"
+lg         <- lagosne_load("1.087.1")
+gpkg_path  <- "data/gis.gpkg"
 
-ep  <- readRDS("data/ep.rds") %>%
+ep         <- readRDS("data/ep.rds") %>%
   st_as_sf(coords = c("nhd_long", "nhd_lat"), crs = 4326)
 
-iws  <- LAGOSNEgis::query_gis("IWS", "lagoslakeid", ep$lagoslakeid)
+iws        <- LAGOSNEgis::query_gis("IWS", "lagoslakeid", ep$lagoslakeid)
 
+states_all <- ne_states(country = c("united states of america", "canada", "mexico"),
+                        returnclass = "sf")
 state_codes <- c("IL", "IN", "IA",
                  "MI", "MN", "MO",
                  "NY", "OH", "PA", "WI")
-states <- state_sf() %>%
-  dplyr::filter(., ABB %in% state_codes)
+states_focal <- states_all %>%
+  dplyr::filter(., postal %in% state_codes & iso_a2 == "US")
+study_bbox   <- st_as_sfc(st_bbox(states_focal))
+states_all   <- states_all %>%
+  st_crop(study_bbox)
 
 counties <- dplyr::filter(county_sf(), state_abb %in% state_codes)
 cnty_lg <- lg$county %>%
@@ -30,11 +35,11 @@ cnty_lg <- lg$county %>%
   mutate(county_name = gsub("\\.", "", gsub(" ", "", county_name))) %>%
   mutate(county_name = gsub("'", "", gsub("saint", "st", county_name))) %>%
   mutate(state_name = tolower(state_name)) %>%
-  select(state_zoneid, state_name, county_name, county_state, county_zoneid) %>%
+  dplyr::select(state_zoneid, state_name, county_name, county_state, county_zoneid) %>%
   # dplyr::filter(cnty_lg, str_detect(county_name, "brien"))
   left_join(st_drop_geometry(counties), .,
             by = c("state" = "state_name", "county" = "county_name")) %>%
-  select(state_abb, county, county_zoneid)
+  dplyr::select(state_abb, county, county_zoneid)
 counties <- left_join(counties, cnty_lg, by = c("state_abb", "county"))
 
 # add zoneids
@@ -50,20 +55,30 @@ hu4_zones <- lg$hu4 %>%
   dplyr::filter(value %in% state_codes) %>%
   distinct(hu4, hu4_zoneid)
 
-hu4s <- LAGOSNEgis::query_gis("HU4", "ZoneID", hu4_zones$hu4_zoneid)
+hu4s       <- LAGOSNEgis::query_gis("HU4", "ZoneID", hu4_zones$hu4_zoneid)
+hu4s_focal <- LAGOSNEgis::query_gis("HU4", "ZoneID", unique(ep$hu4_zoneid))
+
 hu8s <- LAGOSNEgis::query_gis_(
   query = paste0("SELECT * FROM HU8 WHERE ",
                  paste0("HUC8 LIKE '", hu4s$HUC4, "%'", collapse = " OR ")))
 
 # unlink("data/gis.gpkg")
 # st_layers("data/gis.gpkg")
-st_write(states, gpkg_path, layer = "states",
+st_write(states_focal, gpkg_path, layer = "states_focal",
+         layer_options = c("OVERWRITE=yes"))
+st_write(states_all, gpkg_path, layer = "states_all",
          layer_options = c("OVERWRITE=yes"))
 st_write(hu4s, gpkg_path, layer = "hu4s", update = TRUE,
+         layer_options = c("OVERWRITE=yes"))
+st_write(hu4s_focal, gpkg_path, layer = "hu4s_focal", update = TRUE,
          layer_options = c("OVERWRITE=yes"))
 st_write(hu8s, gpkg_path, layer = "hu8s", update = TRUE,
          layer_options = c("OVERWRITE=yes"))
 st_write(counties, gpkg_path, layer = "counties", update = TRUE,
          layer_options = c("OVERWRITE=yes"))
 st_write(iws, gpkg_path, layer = "iws", update = TRUE,
+         layer_options = c("OVERWRITE=yes"))
+st_write(study_bbox, gpkg_path, layer = "study_bbox", update = TRUE,
+         layer_options = c("OVERWRITE=yes"))
+st_write(ep, gpkg_path, layer = "ep", update = TRUE,
          layer_options = c("OVERWRITE=yes"))
