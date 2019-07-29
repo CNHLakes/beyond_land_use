@@ -38,6 +38,7 @@ library(snakecase)
 suppressMessages(library(brms))
 suppressMessages(library(tidybayes))
 library(ggforce)
+library(rnaturalearth)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
@@ -286,3 +287,20 @@ get_if_not_exists <- function(x, destfile, read_function = readRDS,
   }
 }
 
+cart_layers <- function(){
+  lg            <- lagosne_load("1.087.1")
+  ep            <- LAGOSNE::coordinatize(readRDS("../data/ep.rds")) %>%
+    left_join(dplyr::select(lg$locus, "lagoslakeid", "state_zoneid")) %>%
+    left_join(lg$state)
+  
+  states        <- ne_states(country = c("united states of america", "canada", "mexico"), 
+                             returnclass = "sf")
+  states_shaded <- states[states$name %in% unique(ep$state_name),]
+  study_bbox    <- st_as_sfc(st_bbox(states_shaded))
+  states        <- st_crop(states, study_bbox)
+  
+  list(ep = ep, 
+       states = states, 
+       states_shaded = states_shaded,
+       study_bbox = study_bbox)
+}

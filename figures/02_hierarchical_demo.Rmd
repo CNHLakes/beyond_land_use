@@ -12,7 +12,14 @@ source("../scripts/99_utils.R")
 
 ```{r 02_hierarchical_demo, echo=FALSE, message=TRUE, eval=TRUE}
 # setwd("figures")
-ids <- readRDS("../data/dt.rds") %>%
+cl            <- cart_layers()
+ep            <- cl$ep
+states        <- cl$states
+study_bbox    <- cl$study_bbox
+
+dt            <- readRDS("../data/dt.rds")
+
+ids <- dt %>%
   group_by(hu4_zoneid) %>% 
   tally()
 
@@ -31,7 +38,6 @@ hu4 <- dplyr::filter(hu4, !is.na(n_cat))
 # table(as.character(dt$hu4_zoneid))
 
 lg <- lagosne_load("1.087.1")
-
 ep <- left_join(dplyr::select(lg$locus, lagoslakeid, hu4_zoneid), 
                 summarize(
                   group_by(dplyr::select(lg$epi_nutr, lagoslakeid, tp, chla), 
@@ -89,17 +95,21 @@ gg_lines <- ggplot(data = dt, aes(x = ag_pct, y = tp, color = hu4_zoneid, alpha 
     labs(x = "Ag. LULC (pct)", # , NLCD 2011
          y = "TP (ug/L)")  +
     scale_y_continuous(breaks = seq(0, 250, by = 50), limits = c(0, 150)) + 
-    scale_color_manual(values = rep("black", 26)) 
+    scale_color_manual(values = rep("#a50f15", 26)) 
 
-gg_hu4 <- ggplot() +
-    geom_sf(data = hu4, aes(fill = n_cat, alpha = n)) +
+gg_hu4 <- 
+  ggplot() +
+    geom_sf(data = study_bbox, alpha = 1, size = 0.6, 
+              color = "black", fill = "#1D9DCF") +
+    geom_sf(data = states, fill = "gray", color = "black", size = 0.3) +
+    geom_sf(data = hu4, aes(fill = n_cat), color = "black", size = 0.4) +
+  scale_fill_manual(values = c("#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15")) +
     coord_sf(datum = NA) +
     # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +
     theme_minimal() +
     theme(legend.position = 0,
           axis.title = element_blank(),
           legend.title = element_blank()) +
-    scale_fill_manual(values = rep("black", 5)) +
   ggtitle("# of lakes per region")
 
 cowplot::plot_grid(
