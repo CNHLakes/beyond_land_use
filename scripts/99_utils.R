@@ -39,6 +39,7 @@ suppressMessages(library(brms))
 suppressMessages(library(tidybayes))
 library(ggforce)
 library(rnaturalearth)
+library(gghighlight)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
