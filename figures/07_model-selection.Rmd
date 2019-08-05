@@ -64,10 +64,10 @@ gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
   left_join(dplyr::select(pred_key, pretty, category)) %>%
   mutate(category = factor(category, 
                            levels = rev(c("Nutrient inputs", "Nutrient transport", 
-                                      "Land-use cover", "Buffer composition", 
+                                      "Land-use cover", "Buffer configuration", 
                                       "Lake")))) %>%
   mutate(category = forcats::fct_recode(category, 
-                                        Buffer = "Buffer composition")) %>%
+                                        Buffer = "Buffer configuration")) %>%
   arrange(category) %>%
   ungroup() %>% mutate(pretty = factor(pretty, levels = pretty)) %>%
   arrange(category, pretty)
@@ -148,10 +148,10 @@ gg_tn <- spread_draws(fit_tn, `b_.*`, regex = TRUE) %>%
   left_join(dplyr::select(pred_key, pretty, category)) %>%
   mutate(category = factor(category, 
                            levels = rev(c("Nutrient inputs", "Nutrient transport", 
-                                      "Land-use cover", "Buffer composition", 
+                                      "Land-use cover", "Buffer configuration", 
                                       "Lake")))) %>%
   mutate(category = forcats::fct_recode(category, 
-                                        Buffer = "Buffer composition")) %>%
+                                        Buffer = "Buffer configuration")) %>%
   arrange(category) %>%
   ungroup() %>% mutate(pretty = factor(pretty, levels = pretty)) %>%
   arrange(category, pretty)

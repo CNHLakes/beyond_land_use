@@ -25,8 +25,8 @@ pred_key <- data.frame(var = c(
                       category = c(
   "Nutrient inputs", "Lake", "Lake", 
   "Nutrient transport", "Nutrient transport", 
-  "Buffer composition","Land-use cover","Land-use cover", "Land-use cover",
-  "Buffer composition", "Buffer composition",
+  "Buffer configuration","Land-use cover","Land-use cover", "Land-use cover",
+  "Buffer configuration", "Buffer configuration",
   "Land-use cover", "Land-use cover", "Nutrient transport","Lake",
   "Nutrient transport", "Land-use cover","Nutrient inputs", 
   "Nutrient transport", "Land-use cover", "Nutrient inputs",
