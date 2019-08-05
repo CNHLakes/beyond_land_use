@@ -48,19 +48,19 @@ dt           <- r2_re
 dt$elpd_diff <- loo_re$elpd_diff
 dt <- dplyr::select(dt, 
                     response, term, r2 = Estimate, elpd_diff)
-test <- dt[order(dt$response, dt$elpd_diff, decreasing = TRUE),]
+dt <- dt[order(dt$response, dt$elpd_diff, decreasing = FALSE),]
 
 options(knitr.kable.NA = "-")  
-dplyr::filter(dt, str_detect(Model, "tp")) %>%
-  dplyr::select(-Model) %>%
-  dplyr::rename("$R^2$" = Estimate) %>%
+dplyr::filter(dt, str_detect(response, "tp")) %>%
+  dplyr::select(-response) %>%
+  dplyr::rename("$R^2$" = r2) %>%
   knitr::kable(digits = 2, format = "markdown", caption = "TP Model R2")
 ```
 
 \pagebreak
 ```{r tn_results}
-dplyr::filter(dt, str_detect(Model, "tn")) %>%
-  dplyr::select(-Model) %>%
-  dplyr::rename("$R^2$" = Estimate) %>%
+dplyr::filter(dt, str_detect(response, "tn")) %>%
+  dplyr::select(-response) %>%
+  dplyr::rename("$R^2$" = r2) %>%
   knitr::kable(digits = 2, format = "markdown", caption = "TN Model R2")
 ```
