@@ -349,7 +349,6 @@ cowplot::plot_grid(gg_tp_re,
 ```
 
 ```{r re-comparison}
-
 # tp, tn
 # ag, row_crop, pasture, corn, soybeans
 re_global <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
@@ -358,28 +357,50 @@ re_global$term <- unlist(lapply(re_brms,
 re_global$response <- c(rep("tp", 5), rep("tn", 5))
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
 
-loo_compare(
-  loo(re_brms[[1]]), 
-  loo(re_brms[[2]]), 
-  loo(re_brms[[3]]), 
-  loo(re_brms[[4]]), 
-  loo(re_brms[[5]]) 
-)
-
-loo_compare(
-  loo(re_brms[[6]]), 
-  loo(re_brms[[7]]), 
-  loo(re_brms[[8]]), 
-  loo(re_brms[[9]]), 
-  loo(re_brms[[10]]) 
-)
+# loo_compare(loo(re_brms[[1]]), loo(re_brms[[2]]), loo(re_brms[[3]]),
+#             loo(re_brms[[4]]), loo(re_brms[[5]]))
+# loo_compare(loo(re_brms[[6]]), loo(re_brms[[7]]), loo(re_brms[[8]]), 
+#             loo(re_brms[[9]]), loo(re_brms[[10]]))
 
 group_by(re_global, response) %>%
   arrange(desc(`50%`))
 
-ggplot(data = re_global) +
-  geom_pointrange()
+gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
+    geom_pointrange(aes(x = term, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`), color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  expand_limits(y = -0.2) +
+  coord_flip() +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        strip.placement = "outside", 
+        strip.background = element_blank(), 
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA), 
+        panel.grid = element_blank(),
+        rect = element_rect(fill = "transparent"), 
+        axis.line = element_line(), 
+        axis.text.y = element_blank()) +
+  ggtitle("TN")
 
+gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
+    geom_pointrange(aes(x = term, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`), color = "red") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  expand_limits(y = -0.2) +
+  coord_flip() +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        strip.placement = "outside", 
+        strip.background = element_blank(), 
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA), 
+        panel.grid = element_blank(),
+        rect = element_rect(fill = "transparent"), 
+        axis.line = element_line()) +
+  ggtitle("TP")
+
+cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.8))
 ```
 
 ```{r tn_interaction, eval=FALSE}
