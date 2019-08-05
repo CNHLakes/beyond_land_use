@@ -1,7 +1,7 @@
 # setwd("../")
 source("scripts/99_utils.R")
 
-lg <- lagosne_load("1.087.1")
+lg        <- lagosne_load("1.087.1")
 dt        <- readRDS("data/dt_scaled.rds") 
 names(dt) <- gsub("_", "v", names(dt))
 
@@ -79,15 +79,14 @@ r2_fe <- dplyr::bind_rows(
                        phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
-  "tp_soybeans" = bf(tp ~  
+  "tp_rowcrop"       = bf(tp ~  
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                        clayvpct + hu12vbaseflowvmean +
-                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
-                       hu4vnitrogenvatmosphericvdeposition +
+                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
                        phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
-                      (1 + soybeans | hu4vzoneid)),
+                       (1 + rowvcropvpct | hu4vzoneid)),
   "tp_pasture" = bf(tp ~  
                       maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -97,6 +96,24 @@ r2_fe <- dplyr::bind_rows(
                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + pasture | hu4vzoneid)),
+  "tp_soybeans" = bf(tp ~  
+                       maxdepth + iwslavratio +
+                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                       clayvpct + hu12vbaseflowvmean +
+                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                       hu4vnitrogenvatmosphericvdeposition +
+                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       buffervcultivatedvcrops + buffervnatural +
+                      (1 + soybeans | hu4vzoneid)),
+  "tp_corn" = bf(tp ~  
+                       maxdepth + iwslavratio +
+                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                       clayvpct + hu12vbaseflowvmean +
+                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                       hu4vnitrogenvatmosphericvdeposition +
+                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       buffervcultivatedvcrops + buffervnatural +
+                       (1 + corn | hu4vzoneid)),
   "tn_ag"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
@@ -105,15 +122,14 @@ r2_fe <- dplyr::bind_rows(
                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
-  "tn_corn"    = bf(tn ~  
-                      maxdepth + iwslavratio +
+  "tn_rowcrop"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
-                           (1 + corn | hu4vzoneid)), 
+                      (1 + rowvcropvpct | hu4vzoneid)),
   "tn_pasture" = bf(tn ~  
                       maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -122,7 +138,25 @@ r2_fe <- dplyr::bind_rows(
                       hu4vnitrogenvatmosphericvdeposition +
                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
-                      (1 + pasture | hu4vzoneid))
+                      (1 + pasture | hu4vzoneid)),
+  "tn_corn"    = bf(tn ~  
+                      maxdepth + iwslavratio +
+                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                      clayvpct + hu12vbaseflowvmean +
+                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      hu4vnitrogenvatmosphericvdeposition +
+                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      buffervcultivatedvcrops + buffervnatural +
+                           (1 + corn | hu4vzoneid)),
+  "tn_soybeans"    = bf(tn ~  
+                      maxdepth + iwslavratio +
+                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                      clayvpct + hu12vbaseflowvmean +
+                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      hu4vnitrogenvatmosphericvdeposition +
+                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      buffervcultivatedvcrops + buffervnatural +
+                      (1 + soybeans | hu4vzoneid))
 ))
 
 # re_brms <- list()
