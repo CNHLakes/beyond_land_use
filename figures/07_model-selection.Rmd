@@ -128,7 +128,7 @@ gg_tp_re
 
 ```{r tn_fe, out.width="3.25in", out.height="4in"}
 # lapply(re_brms, function(x) x$formula) 
-fit_tn         <- re_brms[[5]] # 5 is best tn model with random effects
+fit_tn         <- re_brms[[9]] # 5 is best tn model with random effects
 signif_hu4_ids <- fit_tn$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
@@ -348,7 +348,7 @@ cowplot::plot_grid(gg_tp_re,
                    rel_widths = c(1, 0.9))
 ```
 
-```{r re-comparison}
+```{r re-comparison, fig.width=4}
 # tp, tn
 # ag, row_crop, pasture, corn, soybeans
 re_global <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
