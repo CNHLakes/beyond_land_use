@@ -100,7 +100,8 @@ gg_tp_fe <-
   theme(panel.background = element_rect(fill = "transparent", color = NA),
         plot.background = element_rect(fill = "transparent", color = NA), 
         panel.grid = element_blank(),
-        rect = element_rect(fill = "transparent")) + 
+        rect = element_rect(fill = "transparent"), 
+        plot.title = element_text(hjust = 0.5, face = "bold")) + 
     annotate(x=0, xend=0, y=-0.6, yend=0.4, 
              colour="black", lwd=0.9, geom="segment") 
 ```
@@ -121,6 +122,7 @@ gg_tp_re <- ggplot(data = fit_tp$re) +
   cowplot::theme_cowplot() +
   theme(rect = element_rect(fill = "transparent")) +
   ggtitle("TP ~ Ag slope") + xlab("Zone ID") + ylab("") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
   theme(legend.position = 0)
 
 gg_tp_re
@@ -183,7 +185,8 @@ gg_tn_fe <-
         ggtitle("TN") + xlab("") +
   theme(panel.background = element_rect(fill = "transparent"), 
         panel.grid = element_blank(),
-        rect = element_rect(fill = "transparent")) + 
+        rect = element_rect(fill = "transparent"), 
+        plot.title = element_text(hjust = 0.5, face = "bold")) + 
     annotate(x=0, xend=0, y=-0.6, yend=0.4, 
              colour="black", lwd=0.9, geom="segment")
 
@@ -239,6 +242,7 @@ gg_tn_re <- ggplot(data = fit_tn$re) +
   cowplot::theme_cowplot() +
   theme(rect = element_rect(fill = "transparent")) +
   ggtitle("TN ~ corn slope") + xlab("Zone ID") + ylab("") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
   theme(legend.position = 0)
 
 ```
@@ -357,8 +361,8 @@ re_global$term <- unlist(lapply(re_brms,
 re_global$response <- c(rep("tp", 5), rep("tn", 5))
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
 
-group_by(re_global, response) %>%
-  arrange(desc(`50%`))
+# group_by(re_global, response) %>%
+#   arrange(desc(`50%`))
 
 gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
     geom_pointrange(aes(x = term, y = `50%`, 
@@ -376,7 +380,8 @@ gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
         rect = element_rect(fill = "transparent"), 
         axis.line = element_line(), 
         axis.text.y = element_blank()) +
-  ggtitle("TN")
+  ggtitle("TN") + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
     geom_pointrange(aes(x = term, y = `50%`, 
@@ -393,9 +398,11 @@ gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
         panel.grid = element_blank(),
         rect = element_rect(fill = "transparent"), 
         axis.line = element_line()) +
-  ggtitle("TP")
+  ggtitle("TP") + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.8))
+
+cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.75))
 ```
 
 ```{r tn_interaction, eval=FALSE}
