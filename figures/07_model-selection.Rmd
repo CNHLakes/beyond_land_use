@@ -368,7 +368,7 @@ gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
     geom_pointrange(aes(x = term, y = `50%`, 
                       ymin = `5%`, ymax = `95%`), color = "red") +
   geom_hline(yintercept = 0, linetype = "dashed") +
-  expand_limits(y = -0.2) +
+  expand_limits(y = c(-0.2, 0.5)) +
   coord_flip() +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
@@ -387,7 +387,7 @@ gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
     geom_pointrange(aes(x = term, y = `50%`, 
                       ymin = `5%`, ymax = `95%`), color = "red") +
   geom_hline(yintercept = 0, linetype = "dashed") +
-  expand_limits(y = -0.2) +
+  expand_limits(y = c(-0.2, 0.5)) +
   coord_flip() +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
