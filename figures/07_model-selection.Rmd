@@ -130,7 +130,7 @@ gg_tp_re
 
 ```{r tn_fe, out.width="3.25in", out.height="4in"}
 # lapply(re_brms, function(x) x$formula) 
-fit_tn         <- re_brms[[9]] # 5 is best tn model with random effects
+fit_tn         <- re_brms[[11]] # 11 is best tn model with random effects
 signif_hu4_ids <- fit_tn$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
@@ -358,7 +358,7 @@ cowplot::plot_grid(gg_tp_re,
 re_global <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
 re_global$term <- unlist(lapply(re_brms, 
                                 function(x) get_re_text(as.character(x$formula)[1])))
-re_global$response <- c(rep("tp", 5), rep("tn", 5))
+re_global$response <- c(rep("tp", 6), rep("tn", 6))
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
 
 # group_by(re_global, response) %>%

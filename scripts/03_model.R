@@ -79,6 +79,14 @@ r2_fe <- dplyr::bind_rows(
                        phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
+  "tp_forest"       = bf(tp ~  
+                       maxdepth + iwslavratio +
+                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                       clayvpct + hu12vbaseflowvmean +
+                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       buffervcultivatedvcrops + buffervnatural +
+                       (1 + forest | hu4vzoneid)),
   "tp_rowcrop"       = bf(tp ~  
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -122,6 +130,14 @@ r2_fe <- dplyr::bind_rows(
                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
+  "tn_forest"      = bf(tn ~  maxdepth + iwslavratio +
+                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                      clayvpct + hu12vbaseflowvmean +
+                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      hu4vnitrogenvatmosphericvdeposition +
+                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      buffervcultivatedvcrops + buffervnatural +
+                      (1 + forest | hu4vzoneid)),
   "tn_rowcrop"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
