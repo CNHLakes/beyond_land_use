@@ -109,6 +109,8 @@ figures: manuscript/figures.pdf manuscript/appendix.pdf
 
 manuscript/appendix.pdf: manuscript/appendix.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
+	-mv manuscript/appendix2.pdf manuscript/appendix.pdf
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
 figures/11_map-1.pdf \

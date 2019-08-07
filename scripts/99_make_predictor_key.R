@@ -39,8 +39,7 @@ pred_key$varv <- gsub("_", "v", pred_key$var)
 
 pred_key <- dplyr::filter(pred_key, 
                           !(pretty %in% c("Lake area", "N-fixer", 
-                                                   "Non-ag")))
-
+                                          "Non-ag")))
 
 # View(pred_key)
 write.csv(pred_key, "data/predictor_key.csv", row.names = FALSE)

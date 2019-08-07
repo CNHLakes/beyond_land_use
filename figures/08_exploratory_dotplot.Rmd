@@ -115,11 +115,15 @@ prep_dotplot <- function(x, col_name){
 
 dt_tp <- prep_dotplot(dt_tp, "tp") %>%
   dplyr::filter(!str_detect(pretty, "^N ")) %>%
-  dplyr::filter(!str_detect(pretty, " N ")) 
+  dplyr::filter(!str_detect(pretty, " N ")) %>%
+  dplyr::filter(!(pretty %in% c("Stream-buffer Ag", 
+                                          "N input", "P input")))
 
 dt_tn <- prep_dotplot(dt_tn, "tn") %>%
   dplyr::filter(!str_detect(pretty, "^P ")) %>%
-  dplyr::filter(!str_detect(pretty, " P ")) 
+  dplyr::filter(!str_detect(pretty, " P ")) %>%
+  dplyr::filter(!(pretty %in% c("Stream-buffer Ag", 
+                                          "N input", "P input")))
 
 # head(prep_dotplot(dt_tp, "tp"))
 # show_col(brewer_pal("div", "Set1")(4))                   
@@ -152,7 +156,33 @@ plot_grid(gg_tp, NULL,
           label_y = c(1.05, 1.1, 1.05)), 
 ncol = 1, rel_heights = c(0.07, 1))
 
- 
+row_highlight <- function(x, gg){
+  # x <- "Fertilizer"
+  if(!(x %in% gg$data$pretty)){
+    x <- as.character(gg$data$pretty[grep(x, gg$data$pretty)])
+  }
+  
+  gg + 
+    scale_color_manual(values = rep("black", 5)) +
+    gghighlight(pretty == x, use_direct_label = FALSE)  
+}
+
+dotplot_panel <- function(x){
+  plot_grid(NULL, 
+plot_grid(row_highlight(x, gg_tp) + theme(legend.position = 0), NULL,
+          row_highlight(x, gg_tn), 
+          rel_widths = c(1, 0.2, 1), nrow = 1, 
+          labels = c("TP", "", "TN"), 
+          label_x = c(0.6, 0.5, 0.6), 
+          label_y = c(1.05, 1.1, 1.05)), 
+ncol = 1, rel_heights = c(0.07, 1))
+}
+
+dotplot_panel("Max depth")
+dotplot_panel("Baseflow")
+dotplot_panel("Corn")
+dotplot_panel("Fertilizer")
+dotplot_panel("Buffer Ag")
 ```
 
 \pagebreak
