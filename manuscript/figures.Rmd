@@ -12,30 +12,30 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 
 \pagebreak
 
-```{r maps2, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE}
+```{r maps2, fig.cap = "Map of lake locations and hydrologic (HUC) regions.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
-```{r exploratory_dotplot, fig.cap = "Exploratory dotplots showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE}
+```{r exploratory_dotplot, fig.cap = "Dotplots showing absolute value Pearson's correlation coefficients. Dots are colored according to predictor categories.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/dotplot-1.pdf")
 ```
 
-```{r fe-1, fig.cap = "Exploratory dotplots showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE}
+```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/fe-1.pdf")
 ```
 
-```{r re-comparison-1, fig.cap = "Exploratory dotplots showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE}
+```{r re-comparison-1, fig.cap = "Population level effect of watershed land use on lake TP and TN.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-comparison-1.pdf")
 ```
 
-```{r re-1, fig.cap = "Exploratory dotplots showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE}
+```{r re-1, fig.cap = "Hydrologic region level effect of watershed land use for the best performing model for TP and TN respectively. Values that do not overlap the population level median are shaded in red.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-1.pdf")
 ```
 
-```{r tn_re_hu4-1, fig.cap = "Exploratory dotplots showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE}
+```{r tn_re_hu4-1, fig.cap = "Map highlighting corn sensitive regions from the previous figure.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/tn_re_hu4-1.pdf")
 ```
 
-```{r tn_re_compare-1, fig.cap = "Exploratory dotplots showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE}
+```{r tn_re_compare-1, fig.cap = "Histograms showing the distribution of Clay and N deposition for the corn sensitive regions compared to all other regions. Medians for each group are shown as vertical dashed lines.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/tn_re_compare-1.pdf")
 ```
