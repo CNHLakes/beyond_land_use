@@ -18,6 +18,12 @@ knitr::read_chunk("../scripts/99_utils.R")
 source("../scripts/99_utils.R")
 ```
 
+\pagebreak
+
+```{r maps, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE, eval=TRUE}
+knitr::include_graphics("../figures/tptn_maps-1.pdf")
+```
+
 ```{r data_prep, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
 lg <- lagosne_load("1.087.1")
 focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
@@ -115,8 +121,28 @@ test <- readRDS("../data/dt.rds") %>%
 # 
 ```
 
-```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE, eval=FALSE}
+```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
+```
+
+```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD (2011) derived and CDL (2010) derived total watershed ag and watershed pasture cover. Line is 1:1 not regression.", warning=FALSE, echo = FALSE, eval=TRUE}
+knitr::include_graphics("../figures/04_nlcd-versus-cdl-1.pdf")
+```
+
+```{r nlcd-versus-cdl_map, fig.cap = "Comparison between NLCD (2011) ag and pasture against CDL (2010) specific crops.", warning=FALSE, echo = FALSE, eval = TRUE}
+knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
+```
+
+```{r lulc_vs_iws-lulc, fig.cap = "Stream buffer versus IWS lulc.", warning=FALSE, echo = FALSE, eval=FALSE}
+knitr::include_graphics("../figures/09_stream_buffer-1.pdf")
+```
+
+```{r big_stream_ag, fig.cap = "Stream buffer Ag compared to IWS Ag.", warning=FALSE, echo = FALSE, eval=TRUE}
+knitr::include_graphics("../figures/satellite-1.pdf")
+```
+
+```{r cdl_viewport, fig.cap = "CDL landuse cover in example IWS.", warning=FALSE, echo = FALSE, eval=FALSE}
+knitr::include_graphics("../figures/cdl_viewport-1.pdf")
 ```
 
 ```{r hierarchical_demo, fig.cap = "A) Global (dashed line) and regional (solid lines) fits to the relationship between lake phosphorus and IWS Ag. land use cover from the 2011 NLCD. A hierarchical model would weight these relationships by sample size (darker lines = higher sample size). B) Number of lakes per region.", warning=FALSE, echo = FALSE, eval=FALSE}
@@ -135,30 +161,6 @@ knitr::include_graphics("../figures/05_cafos-1.pdf")
 knitr::include_graphics("../figures/06_lulc_buffer_demo-1.pdf")
 ```
 
-```{r cdl_viewport, fig.cap = "CDL landuse cover in example IWS.", warning=FALSE, echo = FALSE, eval=TRUE}
-knitr::include_graphics("../figures/cdl_viewport-1.pdf")
-```
-
 ```{r county_extent, fig.cap = "Number of lake watersheds per county where lakes are limited to those with high agricultural land-use cover (greater than 40 percent) and water quality data in LAGOS from at least 3 sampling events between 2000 and 2010.", warning=FALSE, echo = FALSE, eval = FALSE}
 knitr::include_graphics("../figures/01_county_extent-1.pdf")
-```
-
-```{r maps, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE, eval=FALSE}
-knitr::include_graphics("../figures/tptn_maps-1.pdf")
-```
-
-```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD (2011) derived and CDL (2010) derived total watershed ag and watershed pasture cover. Line is 1:1 not regression.", warning=FALSE, echo = FALSE, eval=FALSE}
-knitr::include_graphics("../figures/04_nlcd-versus-cdl-1.pdf")
-```
-
-```{r nlcd-versus-cdl_map, fig.cap = "Comparison between NLCD (2011) ag and pasture against CDL (2010) specific crops.", warning=FALSE, echo = FALSE, eval = FALSE}
-knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
-```
-
-```{r lulc_vs_iws-lulc, fig.cap = "Stream buffer versus IWS lulc.", warning=FALSE, echo = FALSE, eval=FALSE}
-knitr::include_graphics("../figures/09_stream_buffer-1.pdf")
-```
-
-```{r big_stream_ag, fig.cap = "Stream buffer Ag compared to IWS Ag.", warning=FALSE, echo = FALSE, eval=FALSE}
-knitr::include_graphics("../figures/satellite-1.pdf")
 ```
