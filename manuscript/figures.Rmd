@@ -20,7 +20,7 @@ knitr::include_graphics("../figures/11_map-1.pdf")
 knitr::include_graphics("../figures/dotplot-1.pdf")
 ```
 
-```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories.", warning=FALSE, echo = FALSE}
+```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/fe-1.pdf")
 ```
 
