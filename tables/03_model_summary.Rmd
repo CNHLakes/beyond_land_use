@@ -7,40 +7,37 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 6)
-# setwd("../")
-source("scripts/99_utils.R")
+# setwd("tables")
+source("../scripts/99_utils.R")
 ```
 
 ```{r summary_table, eval=TRUE}
-library(kableExtra)
-library(dplyr)
-library(magrittr)
-library(stringr)
-
 # setwd("tables")
-re_brms <- readRDS("data/mcmc/re_brms.rds")
+re_brms <- readRDS("../data/mcmc/re_brms.rds")
 
 r2_re <- dplyr::bind_rows(
   lapply(re_brms, function(x) data.frame(brms::bayes_R2(x))))
 r2_re$term <- unlist(lapply(re_brms, 
                                 function(x) get_re_text(as.character(x$formula)[1])))
-r2_re$response <- c(rep("tp", 5), rep("tn", 5))
+r2_re$response <- c(rep("tp", nrow(r2_re) / 2), rep("tn", nrow(r2_re) / 2))
 r2_re <- dplyr::filter(r2_re, term != "rowvcropvpct")
 
 sort_loo <- function(x){
   x_df       <- as.data.frame(x)
   x_df$index <- row.names(x_df)
-  x_df$index <- stringr::str_extract(x_df$index, "\\d+")
+  x_df$index <- as.numeric(stringr::str_extract(x_df$index, "\\d+"))
   arrange(x_df, index)
 }
 
 loo_re <- rbind(
   sort_loo(loo_compare(loo(re_brms[[1]]),
                        loo(re_brms[[3]]), loo(re_brms[[4]]),
-                       loo(re_brms[[5]]))),
-  sort_loo(loo_compare(loo(re_brms[[6]]),
-                       loo(re_brms[[8]]), loo(re_brms[[9]]),
-                       loo(re_brms[[10]])))
+                       loo(re_brms[[5]]), 
+                       loo(re_brms[[6]]))),
+  sort_loo(loo_compare(loo(re_brms[[7]]),
+                       loo(re_brms[[9]]), loo(re_brms[[10]]),
+                       loo(re_brms[[11]]), 
+                       loo(re_brms[[12]])))
   ) %>%
   arrange(index)
 
@@ -48,17 +45,18 @@ dt           <- r2_re
 dt$elpd_diff <- loo_re$elpd_diff
 dt <- dplyr::select(dt, 
                     response, term, r2 = Estimate, elpd_diff)
-dt <- dt[order(dt$response, dt$elpd_diff, decreasing = FALSE),]
+dt <- dt[order(dt$response, dt$elpd_diff, decreasing = c(TRUE, FALSE)),]
 
 options(knitr.kable.NA = "-")  
-dplyr::filter(dt, str_detect(response, "tp")) %>%
-  dplyr::select(-response) %>%
+dt %>%
+  # dplyr::filter(str_detect(response, "tp")) %>%
+  # dplyr::select(-response) %>%
   dplyr::rename("$R^2$" = r2) %>%
   knitr::kable(digits = 2, format = "markdown", caption = "TP Model R2")
 ```
 
 \pagebreak
-```{r tn_results}
+```{r tn_results, eval=FALSE}
 dplyr::filter(dt, str_detect(response, "tn")) %>%
   dplyr::select(-response) %>%
   dplyr::rename("$R^2$" = r2) %>%

@@ -159,7 +159,7 @@ figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
 
 tables: manuscript/tables.pdf
 
-manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf
+manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf tables/03_model_summary.pdf
 	# tables/03_model_summary.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
