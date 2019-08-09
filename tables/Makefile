@@ -5,6 +5,9 @@ png:
 	-rm *~
 	echo done
 	
+pnglatest:
+	mogrifylatest
+	
 tiff:
 	-mogrify -density 300 -format tiff -resize 2500x2500\> *.pdf
 	-rm *~

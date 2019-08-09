@@ -157,7 +157,8 @@ figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt
 figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
-tables: manuscript/tables.pdf
+tables: manuscript/tables.pdf manuscript/appendix.pdf
+	cd tables && make pnglatest
 
 manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf tables/03_model_summary.pdf
 	# tables/03_model_summary.pdf
