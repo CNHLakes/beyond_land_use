@@ -143,7 +143,7 @@ usgs <- usgs %>%
 
 saveRDS(usgs, "data/usgs/usgs.rds")
 # usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
-# usgs <- readRDS("data/usgs/usgs.rds")
+# usgs     <- readRDS("data/usgs/usgs.rds")
 
 # ---- viz ----
 # res <- readRDS("data/usgs/usgs.rds")
