@@ -77,6 +77,10 @@ pretty_names <- pretty_names[!is.na(pretty_names)]
 row.names(dt_tp_hmap)[which(!is.na(match(row.names(dt_tp_hmap), pred_key$var)))] <- 
   pretty_names
 
+# rm tp and tn
+dt_tp_hmap <- dplyr::select(dt_tp_hmap, -tp, -tn)
+dt_tp_hmap <- dt_tp_hmap[-!(row.names(dt_tp_hmap) %in% c("tp", "tn")),]
+
 pheatmap::pheatmap(
   t(dt_tp_hmap),
   color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
