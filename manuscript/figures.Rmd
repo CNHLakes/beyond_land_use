@@ -16,10 +16,6 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
-```{r exploratory_dotplot, fig.cap = "Dotplots showing absolute value Pearson's correlation coefficients. Dots are colored according to predictor categories.", warning=FALSE, echo = FALSE}
-knitr::include_graphics("../figures/dotplot-1.pdf")
-```
-
 ```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/fe-1.pdf")
 ```

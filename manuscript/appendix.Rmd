@@ -121,6 +121,10 @@ test <- readRDS("../data/dt.rds") %>%
 # 
 ```
 
+```{r exploratory_dotplot, fig.cap = "Dotplots showing absolute value Pearson's correlation coefficients. Dots are colored according to predictor categories.", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/dotplot-1.pdf")
+```
+
 ```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
