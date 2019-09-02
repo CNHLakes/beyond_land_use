@@ -33,3 +33,5 @@ figures/*.log
 figures/rosm.cache/
 Rplots.pdf
 manuscript/appendix.tex
+reilly.R
+data/mapbox
