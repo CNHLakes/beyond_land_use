@@ -3,7 +3,7 @@ suppressMessages(library(dplyr))
 pred_key <- data.frame(var = c(
   "nitrogen_atmospheric_deposition","maxdepth","iwsla_ratio",
   "hu12_baseflow_mean","hu12_ppt_mean",
-  "stream_cultivated_crops","wetlands","ag", "forest",
+  "stream_cultivated_crops","wetlands","ag", "forest", "rowvcropvpct",
   "buffer_cultivated_crops", "buffer_natural",
   "nonag", "nfixer", "clay_pct","lake_area_ha", 
   "wetland_potential", "corn","nitrogen_livestock_manure", 
@@ -14,7 +14,7 @@ pred_key <- data.frame(var = c(
                       pretty = c(
     "N deposition", "Max depth", "Watershed-lake ratio", 
     "Baseflow", "Precipitation", 
-    "Stream-buffer Ag", "Wetlands", "Ag", "Forest",
+    "Stream-buffer Ag", "Wetlands", "Ag", "Forest", "Row-crop",
     "Buffer Ag", "Buffer natural",
     "Non-ag", "N-fixer", "Clay", "Lake area",
     "Wetland potential", "Corn", "Manure N input", 
@@ -25,7 +25,7 @@ pred_key <- data.frame(var = c(
                       category = c(
   "Nutrient inputs", "Lake", "Lake", 
   "Nutrient transport", "Nutrient transport", 
-  "Buffer configuration","Land-use cover","Land-use cover", "Land-use cover",
+  "Buffer configuration","Land-use cover","Land-use cover", "Land-use cover", "Land-use cover",
   "Buffer configuration", "Buffer configuration",
   "Land-use cover", "Land-use cover", "Nutrient transport","Lake",
   "Nutrient transport", "Land-use cover","Nutrient inputs", 
