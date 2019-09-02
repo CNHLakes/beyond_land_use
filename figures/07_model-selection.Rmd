@@ -37,9 +37,25 @@ re_brms        <- readRDS("../data/mcmc/re_brms.rds")
 pred_key       <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
 ```
 
+```{r re_global}
+# tp, tn
+# ag, row_crop, pasture, corn, soybeans
+re_global          <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
+re_global$term     <- unlist(lapply(re_brms, 
+                                function(x) get_re_text(as.character(x$formula)[1])))
+re_global$response <- c(rep("tp", 6), rep("tn", 6))
+re_global          <- left_join(re_global, pred_key, by = c("term" = "var")) %>%
+  dplyr::select(pretty, `5%`:`95%`, term, response)
+# re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
+# group_by(re_global, response) %>%
+#   arrange(desc(`50%`))
+```
+
 ```{r tp_fe, out.width="3.25in", out.height="4in"}
-# lapply(re_brms, function(x) x$formula) 
-fit_tp   <- re_brms[[1]] # 1 is best tp model with random effects
+# lapply(re_brms, function(x) x $formula) 
+# re_brms[[6]]$formula
+best_tp        <- 6 # 6 is best tp model with random effects
+fit_tp         <- re_brms[[best_tp]] 
 signif_hu4_ids <- fit_tp$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
@@ -59,13 +75,15 @@ gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
   summarize(value = list(tibble::enframe(
     quantile(value, probs=c(0.05,0.5,0.95))))) %>% unnest() %>%
   tidyr::spread(name, value) %>%
+  dplyr::bind_rows(
+    dplyr::select(re_global[best_tp,], -term, -response)) %>%
   rowwise() %>%
   mutate(signif = (`5%` > 0 & `95%` > 0)| (`5%` < 0 & `95%` < 0)) %>%
   left_join(dplyr::select(pred_key, pretty, category)) %>%
   mutate(category = factor(category, 
                            levels = rev(c("Nutrient inputs", "Nutrient transport", 
-                                      "Land-use cover", "Buffer configuration", 
-                                      "Lake")))) %>%
+                                      "Buffer configuration", "Lake", 
+                                      "Land-use cover")))) %>%
   mutate(category = forcats::fct_recode(category, 
                                         Buffer = "Buffer configuration")) %>%
   arrange(category) %>%
@@ -130,7 +148,9 @@ gg_tp_re
 
 ```{r tn_fe, out.width="3.25in", out.height="4in"}
 # lapply(re_brms, function(x) x$formula) 
-fit_tn         <- re_brms[[11]] # 11 is best tn model with random effects
+# re_brms[[11]]$formula
+best_tn        <- 11 # 11 is best tn model with random effects
+fit_tn         <- re_brms[[best_tn]] 
 signif_hu4_ids <- fit_tn$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
 
@@ -145,13 +165,15 @@ gg_tn <- spread_draws(fit_tn, `b_.*`, regex = TRUE) %>%
   summarize(value = list(tibble::enframe(
     quantile(value, probs=c(0.05,0.5,0.95))))) %>% unnest() %>%
   tidyr::spread(name, value) %>%
+  dplyr::bind_rows(
+    dplyr::select(re_global[best_tn,], -term, -response)) %>%
   rowwise() %>%
   mutate(signif = (`5%` > 0 & `95%` > 0)| (`5%` < 0 & `95%` < 0)) %>%
   left_join(dplyr::select(pred_key, pretty, category)) %>%
   mutate(category = factor(category, 
                            levels = rev(c("Nutrient inputs", "Nutrient transport", 
-                                      "Land-use cover", "Buffer configuration", 
-                                      "Lake")))) %>%
+                                      "Buffer configuration", "Lake", 
+                                      "Land-use cover")))) %>%
   mutate(category = forcats::fct_recode(category, 
                                         Buffer = "Buffer configuration")) %>%
   arrange(category) %>%
@@ -353,17 +375,7 @@ cowplot::plot_grid(gg_tp_re,
 ```
 
 ```{r re-comparison, fig.width=4}
-# tp, tn
-# ag, row_crop, pasture, corn, soybeans
-re_global <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
-re_global$term <- unlist(lapply(re_brms, 
-                                function(x) get_re_text(as.character(x$formula)[1])))
-re_global$response <- c(rep("tp", 6), rep("tn", 6))
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
-
-# group_by(re_global, response) %>%
-#   arrange(desc(`50%`))
-
 gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
     geom_pointrange(aes(x = term, y = `50%`, 
                       ymin = `5%`, ymax = `95%`), color = "red") +
