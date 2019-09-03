@@ -4,8 +4,11 @@ output:
   pdf_document:
     fig_caption: yes
     keep_tex: yes
+header-includes: 
+- \usepackage{colortbl}
 ---
 
+\arrayrulecolor{white}
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.height = 6, dev = c("pdf"))
 ```
@@ -16,12 +19,16 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
-```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
-knitr::include_graphics("../figures/fe-1.pdf")
-```
-
 ```{r re-comparison-1, fig.cap = "Population level effect of watershed land use on lake TP and TN.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-comparison-1.pdf")
+```
+
+```{r 03_model_summary, results='asis', warning=FALSE, echo = FALSE}
+knitr::kable('\\includegraphics{"../tables/03_model_summary"}', col.names = NULL, caption = "Model selection diagnostics")
+```
+
+```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
+knitr::include_graphics("../figures/fe-1.pdf")
 ```
 
 ```{r re-1, fig.cap = "Hydrologic region level effect of watershed land use for the best performing model for TP and TN respectively. Values that do not overlap the population level median are shaded in red.", warning=FALSE, echo = FALSE}
