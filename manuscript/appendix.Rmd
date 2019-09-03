@@ -3,6 +3,9 @@ title: "Appendix"
 output:
   pdf_document:
     fig_caption: yes
+header-includes: 
+- \usepackage{float}
+- \floatplacement{figure}{H}
 ---
 
 ```{r setup, include=FALSE}
@@ -20,9 +23,17 @@ source("../scripts/99_utils.R")
 
 \pagebreak
 
+## Response variable maps
+
+Some obvious data availability differences in New York and Wisconsin. Wisconsin has quite a bit fewer TN measurements.
+
 ```{r maps, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/tptn_maps-1.pdf")
 ```
+
+## Trophic state
+
+Over 50 percent of our study lakes were eutrophic to hypereutrophic.
 
 ```{r data_prep, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
 lg <- lagosne_load("1.087.1")
@@ -121,28 +132,57 @@ test <- readRDS("../data/dt.rds") %>%
 # 
 ```
 
+\pagebreak
+
+## Bivariate relationships among predictors and lake nutrients
+
+We examined bivariate relationships between lake nutrient concentrations and predictors to determine, at least to first-approximation, the likely drivers of lake nutrients (Figure 2). 
+We found large differences between the drivers of lake phosphorus and lake nitrogen concentrations. 
+For example, max depth and baseflow had a much larger effect on P than N. Pearson’s correlation coefficients for these relationships were XX and YY respectively. 
+In contrast, watershed land-use corn cover, fertilizer inputs, and riparian buffer configuration appear to have a larger effect on N than P Pearson’s correlation coefficients for these relationships were XX, YY, and ZZ respectively. 
+
 ```{r exploratory_dotplot, fig.cap = "Dotplots showing absolute value Pearson's correlation coefficients. Dots are colored according to predictor categories.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/dotplot-1.pdf")
 ```
+
+\pagebreak
+
+## Correlations among predictor variables
+
+There is clearly a cluster of related predictor variables that includes most nutrient input, Ag land-use, and buffer configuration measures.
 
 ```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
-```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD (2011) derived and CDL (2010) derived total watershed ag and watershed pasture cover. Line is 1:1 not regression.", warning=FALSE, echo = FALSE, eval=TRUE}
+\pagebreak
+
+## The Cropland Data Layer
+
+The National land cover database (NLCD) is more typically used in macroecology studies. In our paper, we wanted to go beyond the coarse categories in the NLCD and test relationships with individual crops. The Cropland Data Layer (CDL) is a product that allowed us to do this. Because the CDL is more granular that the NLCD we could not directly compare them. Instead, we aggregated all the CDL categories associated with agriculture (also pasture) and compared these values for each watershed with the corresponding NLCD estimates.
+
+```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD (2011) derived and CDL (2010) derived total watershed ag and watershed pasture cover. Line is 1:1 not a  regression best fit.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/04_nlcd-versus-cdl-1.pdf")
 ```
 
-```{r nlcd-versus-cdl_map, fig.cap = "Comparison between NLCD (2011) ag and pasture against CDL (2010) specific crops.", warning=FALSE, echo = FALSE, eval = TRUE}
+```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops.", warning=FALSE, echo = FALSE, eval = TRUE}
 knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
 ```
 
-```{r lulc_vs_iws-lulc, fig.cap = "Stream buffer versus IWS lulc.", warning=FALSE, echo = FALSE, eval=FALSE}
-knitr::include_graphics("../figures/09_stream_buffer-1.pdf")
+\pagebreak
+
+## Demo of watersheds and buffer configuration
+
+Here are two lakes each with the same percent Ag in their watersheds (red outlines). However, the lake on the left (Lake Carleton) has a riparian buffer (teal outlines) with a much higher percentage of Ag relative to the lake on the right (Argyle Lake).
+
+```{r big_stream_ag, fig.cap = "Stream buffer Ag compared to IWS Ag.", warning=FALSE, echo = FALSE, eval = TRUE}
+knitr::include_graphics("../figures/satellite-1.pdf")
 ```
 
-```{r big_stream_ag, fig.cap = "Stream buffer Ag compared to IWS Ag.", warning=FALSE, echo = FALSE, eval=TRUE}
-knitr::include_graphics("../figures/satellite-1.pdf")
+\pagebreak
+
+```{r lulc_vs_iws-lulc, fig.cap = "Stream buffer versus IWS lulc.", warning=FALSE, echo = FALSE, eval=FALSE}
+knitr::include_graphics("../figures/09_stream_buffer-1.pdf")
 ```
 
 ```{r cdl_viewport, fig.cap = "CDL landuse cover in example IWS.", warning=FALSE, echo = FALSE, eval=FALSE}
