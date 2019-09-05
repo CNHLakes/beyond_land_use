@@ -52,7 +52,8 @@ dt %>%
   # dplyr::filter(str_detect(response, "tp")) %>%
   # dplyr::select(-response) %>%
   dplyr::rename("$R^2$" = r2) %>%
-  knitr::kable(digits = 2, format = "markdown", caption = "TP Model R2")
+  knitr::kable(digits = 2, format = "markdown", caption = "TP Model R2", 
+               row.names = FALSE)
 ```
 
 \pagebreak
