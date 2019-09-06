@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 Code and data for:
 
-## The effect of crop type, fertilizer, and manure applications on lake nutrients in agriculture watersheds at regional scales
+## Beyond land-use cover: relationships between agriculture and lake nutrient concentrations at macroscales
 
 > Journal Target: Ecosystems
 
@@ -24,108 +24,6 @@ Code and data for:
 
 Figures: [manuscript/figures.pdf](manuscript/figures.pdf)
 
+Appendix: [manuscript/appendix.pdf](manuscript/figures.pdf)
+
 Tables: [manuscript/tables.pdf](manuscript/tables.pdf)
-
-## Potential predictor variables
-
-<details><summary><b>Crop Types</b> (`CDL`) </summary><p>
-
-* [x] IWS pasture types (forage or not)
-* [x] IWS specific crops (corn, wheat, etc.)
-* [ ] ~IWS crop frequency/rotation~ -AK says this is probably not needed
-</p></details>
-
-<details><summary>Soil types (`gSSURGO`) </summary><p>
-
-* [x] IWS wetland potential (as a proxy for tile drainage)
-* [x] IWS soil organic carbon
-* [ ] IWS bulk density - needed to compute soil carbon mass
-* [ ] IWS rock content - needed to compute soil carbon mass
-* [ ] IWS root zone depth
-* [ ] IWS lithology (sand %, clay %, etc.)
-</p></details>
-
-<details><summary><b>Fertilizer and manure application data</b> (`USGS`) </summary><p>
-
-* [x] IWS from county - manure, fertilizer, and deposition of N,P
-</p></details>
-
-<details><summary>Land use cover (`LAGOSNE`) </summary><p>
-
-* [ ] Lake buffer LULC
-* [x] IWS LULC 
-</p></details>
-
-<details><summary><b>Lake Characteristics and WQ</b> (`LAGOSNE`) </summary><p>
-
-* [x] Lake depth
-* [x] IWS area
-* [x] IWS/Lake area
-* [x] TP, TN, NO3
-* [ ] IWS precip variability
-  * the area of a given crop in year n-1 matters. Usually, dry years leave nutrients on the ground, and when followed up by a wet year you get the largest signal in year n.
-</p></details>
-
-<details><summary>Animal data</b> (`USDA Census`) </summary><p>
-
-* [ ] Animal units
-</p></details>
-
-## Research questions
-
-## Timeline
-
-## Issues
-
-* Availability of data products through time is highly variable. How to align or decide to treat properties as constant?
-
-```{r echo=FALSE}
-cdl_key <- read.csv("data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
-```
-
-```{r lagos_v_cdl_v_usgs, echo=FALSE, eval=FALSE}
-# tp vs lagos ag, cdl ag, usgs P inputs
-
-# ---- setup ----
-
-library(dplyr)
-library(ggplot2)
-library(magrittr)
-library(LAGOSNE)
-library(cowplot)
-library(sf)
-
-lg          <- lagosne_load("1.087.1")
-ep          <- readRDS("data/ep.rds")
-cdl_summary <- read.csv("data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
-usgs        <- readRDS("data/usgs/usgs.rds")
-
-lg_ep <- mutate(lg$iws.lulc, 
-                lg_ag = rowSums(cbind(iws_nlcd2006_pct_81, 
-                                      iws_nlcd2006_pct_82), na.rm = TRUE)) %>%
-  select(lagoslakeid, lg_ag) %>%
-  left_join(ep, by = "lagoslakeid") %>%
-  filter(!is.na(tp))
-
-cdl_ep <- filter(cdl_summary, variable == "ag") %>%
-  left_join(
-    filter(ep, !is.na(tp)), by = c("llid" = "lagoslakeid")) %>%
-  mutate(cdl_ag = value)
-
-usgs_ep <- filter(usgs, !is.na(tp))
-
-# ---- plotting ----
-  
-plot_grid(
-ggplot() +
-  geom_point(data = lg_ep, aes(x = lg_ag, y = tp)) +
-  xlab("LAGOS (NLCD 2006) Ag (%)"),
-ggplot() +
-  geom_point(data = cdl_ep, aes(x = cdl_ag, y = tp)) +
-  xlab("CDL Ag (%)"),
-ggplot() + 
-  geom_point(data = usgs_ep, aes(x = phosphorus_input, y = tp)) + 
-  scale_x_log10() + 
-  xlab("log(P Input)"))
-
-```
