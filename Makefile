@@ -1,9 +1,9 @@
 RAWLLIDS := data/llids.txt
 VARLLIDS := $(shell cat ${RAWLLIDS})
 
-.PHONY: data all
+.PHONY: data all figures
 
-all: data figures tables data/dt.rds
+all: data tables data/dt.rds
 
 data: data/ep.rds \
 data/usgs/usgs.rds \
@@ -104,7 +104,16 @@ data/mcmc/re_brms.rds: scripts/03_model.R
 data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds
 	Rscript $<
 
-figures: manuscript/figures.pdf manuscript/appendix.pdf
+manuscript/figures.pdf: manuscript/figures.Rmd \
+figures/11_map-1.pdf \
+figures/re-comparison-1.pdf \
+figures/fe-1.pdf \
+figures/re-1.pdf \
+figures/tn_re_hu4-1.pdf \
+figures/tn_re_compare-1.pdf
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
+	-mv manuscript/figures2.pdf manuscript/figures.pdf
 	cd figures && make pnglatest
 
 manuscript/appendix.pdf: manuscript/appendix.Rmd manuscript/figures.pdf
@@ -112,23 +121,29 @@ manuscript/appendix.pdf: manuscript/appendix.Rmd manuscript/figures.pdf
 	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
 	-mv manuscript/appendix2.pdf manuscript/appendix.pdf
 
-manuscript/figures.pdf: manuscript/figures.Rmd \
-figures/11_map-1.pdf \
-figures/01_county_extent-1.pdf \
-figures/02_hierarchical_demo-1.pdf \
-figures/03_wetland_potential-1.pdf \
-figures/04_nlcd-versus-cdl-1.pdf \
-figures/05_cafos-1.pdf \
-figures/06_lulc_buffer_demo-1.pdf \
-figures/08_exploratory_dotplot-1.pdf \
-figures/09_stream_buffer-1.pdf \
-figures/re-1.pdf
-	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
-	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
-	-mv manuscript/figures2.pdf manuscript/figures.pdf
-
 figures/11_map-1.pdf: figures/11_map.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
+
+figures/re-comparison-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
+
+figures/re-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
+	
+figures/fe-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
+
+figures/tn_re_hu4-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
+	
+figres/tn_re_compare-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
 	
 figures/01_county_extent-1.pdf: figures/01_county_extent.Rmd scripts/explore_lagos_ag.R
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
@@ -146,9 +161,6 @@ figures/05_cafos-1.pdf: figures/05_cafos.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 figures/06_lulc_buffer_demo-1.pdf: figures/06_lulc_buffer_demo.Rmd
-	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
-
-figures/re-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt.rds data/predictor_key.csv
