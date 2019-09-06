@@ -3,7 +3,7 @@ VARLLIDS := $(shell cat ${RAWLLIDS})
 
 .PHONY: data all figures
 
-all: data tables data/dt.rds
+all: data tables manuscript/figures.pdf data/dt.rds
 
 data: data/ep.rds \
 data/usgs/usgs.rds \
@@ -106,6 +106,7 @@ data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
 figures/11_map-1.pdf \
+tables/03_model_summary.pdf \
 figures/re-comparison-1.pdf \
 figures/fe-1.pdf \
 figures/re-1.pdf \
@@ -116,7 +117,13 @@ figures/tn_re_compare-1.pdf
 	-mv manuscript/figures2.pdf manuscript/figures.pdf
 	cd figures && make pnglatest
 
-manuscript/appendix.pdf: manuscript/appendix.Rmd manuscript/figures.pdf
+manuscript/appendix.pdf: manuscript/appendix.Rmd \
+figures/tptn_maps-1.pdf \
+figures/dotplot-1.pdf \
+figures/08_exploratory_dotplot-1.pdf \
+figures/04_nlcd-versus-cdl-1.pdf \
+figures/cdl_vs_nlcd-1.pdf \
+figures/satellite-1.pdf 
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
 	-mv manuscript/appendix2.pdf manuscript/appendix.pdf
@@ -172,7 +179,9 @@ figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
 tables: manuscript/tables.pdf manuscript/appendix.pdf
 	cd tables && make pnglatest
 
-manuscript/tables.pdf: tables/01_predictors.pdf tables/02_cdl_key.pdf tables/03_model_summary.pdf
+manuscript/tables.pdf: tables/01_predictors.pdf \
+tables/02_cdl_key.pdf \
+tables/03_model_summary.pdf
 	# tables/03_model_summary.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
@@ -184,3 +193,4 @@ tables/02_cdl_key.pdf: tables/02_cdl_key.Rmd
 	
 tables/03_model_summary.pdf: tables/03_model_summary.Rmd data/mcmc/model_r2.csv
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
