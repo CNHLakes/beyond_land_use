@@ -27,6 +27,7 @@ hu4    <- mutate(hu4,
                 round(classInt::classIntervals(hu4$n, n = n_cat,
                                                style = "kmeans")$brks, 0)
                 ))
+
 hu4 <- dplyr::filter(hu4, !is.na(n_cat))
 hu4 <- dplyr::left_join(hu4, 
                         distinct(dplyr::select(dt, contains("hu4_")), 
@@ -239,6 +240,7 @@ equalize_panels <- function(x){
 ```{r tn_re_hu4, fig.width = 3.77, fig.height = 4.5}
 study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)
 states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
+hu4_all       <- st_read("../data/gis.gpkg", "hu4s_focal", quiet = TRUE)
 
 # map significant random effects hu4s
 gg_hu4 <- 
@@ -246,7 +248,7 @@ gg_hu4 <-
     geom_sf(data = study_bbox, alpha = 1, size = 0.6, 
               color = "black", fill = "#1D9DCF") +
     geom_sf(data = states_all, fill = "gray", color = "black", size = 0.3) +
-    geom_sf(data = hu4, fill = "white", color = "black", size = 0.4) +
+    geom_sf(data = hu4_all, fill = "white", color = "black", size = 0.4) +
     geom_sf(data = signif_hu4, color = "red", alpha = 0) +
     # geom_text(data = coords, aes(x = x, y = y, label = ZoneID)) +   
     coord_sf(datum = NA) +
@@ -284,6 +286,7 @@ gg_tn_re <- ggplot(data = fit_tn$re) +
 
 ```{r fe}
 cowplot::plot_grid(
+cowplot::plot_grid(
   equalize_panels(
     gg_tp_fe + theme(axis.title.x = element_blank())
   ), 
@@ -291,7 +294,14 @@ cowplot::plot_grid(
     gg_tn_fe + 
       theme(axis.text.y = element_blank(), 
             axis.title.x = element_blank())), 
-  rel_widths = c(1, 1))
+  rel_widths = c(1, 0.95)), 
+ggplot(data.frame(x = 1, y = 1, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
+  geom_text(aes(x = x, y = y, label = label)) +
+  theme_void(),
+ncol = 1, rel_heights = c(1, 0.05))
+
+
+
 ```
 
 ```{r tn_re_compare, fig.height=3, fig.width=4}
@@ -777,6 +787,7 @@ ggplot(data = all_dist) +
   geom_hline(yintercept = 0) +
   coord_flip()
 
+# STOP
 hu4_signif <-  LAGOSNEgis::query_gis(
   "HU4", "ZoneID", dplyr::filter(hu4_dist, signif)$hu4vzoneid) %>% 
   st_cast(to = "MULTIPOLYGON")
