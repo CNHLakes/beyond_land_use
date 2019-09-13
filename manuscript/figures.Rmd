@@ -15,11 +15,11 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 
 \pagebreak
 
-```{r maps2, fig.cap = "Map of lake locations and hydrologic (HUC) regions.", warning=FALSE, echo = FALSE}
+```{r maps2, fig.cap = "A) Map of lake locations and B) hydrologic (HUC) regions.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
-```{r re-comparison-1, fig.cap = "Population level effect of watershed land use on lake TP and TN. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE}
+```{r re-comparison-1, fig.cap = "Population level effect of watershed land-use cover on lake TP and TN. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-comparison-1.pdf")
 ```
 
@@ -27,15 +27,15 @@ knitr::include_graphics("../figures/re-comparison-1.pdf")
 knitr::kable('\\includegraphics[width=5in]{"../tables/03_model_summary"}', col.names = NULL, caption = "Diagnostics for each model listed by regionally varying coefficient. Table is sorted by decreasing R2 and expected log predictive density.")
 ```
 
-```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
+```{r fe-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/fe-1.pdf")
 ```
 
-```{r re-1, fig.cap = "Regionally varying effect of watershed land-use cover on A) TP and B) TN. Lines shown are 95% credible intervals with median marked by a filled circle. Values that do not overlap the population level estimate are shaded in red.", warning=FALSE, echo = FALSE}
+```{r re-1, fig.cap = "Regionally varying effect of watershed land-use cover for best-fit lake TP and TN models. Lines shown are 95% credible intervals with median marked by a filled circle. Values that do not overlap the population level estimate are shaded in red.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-1.pdf")
 ```
 
-```{r tn_re_hu4-1, fig.cap = "Location of hydrologic regions sensitive to watershed land-use cover corresponds to highlighted credible intervals in Figure 4.", warning=FALSE, echo = FALSE}
+```{r tn_re_hu4-1, fig.cap = "Location of hydrologic regions sensitive to watershed land-use cover corresponding to highlighted credible intervals in Figure 4.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/tn_re_hu4-1.pdf")
 ```
 
