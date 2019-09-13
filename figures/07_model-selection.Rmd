@@ -295,7 +295,7 @@ cowplot::plot_grid(
       theme(axis.text.y = element_blank(), 
             axis.title.x = element_blank())), 
   rel_widths = c(1, 0.95)), 
-ggplot(data.frame(x = 1, y = 1, label = "Standardized slopes", stringsAsFactors = FALSE)) + 
+ggplot(data.frame(x = 1, y = 1, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
   geom_text(aes(x = x, y = y, label = label)) +
   theme_void(),
 ncol = 1, rel_heights = c(1, 0.05))
@@ -397,7 +397,7 @@ ggplot(data.frame(x = 0, y = 0, label = "Standardized coefficients", stringsAsFa
   geom_text(aes(x = x, y = y, label = label), size = 5) +
   theme_void() + 
   theme(plot.margin = unit(c(0,0,0,0), "cm")),
-ncol = 1, rel_heights = c(1, 0.03))
+ncol = 1, rel_heights = c(1, 0.05))
 
 cowplot::plot_grid(gg_tp_re, 
                    gg_tn_re + 
@@ -446,8 +446,12 @@ gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
   ggtitle("TP") + 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-
-cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.75))
+cowplot::plot_grid(
+cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.75)),
+ggplot(data.frame(x = 1, y = 1, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
+  geom_text(aes(x = x, y = y, label = label)) +
+  theme_void(),
+ncol = 1, rel_heights = c(1, 0.05))
 ```
 
 ```{r tn_interaction, eval=FALSE}
