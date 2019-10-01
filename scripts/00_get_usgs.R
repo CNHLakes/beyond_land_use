@@ -101,6 +101,7 @@ interp_to_iws <- function(usgs_raw, varname, outname){
               mutate(state = tolower(state_name))
 
   county_usgs <- left_join(county_sf, usgs) %>%
+    # TODO: check that the area used here is only Ag
     mutate(value_per_ha = value / units::set_units(st_area(geometry), "ha")) %>% 
     dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
   
