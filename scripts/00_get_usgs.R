@@ -15,8 +15,11 @@ source("scripts/99_utils.R")
 # County-Level Estimates of Nutrient Inputs to the Land
 # Surface of the Conterminous United States, 1982–2001
 
-lg  <- lagosne_load("1.087.1")
-ep  <- readRDS("data/ep.rds")
+lg     <- lagosne_load("1.087.1")
+ep     <- readRDS("data/ep.rds")
+states <- left_join(ep, lg$locus) %>%
+  left_join(lg$state) %>%
+  distinct(state)
 iws <- LAGOSNEgis::query_wbd(ep$lagoslakeid, utm = FALSE)
 # mapview::mapview(dplyr::filter(iws, lagoslakeid == 34352))
 iws <- st_make_valid(iws)
@@ -36,6 +39,7 @@ if(!file.exists(ofile)){
 }
 
 # setwd("../")
+message("Parsing raw county data...")
 if(!file.exists("data/usgs/usgs_raw.rds")){
   sfile <- "data/usgs/usgs_nutrient_inputs.xls"
   ofile <- paste0(sfile, "x")
@@ -71,22 +75,10 @@ if(!file.exists("data/usgs/usgs_raw.rds")){
   saveRDS(usgs_raw, "data/usgs/usgs_raw.rds")
 }
 
+message("Interpolating county data to watersheds...")
 # select counties intersected by ep iws
-county_sf <- st_as_sf(maps::map("county", fill = TRUE, plot = FALSE))
-county_sf <- tidyr::separate(county_sf, ID, c("state", "county"), sep = ",")
-county_sf <- st_transform(county_sf, st_crs(iws))
-county_sf <- st_make_valid(county_sf)
-county_sf <- county_sf[
-  unlist(lapply(
-    st_intersects(county_sf, iws),
-    function(x) length(x) > 0)),]
-
-# use LAGOSNEgis county polygons to get zoneids
-# add an ag_area column to apportion nutrient inputs
-county_sf <- key_state(mutate(county_sf, 
-                                    state.name = to_sentence_case(state)))
 county_ll <- query_gis_(query = paste0("SELECT * FROM COUNTY WHERE ",
-                          paste0("STATE LIKE '", county_sf$state.abb, "%'", collapse = " OR ")))
+                          paste0("STATE LIKE '", states$state, "%'", collapse = " OR ")))
 county_ll <- county_ll[
   unlist(lapply(
     st_intersects(county_ll, iws),
@@ -101,6 +93,7 @@ county_ll <- mutate(county_ll, state = STATE)
 
 interp_to_iws <- function(usgs_raw, varname, outname){
   # varname = "nitrogen_livestock_manure"
+  message(paste0("Interpolating ", varname, " ..."))
   usgs <- filter(usgs_raw, stringr::str_detect(variable, varname)) %>%
     mutate(value = as.numeric(value)) %>%
     group_by(county, state, year, variable) %>%
@@ -146,7 +139,6 @@ interp_to_iws <- function(usgs_raw, varname, outname){
   dplyr::select(iws_interp, lagoslakeid, everything())
 }
 
-
 usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
 
 # unique(usgs_raw$variable)
@@ -157,9 +149,11 @@ usgs_key <- data.frame(variable = unique(usgs_raw$variable),
 
 usgs <- apply(usgs_key, 1, function(x) interp_to_iws(usgs_raw, x[1], x[2]))
 
+message("Binding variables...")
 usgs <- bind_cols(usgs) %>%
   dplyr::select(lagoslakeid, usgs_key$pretty_name)
 
+message("Calculating total inputs...")
 usgs <- usgs %>% 
   mutate(n_input = rowSums(select(., starts_with("nitrogen")), na.rm = TRUE),
          p_input = rowSums(select(., starts_with("phosphorus")), na.rm = TRUE))
