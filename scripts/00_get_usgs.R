@@ -1,19 +1,21 @@
-library(LAGOSNE)
-library(LAGOSNEgis)
-library(sf)
-library(unpivotr)
-suppressMessages(library(tidyr))
-library(tidyxl)
-suppressMessages(library(dplyr))
-library(snakecase)
-library(lwgeom)
-suppressMessages(library(magrittr))
+source("scripts/99_utils.R")
+# library(LAGOSNE)
+# library(LAGOSNEgis)
+# library(sf)
+# library(unpivotr)
+# suppressMessages(library(tidyr))
+# library(tidyxl)
+# suppressMessages(library(dplyr))
+# library(snakecase)
+# library(lwgeom)
+# suppressMessages(library(magrittr))
 
 # ---- usgs_get ----
 
 # County-Level Estimates of Nutrient Inputs to the Land
 # Surface of the Conterminous United States, 1982–2001
 
+lg  <- lagosne_load("1.087.1")
 ep  <- readRDS("data/ep.rds")
 iws <- LAGOSNEgis::query_wbd(ep$lagoslakeid, utm = FALSE)
 # mapview::mapview(dplyr::filter(iws, lagoslakeid == 34352))
@@ -79,6 +81,24 @@ county_sf <- county_sf[
     st_intersects(county_sf, iws),
     function(x) length(x) > 0)),]
 
+# use LAGOSNEgis county polygons to get zoneids
+# add an ag_area column to apportion nutrient inputs
+county_sf <- key_state(mutate(county_sf, 
+                                    state.name = to_sentence_case(state)))
+county_ll <- query_gis_(query = paste0("SELECT * FROM COUNTY WHERE ",
+                          paste0("STATE LIKE '", county_sf$state.abb, "%'", collapse = " OR ")))
+county_ll <- county_ll[
+  unlist(lapply(
+    st_intersects(county_ll, iws),
+    function(x) length(x) > 0)),]
+county_ll <- left_join(county_ll, 
+dplyr::select(readRDS("data/county_lulc.rds"), 
+              county_zoneid, county_ag_2011_pcent), 
+by = c("ZoneID" = "county_zoneid"))
+county_ll <- mutate(county_ll, 
+                    ag_area = units::set_units(st_area(geometry), "ha") * county_ag_2011_pcent)
+county_ll <- mutate(county_ll, state = STATE)
+
 interp_to_iws <- function(usgs_raw, varname, outname){
   # varname = "nitrogen_livestock_manure"
   usgs <- filter(usgs_raw, stringr::str_detect(variable, varname)) %>%
@@ -99,10 +119,12 @@ interp_to_iws <- function(usgs_raw, varname, outname){
               mutate(county = tolower(county)) %>%
               left_join(state_key) %>%
               mutate(state = tolower(state_name))
+    usgs <- mutate(key_state(mutate(usgs, state.name = state_name)), 
+                   state = state.abb)
 
-  county_usgs <- left_join(county_sf, usgs) %>%
-    # TODO: check that the area used here is only Ag
-    mutate(value_per_ha = value / units::set_units(st_area(geometry), "ha")) %>% 
+  # area used here is all (and only) Ag
+  county_usgs <- left_join(county_ll, usgs) %>%
+    mutate(value_per_ha = value / ag_area) %>% 
     dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
   
   iws <- iws[sapply(st_intersects(iws, county_usgs), length) != 0,]
