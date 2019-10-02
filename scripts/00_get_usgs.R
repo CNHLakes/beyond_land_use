@@ -15,14 +15,11 @@ source("scripts/99_utils.R")
 # County-Level Estimates of Nutrient Inputs to the Land
 # Surface of the Conterminous United States, 1982–2001
 
-lg     <- lagosne_load("1.087.1")
 ep     <- readRDS("data/ep.rds")
-states <- left_join(ep, lg$locus) %>%
-  left_join(lg$state) %>%
-  distinct(state)
-iws <- LAGOSNEgis::query_wbd(ep$lagoslakeid, utm = FALSE)
+states <- c("OH", "IL", "MI", "WI", "IN", "MN", "IA", "MO", "PA", "NY")
+iws    <- LAGOSNEgis::query_wbd(ep$lagoslakeid, utm = FALSE)
 # mapview::mapview(dplyr::filter(iws, lagoslakeid == 34352))
-iws <- st_make_valid(iws)
+iws    <- st_make_valid(iws)
 
 sfile <- "data/usgs/usgs_nutrient_inputs.xls"
 ofile <- paste0(sfile, "x")
@@ -78,7 +75,7 @@ if(!file.exists("data/usgs/usgs_raw.rds")){
 message("Interpolating county data to watersheds...")
 # select counties intersected by ep iws
 county_ll <- query_gis_(query = paste0("SELECT * FROM COUNTY WHERE ",
-                          paste0("STATE LIKE '", states$state, "%'", collapse = " OR ")))
+                          paste0("STATE LIKE '", states, "%'", collapse = " OR ")))
 county_ll <- county_ll[
   unlist(lapply(
     st_intersects(county_ll, iws),
@@ -153,10 +150,11 @@ message("Binding variables...")
 usgs <- bind_cols(usgs) %>%
   dplyr::select(lagoslakeid, usgs_key$pretty_name)
 
-message("Calculating total inputs...")
-usgs <- usgs %>% 
-  mutate(n_input = rowSums(select(., starts_with("nitrogen")), na.rm = TRUE),
-         p_input = rowSums(select(., starts_with("phosphorus")), na.rm = TRUE))
+# TODO: move this block to the aggregate script
+# message("Calculating total inputs...")
+# usgs <- usgs %>% 
+#   mutate(n_input = rowSums(select(., starts_with("nitrogen")), na.rm = TRUE),
+#          p_input = rowSums(select(., starts_with("phosphorus")), na.rm = TRUE))
 
 saveRDS(usgs, "data/usgs/usgs.rds")
 # usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
