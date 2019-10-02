@@ -85,7 +85,8 @@ dplyr::select(readRDS("data/county_lulc.rds"),
               county_zoneid, county_ag_2011_pcent), 
 by = c("ZoneID" = "county_zoneid"))
 county_ll <- mutate(county_ll, 
-                    ag_area = units::set_units(st_area(geometry), "ha") * county_ag_2011_pcent)
+                    ag_area = units::set_units(st_area(geometry), "ha") * county_ag_2011_pcent, 
+                    total_area = units::set_units(st_area(geometry), "ha"))
 county_ll <- mutate(county_ll, state = STATE)
 
 interp_to_iws <- function(usgs_raw, varname, outname){
@@ -112,10 +113,16 @@ interp_to_iws <- function(usgs_raw, varname, outname){
     usgs <- mutate(key_state(mutate(usgs, state.name = state_name)), 
                    state = state.abb)
 
-  # area used here is all (and only) Ag
-  county_usgs <- left_join(county_ll, usgs) %>%
-    mutate(value_per_ha = value / ag_area) %>% 
-    dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
+  # if !atmospheric deposition area used here is all (and only) Ag
+  if(length(grep("deposition", varname)) > 0){
+    county_usgs <- left_join(county_ll, usgs) %>%
+      mutate(value_per_ha = value / ag_area) %>% 
+      dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
+  }else{
+    county_usgs <- left_join(county_ll, usgs) %>%
+      mutate(value_per_ha = value / total_area) %>% 
+      dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
+  }
   
   iws <- iws[sapply(st_intersects(iws, county_usgs), length) != 0,]
   
