@@ -116,11 +116,11 @@ interp_to_iws <- function(usgs_raw, varname, outname){
   # if !atmospheric deposition area used here is all (and only) Ag
   if(length(grep("deposition", varname)) > 0){
     county_usgs <- left_join(county_ll, usgs) %>%
-      mutate(value_per_ha = value / ag_area) %>% 
+      mutate(value_per_ha = value / total_area) %>% 
       dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
   }else{
     county_usgs <- left_join(county_ll, usgs) %>%
-      mutate(value_per_ha = value / total_area) %>% 
+      mutate(value_per_ha = value / ag_area) %>% 
       dplyr::filter(!is.na(value)) # hist(county_usgs$value_per_ha)
   }
   
