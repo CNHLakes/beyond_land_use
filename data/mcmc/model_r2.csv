@@ -1,19 +1,24 @@
-"Model","Estimate","Proxy","Lake","Transport","Source"
-"tp",0.18,"Ag",NA,NA,NA
-"tp_depth",0.39,"Ag","maxdepth",NA,NA
-"tp_bf",0.5,"Ag","maxdepth","Baseflow",NA
-"tp_nfert",0.51,"Ag","maxdepth","Baseflow","N fertilizer"
-"tn",0.2,"Ag",NA,NA,NA
-"tn_depth",0.29,"Ag","maxdepth",NA,NA
-"tn_sc",0.34,"Ag","maxdepth","Soil Org Carbon",NA
-"tn_nfert",0.43,"Ag","maxdepth","Soil Org Carbon","N fertilizer"
-"tp_ag",0.59,"Ag","maxdepth","Baseflow","N fertilizer"
-"tp_streamag",0.59,"Stream Ag","maxdepth","Baseflow","N fertilizer"
-"tp_soybeans",0.58,"Soybeans","maxdepth","Baseflow","N fertilizer"
-"tp_pasture",0.58,"Pasture","maxdepth","Baseflow","N fertilizer"
-"tp_rowcrop",0.6,"Row Crop","maxdepth","Baseflow","N fertilizer"
-"tn_ag",0.54,"Ag","maxdepth","Soil Org Carbon","N fertilizer"
-"tn_streamag",0.44,"Stream Ag","maxdepth","Soil Org Carbon","N fertilizer"
-"tn_corn",0.53,"Corn","maxdepth","Soil Org Carbon","N fertilizer"
-"tn_pasture",0.46,"Pasture","maxdepth","Soil Org Carbon","N fertilizer"
-"tn_rowcrop",0.53,"Row Crop","maxdepth","Soil Org Carbon","N fertilizer"
+"Model","Estimate","re_signif"
+"tp",0.18,NA
+"tp_depth",0.39,NA
+"tp_bf",0.5,NA
+"tp_nfert",0.51,NA
+"tp_buffer",0.53,NA
+"tn",0.2,NA
+"tn_depth",0.29,NA
+"tn_sc",0.34,NA
+"tn_nfert",0.43,NA
+"tn_buffer",0.44,NA
+"tn_ndep",0.45,NA
+"tp_ag",0.62,FALSE
+"tp_forest",0.63,FALSE
+"tp_rowcrop",0.62,FALSE
+"tp_pasture",0.62,FALSE
+"tp_soybeans",0.62,FALSE
+"tp_corn",0.62,FALSE
+"tn_ag",0.57,TRUE
+"tn_forest",0.54,FALSE
+"tn_rowcrop",0.57,TRUE
+"tn_pasture",0.54,FALSE
+"tn_corn",0.58,TRUE
+"tn_soybeans",0.54,TRUE

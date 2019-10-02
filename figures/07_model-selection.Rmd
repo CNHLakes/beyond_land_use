@@ -44,7 +44,7 @@ pred_key       <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE
 re_global          <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
 re_global$term     <- unlist(lapply(re_brms, 
                                 function(x) get_re_text(as.character(x$formula)[1])))
-re_global$response <- c(rep("tp", 7), rep("tn", 7))
+re_global$response <- c(rep("tp", 6), rep("tn", 6))
 re_global          <- left_join(re_global, pred_key, by = c("term" = "var")) %>%
   dplyr::select(pretty, `5%`:`95%`, term, response)
 # re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
