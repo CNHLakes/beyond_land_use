@@ -8,7 +8,6 @@
 # ---- source_utils ----
 
 library(sp)
-suppressMessages(library(dplyr))
 library(gstat)
 library(ggplot2)
 suppressMessages(library(sf))
@@ -40,6 +39,7 @@ suppressMessages(library(tidybayes))
 library(ggforce)
 library(rnaturalearth)
 library(gghighlight)
+suppressMessages(library(dplyr))
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),

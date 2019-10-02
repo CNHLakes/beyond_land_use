@@ -150,19 +150,24 @@ message("Binding variables...")
 usgs <- bind_cols(usgs) %>%
   dplyr::select(lagoslakeid, usgs_key$pretty_name)
 
-# TODO: move this block to the aggregate script
-# message("Calculating total inputs...")
-# usgs <- usgs %>% 
-#   mutate(n_input = rowSums(select(., starts_with("nitrogen")), na.rm = TRUE),
-#          p_input = rowSums(select(., starts_with("phosphorus")), na.rm = TRUE))
+message("Calculating total inputs...")
+usgs <- usgs %>%
+  mutate(n_input = rowSums(select(., starts_with("nitrogen")), na.rm = TRUE),
+         p_input = rowSums(select(., starts_with("phosphorus")), na.rm = TRUE))
 
 saveRDS(usgs, "data/usgs/usgs.rds")
 # usgs_raw <- readRDS("data/usgs/usgs_raw.rds")
 # usgs     <- readRDS("data/usgs/usgs.rds")
 
 # ---- viz ----
+# res_b <- readRDS("data/usgs/usgs_backup.rds")
+# res_b$n_input <- log(res_b$n_input)
+# 
 # res <- readRDS("data/usgs/usgs.rds")
-# res$value <- log(res$value)
+# res$n_input <- log(res$n_input)
+# res <- dplyr::filter(res, lagoslakeid %in% res_b$lagoslakeid)
+# 
+# plot(res$n_input, res_b$n_input)
 #
 # mapview::mapview(county_sf) +
 # mapview::mapview(coordinatize(res), zcol = "value")
