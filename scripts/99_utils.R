@@ -7,6 +7,7 @@
 
 # ---- source_utils ----
 
+library(httr)
 library(sp)
 library(gstat)
 library(ggplot2)
