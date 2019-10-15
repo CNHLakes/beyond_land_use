@@ -35,3 +35,6 @@ Rplots.pdf
 manuscript/appendix.tex
 reilly.R
 data/mapbox
+temp1.tif
+temp2.tif
+*.tif.aux.xml
