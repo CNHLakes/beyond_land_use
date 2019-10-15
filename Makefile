@@ -57,7 +57,7 @@ data/county_lulc.rds: scripts/00_get_lulc.R
 data/usgs/usgs.rds: scripts/00_get_usgs.R data/ep.rds
 	Rscript $<
 
-data/cdl/cdl.csv: scripts/00_get_cdl.R
+data/cdl/cdl.csv: scripts/00_get_cdl.R data/ep.rds
 	Rscript $< 'data/cdl/'
 	
 data/cdl/cdl_summary.csv: scripts/01_process_cdl.R \
