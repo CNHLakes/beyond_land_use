@@ -16,7 +16,8 @@ data/macroag/crp.rds \
 data/gis.gpkg \
 data/llids.txt \
 data/buffer_lulc.csv \
-data/mcmc/re_brms.rds
+data/mcmc/re_brms.rds \
+data/dt.rds
 # data/mcmc/model_r2.csv
 
 gssurgo: data/gssurgo/gssurgo.rds
