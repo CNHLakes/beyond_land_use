@@ -1,14 +1,5 @@
 source("scripts/99_utils.R")
-# library(LAGOSNE)
-# library(LAGOSNEgis)
-# library(sf)
-# library(unpivotr)
-# suppressMessages(library(tidyr))
 # library(tidyxl)
-# suppressMessages(library(dplyr))
-# library(snakecase)
-# library(lwgeom)
-# suppressMessages(library(magrittr))
 
 # ---- usgs_get ----
 
@@ -151,7 +142,18 @@ usgs_key <- data.frame(variable = unique(usgs_raw$variable),
                        pretty_name = unique(usgs_raw$variable), 
                        stringsAsFactors = FALSE)
 
-usgs <- apply(usgs_key, 1, function(x) interp_to_iws(usgs_raw, x[1], x[2]))
+
+# write each loop iteration to disk to conserve memory
+for(i in seq_len(nrow(usgs_key))){
+  # i <- 1
+  outpath <- paste0("data/usgs/", usgs_key[i,1], ".rds")
+  if(!file.exists(outpath)){
+    res <- interp_to_iws(usgs_raw, usgs_key[i,1], usgs_key[i,2])
+    saveRDS(res, outpath)
+  }
+}
+usgs <- apply(usgs_key, 1, function(x) 
+  readRDS(paste0("data/usgs/", x[1], ".rds")))
 
 message("Binding variables...")
 usgs <- bind_cols(usgs) %>%
