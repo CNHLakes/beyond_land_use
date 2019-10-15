@@ -7,7 +7,7 @@ county_lulc      <- readRDS("data/county_lulc.rds")
 date_start       <- as.Date("2000-01-01")
 date_end         <- as.Date("2010-01-01")
 min_sample_n     <- 3
-ag_cutoff        <- 0.4
+ag_cutoff        <- 0.1
 min_state_n      <- 4
 max_iws_ha       <- 190000
 max_lake_area_ha <- 40000
@@ -113,7 +113,9 @@ states <- dplyr::filter(state_sf(), ABB != "ME")
 ep <- ep[unlist(
   lapply(st_intersects(coordinatize(ep), states), function(x) length(x) != 0)),]
 
-saveRDS(ep, "data/ep.rds")
+if(!interactive()){
+  saveRDS(ep, "data/ep.rds")
+}
 # test <- readRDS("data/ep.rds")
 
 # mapview::mapview(coordinatize(ep))
