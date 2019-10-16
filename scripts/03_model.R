@@ -87,6 +87,14 @@ r2_fe <- dplyr::bind_rows(
                        phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                        (1 + forest | hu4vzoneid)),
+  "tp_wetlands"       = bf(tp ~  
+                           maxdepth + iwslavratio +
+                           soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                           clayvpct + hu12vbaseflowvmean +
+                           nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                           phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                           buffervcultivatedvcrops + buffervnatural +
+                           (1 + wetlands | hu4vzoneid)),
   "tp_rowcrop"       = bf(tp ~  
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -138,6 +146,14 @@ r2_fe <- dplyr::bind_rows(
                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + forest | hu4vzoneid)),
+  "tn_wetlands"       = bf(tn ~  
+                             maxdepth + iwslavratio +
+                             soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                             clayvpct + hu12vbaseflowvmean +
+                             nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                             phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                             buffervcultivatedvcrops + buffervnatural +
+                             (1 + wetlands | hu4vzoneid)),
   "tn_rowcrop"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
@@ -175,18 +191,18 @@ r2_fe <- dplyr::bind_rows(
                       (1 + soybeans | hu4vzoneid))
 ))
 
-# re_brms <- list()
+re_brms <- list()
 # for(i in seq_along(model_forms_re)){
-  # i <- 1
-  # print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
-  # if(!file.exists(paste0("data/mcmc/re/", names(model_forms_re)[i]))){
-  #   re_brms[[i]] <- brm(formula = model_forms_re[[i]], data = dt,
-  #                       prior = set_prior("horseshoe(1)"), family = gaussian(),
-  #                       control = list(adapt_delta = 0.99))
-  #   saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
-  # }else{
-  #   re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
-  # }
+# i <- 7# 13
+# print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
+# if(!file.exists(paste0("data/mcmc/re/", names(model_forms_re)[i]))){
+#   re_brms[[i]] <- brm(formula = model_forms_re[[i]], data = dt,
+#                       prior = set_prior("horseshoe(1)"), family = gaussian(),
+#                       control = list(adapt_delta = 0.99))
+#   saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
+# }# else{
+#   re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
+# }
 # }
 
 re_brms <- 
@@ -237,14 +253,14 @@ get_residuals <- function(model, threshold = 0.1){
   lg <- parent.env(environment())$lg
   # model <- re_brms[[1]]
   model$res_med <- dt %>%
-    add_residual_draws(model) %>%
+    add_residual_draws(model, allow_new_levels = TRUE) %>%
     group_by(lagoslakeid) %>%
     summarize(.residual_median = median(.residual)) %>%
     left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long),
               by = "lagoslakeid")
   
   model$res_med <- dt %>%
-    add_fitted_draws(model) %>%
+    add_fitted_draws(model, allow_new_levels = TRUE) %>%
     group_by(lagoslakeid) %>%
     summarize(.value_median = median(.value)) %>%
     right_join(model$res_med, by = "lagoslakeid")
