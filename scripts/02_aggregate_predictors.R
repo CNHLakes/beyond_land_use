@@ -123,6 +123,7 @@ dt_scaled <- dt %>%
                 contains("cultivated_crops"), 
                 "stream_natural", "buffer_natural", cdl_vars) %>% 
   dplyr::filter(!is.na(phosphorus_fertilizer_use), 
+                !is.na(wetlands),
                 !is.na(soybeans), 
                 !is.na(corn),
                 !is.na(maxdepth), 
