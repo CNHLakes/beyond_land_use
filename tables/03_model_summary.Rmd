@@ -29,12 +29,14 @@ sort_loo <- function(x){
   arrange(x_df, index)
 }
 
+# lapply(re_brms, function(x) x$formula)
+
 loo_re <- rbind(
-  sort_loo(loo_compare(loo(re_brms[[1]]),
+  sort_loo(loo_compare(loo(re_brms[[1]]), loo(re_brms[[2]]),
                        loo(re_brms[[3]]), loo(re_brms[[4]]),
                        loo(re_brms[[5]]), 
                        loo(re_brms[[6]]))),
-  sort_loo(loo_compare(loo(re_brms[[7]]),
+  sort_loo(loo_compare(loo(re_brms[[7]]), loo(re_brms[[8]]),
                        loo(re_brms[[9]]), loo(re_brms[[10]]),
                        loo(re_brms[[11]]), 
                        loo(re_brms[[12]])))

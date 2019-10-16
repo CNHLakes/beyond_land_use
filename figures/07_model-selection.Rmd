@@ -44,7 +44,7 @@ pred_key       <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE
 re_global          <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
 re_global$term     <- unlist(lapply(re_brms, 
                                 function(x) get_re_text(as.character(x$formula)[1])))
-re_global$response <- c(rep("tp", 6), rep("tn", 6))
+re_global$response <- c(rep("tp", nrow(re_global) / 2), rep("tn", nrow(re_global) / 2))
 re_global          <- left_join(re_global, pred_key, by = c("term" = "var")) %>%
   dplyr::select(pretty, `5%`:`95%`, term, response)
 # re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
@@ -55,8 +55,8 @@ re_global          <- left_join(re_global, pred_key, by = c("term" = "var")) %>%
 ```{r tp_fe, out.width="3.45in", out.height="4in"}
 # lapply(re_brms, function(x) x$R2)
 # lapply(re_brms, function(x) x $formula) 
-# re_brms[[6]]$formula
-best_tp        <- 6 # 6 is best tp model with random effects
+# re_brms[[2]]$formula
+best_tp        <- 2 # 2 is best tp model with random effects
 fit_tp         <- re_brms[[best_tp]] 
 signif_hu4_ids <- fit_tp$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
@@ -158,8 +158,10 @@ gg_tp_re
 
 ```{r tn_fe, out.width="3.45in", out.height="4in"}
 # lapply(re_brms, function(x) x$formula) 
-# re_brms[[11]]$formula
-best_tn        <- 11 # 11 is best tn model with random effects
+# re_brms[[8]]$formula
+# brms::bayes_R2(re_brms[[8]])
+  
+best_tn        <- 8 # 11 is best tn model with random effects
 fit_tn         <- re_brms[[best_tn]] 
 signif_hu4_ids <- fit_tn$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
