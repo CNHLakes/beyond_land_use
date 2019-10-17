@@ -21,7 +21,8 @@ states_all <- ne_states(country = c("united states of america", "canada", "mexic
                         returnclass = "sf")
 state_codes <- c("IL", "IN", "IA",
                  "MI", "MN", "MO",
-                 "NY", "OH", "PA", "WI")
+                 "NY", "OH", "PA", "WI", 
+                 "CT", "RI", "NH", "VT")
 states_focal <- states_all %>%
   dplyr::filter(., postal %in% state_codes & iso_a2 == "US")
 study_bbox   <- st_as_sfc(st_bbox(states_focal))
@@ -61,6 +62,9 @@ hu4s_focal <- LAGOSNEgis::query_gis("HU4", "ZoneID", unique(ep$hu4_zoneid))
 hu8s <- LAGOSNEgis::query_gis_(
   query = paste0("SELECT * FROM HU8 WHERE ",
                  paste0("HUC8 LIKE '", hu4s$HUC4, "%'", collapse = " OR ")))
+
+study_bbox   <- st_transform(st_as_sfc(st_bbox(hu4s_focal)), st_crs(study_bbox))
+# study_bbox   <- concaveman::concaveman(st_cast(hu4s_focal, "POINT"))
 
 # unlink("data/gis.gpkg")
 # st_layers("data/gis.gpkg")
