@@ -26,7 +26,7 @@ cdl: data/cdl/cdl_summary.csv
 
 usgs: data/usgs/usgs.rds
 
-data/gis.gpkg: scripts/00_get_gis.R
+data/gis.gpkg: scripts/00_get_gis.R data/ep.rds
 	Rscript $<
 
 data/ep.rds: scripts/00_get_ep.R \
@@ -129,7 +129,7 @@ figures/satellite-1.pdf
 	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
 	-mv manuscript/appendix2.pdf manuscript/appendix.pdf
 
-figures/11_map-1.pdf: figures/11_map.Rmd
+figures/11_map-1.pdf: figures/11_map.Rmd data/gis.gpkg
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 
