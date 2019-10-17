@@ -309,7 +309,6 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
                        x_min, x_max, plot_title){
   # x <- gg_tn
   # plot_title <- "Asdf"
-  # x_range   <- (x$`5%` - x$`95%`)[which.min(x$`5%` - x$`95%`)] 
   x_range <- x_min - x_max
   
   if(y_label_side == "left"){
@@ -318,7 +317,7 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
     y_label_padding_min <- x_min - 2
     y_label_padding_max <- x_max
     y_label_just <- "right"
-    expand_min <- x_min - 0.6
+    expand_min <- x_min - 1.1
     expand_max <- x_max
   }else{
     # tn
@@ -327,7 +326,7 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
     y_label_padding_max <- x_max + 2
     y_label_just <- "left"
     expand_min <- x_min
-    expand_max <- x_max + 0.6
+    expand_max <- x_max + 1.1
   }
   
   res <- ggplot(data = x) + 
@@ -345,7 +344,7 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
     # x-axis labels
     scale_y_continuous(breaks = seq(from = x_min, 
                                     to  = x_max, 
-                                    by = 0.2), 
+                                    by = 0.4), 
                        labels = scales::number_format(accuracy = 0.1)) +
     coord_flip() +
     theme(axis.text.y = element_blank(), 
