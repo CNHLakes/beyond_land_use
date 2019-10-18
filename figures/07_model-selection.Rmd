@@ -174,7 +174,6 @@ ggplot(data.frame(x = 1, y = 1, label = "Standardized coefficients", stringsAsFa
 ncol = 1, rel_heights = c(1, 0.05))
 ```
 
-
 ```{r tp_re, fig.width=3.25, fig.height=4.5}
 fit_tp$re$hu4vzoneid <- gsub("HU4_", "", fit_tp$re$hu4vzoneid)
 fit_tp$re <- fit_tp$re %>%
