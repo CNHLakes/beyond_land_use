@@ -197,7 +197,7 @@ gg_tp_re
 ```
 
 ```{r tn_re_hu4, fig.width = 3.77, fig.height = 4.5}
-study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)
+study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
 states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
 hu4_all       <- st_read("../data/gis.gpkg", "hu4s_focal", quiet = TRUE)
 
