@@ -102,7 +102,7 @@ data/buffer_stats.csv: scripts/00_get_buffers.R
 data/mcmc/re_brms.rds: scripts/03_model.R
 	Rscript $<
 
-data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds
+data/mcmc/model_r2.csv: scripts/03_model.R
 	Rscript $<
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
