@@ -104,6 +104,32 @@ saveRDS(dt, "data/dt.rds")
 write.csv(dt, "data/dt.csv", row.names = FALSE)
 # dt <- readRDS("../data/dt.rds")
 
+dt_units <- data.frame(variable = names(dt), stringsAsFactors = FALSE) %>%
+  mutate(units = case_when(
+    variable %in% names(cdl)[-1] ~ "percent",
+    variable %in% names(usgs)[-1] ~ "kg/ha",
+    grepl("_ha$", tolower(variable)) ~ "hectares",
+    grepl("_ratio$", tolower(variable)) ~ "",
+    grepl("deposition", tolower(variable)) ~ "kg/ha",
+    grepl("baseflow", tolower(variable)) ~ "",
+    grepl("_ppt_", tolower(variable)) ~ "mm/yr",
+    grepl("pct$", tolower(variable)) ~ "percent",
+    grepl("buffer", tolower(variable)) ~ "percent",
+    variable %in% "maxdepth" ~ "m",
+    # keep below line as last
+    variable %in% names(ep)[c(-1, -2, -3, -9, -10, -12)] ~ "ug/l"
+  ))
+
+dt_units <- left_join(dt_units, 
+                      dplyr::select(gssurgo_key, metric, units = agg_type), 
+                      by = c("variable" = "metric")) %>%
+  mutate(units = coalesce(units.x, units.y)) %>%
+  dplyr::select(variable, units)
+
+saveRDS(dt_units, "data/dt_units.rds")
+
+# ---- create scaled version of predictors for modelling ----
+
 cdl_vars <- dt %>%
   dplyr::select(ag:wheat, -natural, -nonnatural) %>%
   summarize_all(median, na.rm = TRUE) %>%
@@ -135,21 +161,3 @@ dt_scaled <- dt %>%
 saveRDS(dt_scaled, "data/dt_scaled.rds")
 write.csv(dt_scaled, "data/dt_scaled.csv", row.names = FALSE)
 # dt_scaled <- readRDS("data/dt_scaled.rds")
-
-dt_units <- data.frame(variable = names(dt), stringsAsFactors = FALSE) %>%
-  mutate(units = case_when(
-    variable %in% names(cdl)[-1] ~ "percent",
-    variable %in% names(usgs)[-1] ~ "kg/ha",
-    grepl("_ha$", tolower(variable)) ~ "hectares",
-    grepl("_ratio$", tolower(variable)) ~ "",
-    variable %in% names(ep)[c(-1, -2, -3)] ~ "ug/l",
-    grepl("pct$", tolower(variable)) ~ "percent"
-  ))
-
-dt_units <- left_join(dt_units, 
-          dplyr::select(gssurgo_key, metric, units = agg_type), 
-          by = c("variable" = "metric")) %>%
-  mutate(units = coalesce(units.x, units.y)) %>%
-  dplyr::select(variable, units)
-
-saveRDS(dt_units, "data/dt_units.rds")

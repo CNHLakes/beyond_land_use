@@ -11,8 +11,9 @@ r_list <- list.files(cdl_path, pattern = "^\\d*.tif$",
                      include.dirs = TRUE, full.names = TRUE)
 
 cdl_summary <- function(llid){
-  # llid <- 4393
-  r <- raster(r_list[grep(paste0(llid, ".tif"), r_list)[1]])
+  # llid <- 5543
+  r <- suppressMessages(
+    raster(r_list[grep(paste0(llid, ".tif"), r_list)[1]]))
   
   cdl_table <- as.data.frame(table(values(r)), stringsAsFactors = FALSE) %>%
     mutate(code = as.integer(Var1)) %>%
@@ -100,6 +101,7 @@ for(i in seq_len(length(r_list))){
 
 res <- bind_rows(res)
 res <- dplyr::filter(res, value >=0)
+res <- dplyr::filter(res, !is.na(variable))
 res <- tidyr::spread(res, variable, value, -llid, fill = NA)
 
 write.csv(res, "data/cdl/cdl_summary.csv", row.names = FALSE)

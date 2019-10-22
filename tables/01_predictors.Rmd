@@ -18,6 +18,9 @@ library(magrittr)
 pred_key <- read.csv("../data/predictor_key.csv", 
                      stringsAsFactors = FALSE)
 
+# scripts/02_aggregate_predictors.R
+dt_units <- readRDS("../data/dt_units.rds")
+
 cdl_vars <- readRDS("../data/dt.rds") %>%
   dplyr::select(ag:wheat) %>%
   summarize_all(median, na.rm = TRUE) %>%
@@ -28,7 +31,8 @@ cdl_vars <- readRDS("../data/dt.rds") %>%
 
 # setwd("tables")
 dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select(tp:clay_pct, -matches("zoneid"), -matches("pct"), -matches("input"), cdl_vars) %>%
+  dplyr::select(tp:clay_pct, buffer_cultivated_crops, buffer_natural,
+                -matches("zoneid"), -matches("pct"), -matches("input"), cdl_vars) %>%
   tidyr::gather(key = "variable") %>%
   group_by(variable) %>%
   mutate(value = as.numeric(value)) %>%
@@ -48,7 +52,7 @@ dt <- readRDS("../data/dt.rds") %>%
          q90 = `signif(q90, 2)`,
          q10_q90_ratio = ratio,
          n) %>%
-  left_join(readRDS("../data/dt_units.rds"), by = "variable") %>%
+  left_join(dt_units, by = "variable") %>%
   dplyr::select(variable, units, everything())
 
 dt <- ungroup(dt)

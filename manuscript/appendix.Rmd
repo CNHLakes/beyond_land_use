@@ -3,13 +3,16 @@ title: "Appendix"
 output:
   pdf_document:
     fig_caption: yes
+    keep_tex: yes
 header-includes: 
 - \usepackage{float}
 - \floatplacement{figure}{H}
+- \usepackage{colortbl}
 ---
 
+\arrayrulecolor{white}
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 5)
+knitr::opts_chunk$set(echo = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 5, dev = c("pdf"))
 ```
 
 ```{r read_chunks, cache=FALSE, echo=FALSE}
@@ -20,6 +23,12 @@ knitr::read_chunk("../scripts/99_utils.R")
 # setwd("scripts")
 source("../scripts/99_utils.R")
 ```
+
+\pagebreak
+
+## Predictor summary table
+
+\includegraphics[width=5in]{"../tables/01_predictors"}
 
 \pagebreak
 

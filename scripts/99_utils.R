@@ -317,7 +317,7 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
     y_label_padding_min <- x_min - 2
     y_label_padding_max <- x_max
     y_label_just <- "right"
-    expand_min <- x_min - 2.2
+    expand_min <- x_min - 2.4
     expand_max <- x_max
   }else{
     # tn
@@ -326,7 +326,7 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
     y_label_padding_max <- x_max + 2
     y_label_just <- "left"
     expand_min <- x_min
-    expand_max <- x_max + 2.2
+    expand_max <- x_max + 2.4
   }
   
   res <- ggplot(data = x) + 
