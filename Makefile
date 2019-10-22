@@ -188,10 +188,13 @@ tables/03_model_summary.pdf
 	
 tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
 
 tables/02_cdl_key.pdf: tables/02_cdl_key.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
 	
 tables/03_model_summary.pdf: tables/03_model_summary.Rmd data/mcmc/model_r2.csv
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
+	
