@@ -28,7 +28,7 @@ cdl_vars <- readRDS("../data/dt.rds") %>%
 
 # setwd("tables")
 dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select(tp:clay_pct, -matches("zoneid"), -matches("pct"), cdl_vars) %>%
+  dplyr::select(tp:clay_pct, -matches("zoneid"), -matches("pct"), -matches("input"), cdl_vars) %>%
   tidyr::gather(key = "variable") %>%
   group_by(variable) %>%
   mutate(value = as.numeric(value)) %>%
@@ -54,10 +54,13 @@ dt <- readRDS("../data/dt.rds") %>%
 dt <- ungroup(dt)
 dt <- left_join(dt, pred_key, by = c("variable" = "var"))
 dt <- dplyr::filter(dt, !is.na(pretty))
-dt <- mutate(dt, pretty = paste0(pretty, " (", units, ")"), 
-             IQR = paste0(q25, " - ", q75))
+
+dt <- mutate(dt, pretty = case_when(
+  nchar(units) > 0 ~ paste0(pretty, " (", units, ")"),
+  TRUE ~ pretty), 
+  IQR = paste0(q25, " - ", q75))
 dt <- dplyr::select(dt, Variable = pretty, 
-                    Median = q50, IQR)
+                    Median = q50, Q25 = q25, Q75 = q75)
 
 knitr::kable(dt, digits = 0, format = "markdown") 
 #%>%
