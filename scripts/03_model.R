@@ -25,6 +25,18 @@ brm_fit <- function(destfile, formula, data){
 
 (model_forms_fe <- list(
   "tp" = bf(tp ~ ag), # proxy
+  "tp_nolulc" = bf(tp ~ maxdepth + iwslavratio +
+                     soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                     clayvpct + hu12vbaseflowvmean +
+                     nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                     hu4vnitrogenvatmosphericvdeposition +
+                     phosphorusvfertilizervuse + pvinput + 
+                     phosphorusvlivestockvmanure),
+  "tp_nuts" = bf(tp ~ nitrogenvfertilizervuse + nvinput + 
+                     nitrogenvlivestockvmanure +
+                     hu4vnitrogenvatmosphericvdeposition +
+                     phosphorusvfertilizervuse + pvinput + 
+                     phosphorusvlivestockvmanure),
   "tp_depth" = bf(tp ~ ag + maxdepth), # lake
   "tp_bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean), # transport
   "tp_nfert" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + 
@@ -32,6 +44,13 @@ brm_fit <- function(destfile, formula, data){
   "tp_buffer" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean +
                      phosphorusvfertilizervuse + buffervcultivatedvcrops), # buffer
   "tn" = bf(tn ~ ag), # proxy
+  "tn_nolulc" = bf(tn ~ maxdepth + iwslavratio +
+                     soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+                     clayvpct + hu12vbaseflowvmean +
+                     nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                     hu4vnitrogenvatmosphericvdeposition +
+                     phosphorusvfertilizervuse + pvinput + 
+                     phosphorusvlivestockvmanure),
   "tn_depth" = bf(tn ~ ag + maxdepth), # lake
   "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon), # transport
   "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
@@ -42,6 +61,21 @@ brm_fit <- function(destfile, formula, data){
                    nitrogenvfertilizervuse + buffervcultivatedvcrops + 
                    hu4vnitrogenvatmosphericvdeposition)
 ))
+
+fe_brms <- list()
+i <- 3
+print(paste0("Fitting ", paste0("data/mcmc/fe/", names(model_forms_fe)[i])))
+fe_brms[[i]] <- brm(formula = model_forms_fe[[i]], data = dt,
+                      prior = set_prior("horseshoe(2)"), family = gaussian(),
+                      control = list(adapt_delta = 0.99))
+summary(fe_brms[[i]])
+
+#   saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
+# }# else{
+#   re_brms[[i]] <- readRDS(paste0("data/mcmc/re/", names(model_forms_re)[i]))
+# }
+# }
+
 
 fe_brms <- 
   lapply(seq_along(model_forms_fe), function(i) 
@@ -75,123 +109,123 @@ r2_fe <- dplyr::bind_rows(
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                        clayvpct + hu12vbaseflowvmean +
-                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
-                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
   "tp_forest"       = bf(tp ~  
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                        clayvpct + hu12vbaseflowvmean +
-                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
-                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                        (1 + forest | hu4vzoneid)),
   "tp_wetlands"       = bf(tp ~  
                            maxdepth + iwslavratio +
                            soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                            clayvpct + hu12vbaseflowvmean +
-                           nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
-                           phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                           nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                           phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                            buffervcultivatedvcrops + buffervnatural +
                            (1 + wetlands | hu4vzoneid)),
   "tp_rowcrop"       = bf(tp ~  
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                        clayvpct + hu12vbaseflowvmean +
-                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
-                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                        (1 + rowvcropvpct | hu4vzoneid)),
   "tp_pasture" = bf(tp ~  
                       maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
-                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
-                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + pasture | hu4vzoneid)),
   "tp_soybeans" = bf(tp ~  
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                        clayvpct + hu12vbaseflowvmean +
-                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                        hu4vnitrogenvatmosphericvdeposition +
-                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                       (1 + soybeans | hu4vzoneid)),
   "tp_corn" = bf(tp ~  
                        maxdepth + iwslavratio +
                        soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                        clayvpct + hu12vbaseflowvmean +
-                       nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                        hu4vnitrogenvatmosphericvdeposition +
-                       phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                        buffervcultivatedvcrops + buffervnatural +
                        (1 + corn | hu4vzoneid)),
   "tn_ag"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
-                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
-                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + ag | hu4vzoneid)),
   "tn_forest"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
-                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
-                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + forest | hu4vzoneid)),
   "tn_wetlands"       = bf(tn ~  
                              maxdepth + iwslavratio +
                              soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                              clayvpct + hu12vbaseflowvmean +
-                             nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
-                             phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                             nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
+                             phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                              buffervcultivatedvcrops + buffervnatural +
                              (1 + wetlands | hu4vzoneid)),
   "tn_rowcrop"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
-                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
-                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + rowvcropvpct | hu4vzoneid)),
   "tn_pasture" = bf(tn ~  
                       maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
-                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
-                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + pasture | hu4vzoneid)),
   "tn_corn"    = bf(tn ~  
                       maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
-                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
-                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                            (1 + corn | hu4vzoneid)),
   "tn_soybeans"    = bf(tn ~  
                       maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                       clayvpct + hu12vbaseflowvmean +
-                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
-                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+                      phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
                       buffervcultivatedvcrops + buffervnatural +
                       (1 + soybeans | hu4vzoneid))
 ))
 
-re_brms <- list()
+# re_brms <- list()
 # for(i in seq_along(model_forms_re)){
 # i <- 7# 13
 # print(paste0("Fitting ", paste0("data/mcmc/re/", names(model_forms_re)[i])))
@@ -211,6 +245,52 @@ re_brms <-
                       paste0("data/mcmc/re/", names(model_forms_re)[i]), 
                       formula = model_forms_re[[i]], 
                       data = dt))
+
+
+# (model_forms_resuper <- list("tn_crops"    = bf(tn ~  
+#                                                      maxdepth + iwslavratio +
+#                                                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+#                                                      clayvpct + hu12vbaseflowvmean +
+#                                                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+#                                                      hu4vnitrogenvatmosphericvdeposition +
+#                                                      phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+#                                                      buffervcultivatedvcrops + buffervnatural +
+#                                                      (1 + soybeans + corn + pasture | hu4vzoneid)),
+#                              "tn_ag"    = bf(tn ~  
+#                                                   maxdepth + iwslavratio +
+#                                                   soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+#                                                   clayvpct + hu12vbaseflowvmean +
+#                                                   nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+#                                                   hu4vnitrogenvatmosphericvdeposition +
+#                                                   phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+#                                                   buffervcultivatedvcrops + buffervnatural +
+#                                                   (1 + ag | hu4vzoneid)),
+#                              "tp_crops"    = bf(tp ~  
+#                                                   maxdepth + iwslavratio +
+#                                                   soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+#                                                   clayvpct + hu12vbaseflowvmean +
+#                                                   nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+#                                                   hu4vnitrogenvatmosphericvdeposition +
+#                                                   phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+#                                                   buffervcultivatedvcrops + buffervnatural +
+#                                                   (1 + soybeans + corn + pasture | hu4vzoneid)), 
+#                              "tp_ag"    = bf(tp ~  
+#                                                   maxdepth + iwslavratio +
+#                                                   soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+#                                                   clayvpct + hu12vbaseflowvmean +
+#                                                   nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+#                                                   hu4vnitrogenvatmosphericvdeposition +
+#                                                   phosphorusvfertilizervuse + pvinput + phosphorusvlivestockvmanure +
+#                                                   buffervcultivatedvcrops + buffervnatural +
+#                                                   (1 + ag | hu4vzoneid))
+#                              ))
+# 
+# resuper_brms <- 
+#   lapply(seq_along(model_forms_resuper), function(i) 
+#     get_if_not_exists(brm_fit, 
+#                       paste0("data/mcmc/resuper/", names(model_forms_resuper)[i]), 
+#                       formula = model_forms_resuper[[i]], 
+#                       data = dt))
 
 # evaluate hu4 re slope significance
 get_re_text <- function(x){
