@@ -26,7 +26,7 @@ cdl: data/cdl/cdl_summary.csv
 
 usgs: data/usgs/usgs.rds
 
-data/gis.gpkg: scripts/00_get_gis.R
+data/gis.gpkg: scripts/00_get_gis.R data/ep.rds
 	Rscript $<
 
 data/ep.rds: scripts/00_get_ep.R \
@@ -102,7 +102,7 @@ data/buffer_stats.csv: scripts/00_get_buffers.R
 data/mcmc/re_brms.rds: scripts/03_model.R
 	Rscript $<
 
-data/mcmc/model_r2.csv: scripts/03_model.R data/dt.rds
+data/mcmc/model_r2.csv: scripts/03_model.R
 	Rscript $<
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
@@ -129,7 +129,7 @@ figures/satellite-1.pdf
 	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
 	-mv manuscript/appendix2.pdf manuscript/appendix.pdf
 
-figures/11_map-1.pdf: figures/11_map.Rmd
+figures/11_map-1.pdf: figures/11_map.Rmd data/gis.gpkg
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 
@@ -149,7 +149,7 @@ figures/tn_re_hu4-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 	
-figres/tn_re_compare-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+figures/tn_re_compare-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 	
@@ -186,12 +186,15 @@ tables/03_model_summary.pdf
 	# tables/03_model_summary.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
-tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
+tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds data/dt_units.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
 
 tables/02_cdl_key.pdf: tables/02_cdl_key.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
 	
 tables/03_model_summary.pdf: tables/03_model_summary.Rmd data/mcmc/model_r2.csv
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
+	

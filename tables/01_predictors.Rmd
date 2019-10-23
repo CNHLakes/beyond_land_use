@@ -15,6 +15,12 @@ library(kableExtra)
 suppressMessages(library(dplyr))
 library(magrittr)
 
+pred_key <- read.csv("../data/predictor_key.csv", 
+                     stringsAsFactors = FALSE)
+
+# scripts/02_aggregate_predictors.R
+dt_units <- readRDS("../data/dt_units.rds")
+
 cdl_vars <- readRDS("../data/dt.rds") %>%
   dplyr::select(ag:wheat) %>%
   summarize_all(median, na.rm = TRUE) %>%
@@ -25,25 +31,46 @@ cdl_vars <- readRDS("../data/dt.rds") %>%
 
 # setwd("tables")
 dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select(tp:clay_pct, -matches("zoneid"), -matches("pct"), cdl_vars) %>%
+  dplyr::select(lagoslakeid, 
+                tp:clay_pct, buffer_cultivated_crops, buffer_natural,
+                -matches("zoneid"), -matches("pct"), -matches("input"), -matches("std"), 
+                cdl_vars) %>%
+  left_join(dplyr::select(readRDS("../data/dt.rds"), 
+                          lagoslakeid, clay_pct)) %>%
+  dplyr::select(-lagoslakeid) %>%
   tidyr::gather(key = "variable") %>%
   group_by(variable) %>%
   mutate(value = as.numeric(value)) %>%
   mutate(q10 = quantile(value, probs = c(0.1), na.rm = TRUE),
+         q25 = quantile(value, probs = c(0.25), na.rm = TRUE),
          q50 = quantile(value, probs = c(0.5), na.rm = TRUE),
+         q75 = quantile(value, probs = c(0.75), na.rm = TRUE),
          q90 = quantile(value, probs = c(0.9), na.rm = TRUE), 
          ratio = q90 / q10, 
          n = sum(!is.na(value), na.rm = TRUE)) %>%
-  dplyr::distinct(signif(q10, 2), signif(q50, 2), signif(q90, 2), ratio, n) %>%
+  dplyr::distinct(signif(q10, 2), signif(q25, 2), signif(q50, 2), signif(q75, 2), signif(q90, 2), ratio, n) %>%
   dplyr::select(variable, 
          q10 = `signif(q10, 2)`,
-         q50 = `signif(q50, 2)`, 
+         q25 = `signif(q25, 2)`,
+         q50 = `signif(q50, 2)`,
+         q75 = `signif(q75, 2)`,
          q90 = `signif(q90, 2)`,
          q10_q90_ratio = ratio,
          n) %>%
-  left_join(readRDS("../data/dt_units.rds"), by = "variable") %>%
+  left_join(dt_units, by = "variable") %>%
   dplyr::select(variable, units, everything())
-  
+
+dt <- ungroup(dt)
+dt <- left_join(dt, pred_key, by = c("variable" = "var"))
+dt <- dplyr::filter(dt, !is.na(pretty))
+
+dt <- mutate(dt, pretty = case_when(
+  nchar(units) > 0 ~ paste0(pretty, " (", units, ")"),
+  TRUE ~ pretty), 
+  IQR = paste0(q25, " - ", q75))
+dt <- dplyr::select(dt, Variable = pretty, 
+                    Median = q50, Q25 = q25, Q75 = q75)
+
 knitr::kable(dt, digits = 0, format = "markdown") 
 #%>%
  # add_header_above(c(" ", " ", Ranges = 3, " ", " "))

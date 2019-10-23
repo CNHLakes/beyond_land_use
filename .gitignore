@@ -38,3 +38,7 @@ data/mapbox
 temp1.tif
 temp2.tif
 *.tif.aux.xml
+tables/hu4.pdf
+data/mcmc/re
+data/mcmc/re_10
+data/mcmc/fe

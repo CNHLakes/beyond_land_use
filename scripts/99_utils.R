@@ -304,3 +304,81 @@ key_state <- function(x){
   dplyr::left_join(x, key, 
                    by = c("state.name"))
 }
+
+fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE, 
+                       x_min, x_max, plot_title){
+  # x <- gg_tn
+  # plot_title <- "Asdf"
+  x_range <- x_min - x_max
+  
+  if(y_label_side == "left"){
+    # tp
+    y_label_x <- x_min - 0.05
+    y_label_padding_min <- x_min - 2
+    y_label_padding_max <- x_max
+    y_label_just <- "right"
+    expand_min <- x_min - 2.4
+    expand_max <- x_max
+  }else{
+    # tn
+    y_label_x <- x_max + 0.05
+    y_label_padding_min <- x_min
+    y_label_padding_max <- x_max + 2
+    y_label_just <- "left"
+    expand_min <- x_min
+    expand_max <- x_max + 2.4
+  }
+  
+  res <- ggplot(data = x) + 
+    geom_pointrange(aes(x = pretty, y = `50%`, 
+                        ymin = `5%`, ymax = `95%`, color = signif)) + 
+    expand_limits(y = c(expand_min, expand_max)) +
+    geom_rect(ymin = y_label_padding_min, ymax = y_label_padding_max, 
+              xmin = 0, xmax = nrow(x) + 1, 
+              fill = "transparent") +
+    # y-axis labels
+    geom_text(aes(x = pretty, label = pretty, color = signif), 
+                     y = y_label_x, vjust = 0.5, hjust = y_label_just) + 
+    scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+    geom_hline(yintercept = 0) +
+    # x-axis labels
+    scale_y_continuous(breaks = seq(from = x_min, 
+                                    to  = x_max, 
+                                    by = 0.4), 
+                       labels = scales::number_format(accuracy = 0.1)) +
+    coord_flip() +
+    theme(axis.text.y = element_blank(), 
+          axis.ticks.y = element_blank(), 
+          axis.title.y = element_blank()) + 
+    facet_wrap(~category, strip.position = "left", ncol = 1, scales = "free_y",
+                 as.table = FALSE) +
+    theme(panel.spacing = unit(0, "lines"), 
+          strip.placement = "outside", 
+          strip.background = element_blank(), 
+          axis.title.y = element_blank())
+  if(!cat_labels){
+    res <- res + 
+      theme(strip.text = element_blank())
+  }
+    res <- res + 
+      ylab("Standardized slope") + theme(legend.position = 0) + 
+      ggtitle(plot_title) + xlab("") +
+      theme(panel.background = element_rect(fill = "transparent", color = NA),
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            panel.grid = element_blank(),
+            rect = element_rect(fill = "transparent"), 
+            plot.title = element_text(hjust = 0.5, face = "bold")) + 
+      # x-axis line length; controls dot-plot extent
+      annotate(x=0, xend=0, y=x_min, yend=x_max, 
+               colour="black", lwd=0.9, geom="segment") 
+}
+
+equalize_panels <- function(x){
+  gp <- ggplotGrob(x)
+  facet.columns <- gp$layout$t[grepl("panel", gp$layout$name)]
+  x.var         <- sapply(ggplot_build(x)$layout$panel_scales_x,
+                          function(l) length(l$range$range))
+  gp$heights[facet.columns] <- gp$heights[facet.columns] * rev(x.var)
+  x <- ggplotify::as.ggplot(gp)
+  x
+}

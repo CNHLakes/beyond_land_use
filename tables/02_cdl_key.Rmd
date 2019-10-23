@@ -28,15 +28,19 @@ cdl_key %>%
 
 \pagebreak
 ```{r cdl_summary}
+# setwd("tables")
 # ---- cdl summary ----
 cdl_data <- read.csv("../data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)
 
-apply(cdl_data, 2, function(x) quantile(x, c(0.05, 0.5, 0.95), 
+dt <- apply(cdl_data, 2, function(x) quantile(x, c(0.05, 0.5, 0.95), 
                                         na.rm = TRUE)) %>%
   data.frame() %>%
-  dplyr::select(-llid) %>%
+  dplyr::select(-llid)
+  
+dt %>%
   t() %>%
-  knitr::kable(caption = "CDL summary statistics", format = "latex", booktabs = TRUE) %>%
+  knitr::kable(caption = "CDL summary statistics", digits = 2,
+               format = "latex", booktabs = TRUE) %>%
   kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" ", "Quantiles" = 3))
 ```
