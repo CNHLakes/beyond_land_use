@@ -31,8 +31,13 @@ cdl_vars <- readRDS("../data/dt.rds") %>%
 
 # setwd("tables")
 dt <- readRDS("../data/dt.rds") %>%
-  dplyr::select(tp:clay_pct, buffer_cultivated_crops, buffer_natural,
-                -matches("zoneid"), -matches("pct"), -matches("input"), cdl_vars) %>%
+  dplyr::select(lagoslakeid, 
+                tp:clay_pct, buffer_cultivated_crops, buffer_natural,
+                -matches("zoneid"), -matches("pct"), -matches("input"), -matches("std"), 
+                cdl_vars) %>%
+  left_join(dplyr::select(readRDS("../data/dt.rds"), 
+                          lagoslakeid, clay_pct)) %>%
+  dplyr::select(-lagoslakeid) %>%
   tidyr::gather(key = "variable") %>%
   group_by(variable) %>%
   mutate(value = as.numeric(value)) %>%

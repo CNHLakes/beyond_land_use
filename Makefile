@@ -149,7 +149,7 @@ figures/tn_re_hu4-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 	
-figres/tn_re_compare-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+figures/tn_re_compare-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 	
@@ -186,7 +186,7 @@ tables/03_model_summary.pdf
 	# tables/03_model_summary.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
-tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds
+tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds data/dt_units.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 

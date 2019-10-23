@@ -102,6 +102,7 @@ dt <- ep %>%
 
 saveRDS(dt, "data/dt.rds")
 write.csv(dt, "data/dt.csv", row.names = FALSE)
+# setwd("tables")
 # dt <- readRDS("../data/dt.rds")
 
 dt_units <- data.frame(variable = names(dt), stringsAsFactors = FALSE) %>%
@@ -116,6 +117,7 @@ dt_units <- data.frame(variable = names(dt), stringsAsFactors = FALSE) %>%
     grepl("pct$", tolower(variable)) ~ "percent",
     grepl("buffer", tolower(variable)) ~ "percent",
     variable %in% "maxdepth" ~ "m",
+    variable %in% "soil_org_carbon" ~ "g C/m2",
     # keep below line as last
     variable %in% names(ep)[c(-1, -2, -3, -9, -10, -12)] ~ "ug/l"
   ))
