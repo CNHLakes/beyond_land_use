@@ -130,7 +130,9 @@ figures/dotplot-1.pdf \
 figures/08_exploratory_dotplot-1.pdf \
 figures/04_nlcd-versus-cdl-1.pdf \
 figures/cdl_vs_nlcd-1.pdf \
-figures/satellite-1.pdf 
+figures/satellite-1.pdf \
+figures/fe_10-1.pdf \
+figures/fe_nolulc-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
 	-mv manuscript/appendix2.pdf manuscript/appendix.pdf
@@ -148,6 +150,14 @@ figures/re-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
 	pdfcrop $@ $@
 	
 figures/fe-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
+	
+figures/fe_10-1.pdf: figures/07_model-selection_10.Rmd data/mcmc/re_brms_10.rds
+	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
+	pdfcrop $@ $@
+
+figures/fe_nolulc-1.pdf: figures/07_model-selection_nolulc.Rmd data/mcmc/re_brms_nolulc.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 
