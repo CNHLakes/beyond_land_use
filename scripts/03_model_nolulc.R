@@ -32,8 +32,8 @@ dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
 fe_brms <- 
   lapply(seq_along(model_forms_fe), function(i) 
     get_if_not_exists(brm_fit, 
-                      paste0("data/mcmc/fe/", names(model_forms_fe)[i]), 
+                      paste0("data/mcmc/fe_nolulc/", names(model_forms_fe)[i]), 
                       formula = model_forms_fe[[i]], 
                       data = dt))
 
-saveRDS(re_brms, "data/mcmc/fe_brms_nolulc.rds")
+saveRDS(fe_brms, "data/mcmc/fe_brms_nolulc.rds")
