@@ -11,26 +11,15 @@ good_hu4s <- readRDS("data/dt.rds") %>%
   dplyr::filter(n >= 3)
 dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
 
-brm_fit <- function(destfile, formula, data){
-  fit <- brm(formula = formula, data = data, prior = set_prior("horseshoe(2)"), 
-             family = gaussian(), control = list(adapt_delta = 0.99))
-  
-  saveRDS(fit, destfile)
-  return(fit)
-}
-
-
 # evaulate fixed effects
-# ag + {maxdepth, baseflow, iwslavratio}
-
 (model_forms_fe <- list(
-  "tp" = bf(tp ~ ag), # proxy
+  "tp" = bf(tp ~ ag),
   "tp_nolulc" = bf(tp ~ maxdepth + iwslavratio +
                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                      clayvpct + hu12vbaseflowvmean +
-                     nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+                     nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                      hu4vnitrogenvatmosphericvdeposition +
-                     phosphorusvfertilizervuse + pvinput + 
+                     phosphorusvfertilizervuse +
                      phosphorusvlivestockvmanure),
   "tp_nuts" = bf(tp ~ nitrogenvfertilizervuse + nvinput + 
                      nitrogenvlivestockvmanure +

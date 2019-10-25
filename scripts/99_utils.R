@@ -382,3 +382,11 @@ equalize_panels <- function(x){
   x <- ggplotify::as.ggplot(gp)
   x
 }
+
+brm_fit <- function(destfile, formula, data){
+  fit <- brm(formula = formula, data = data, prior = set_prior("horseshoe(2)"), 
+             family = gaussian(), control = list(adapt_delta = 0.99))
+  
+  saveRDS(fit, destfile)
+  return(fit)
+}

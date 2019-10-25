@@ -101,6 +101,12 @@ data/buffer_stats.csv: scripts/00_get_buffers.R
 
 data/mcmc/re_brms.rds: scripts/03_model.R
 	Rscript $<
+	
+data/mcmc/re_brms_10.rds: scripts/03_model_10.R
+	Rscript $<
+
+data/mcmc/re_brms_nolulc.rds: scripts/03_model_nolulc.R
+	Rscript $<
 
 data/mcmc/model_r2.csv: scripts/03_model.R
 	Rscript $<
