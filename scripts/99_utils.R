@@ -390,3 +390,57 @@ brm_fit <- function(destfile, formula, data){
   saveRDS(fit, destfile)
   return(fit)
 }
+
+get_re_text <- function(x){
+  # x <- "maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse + buffervcultivatedvcrops + (1 + ag | hu4vzoneid)"
+  res <- strsplit(x, "\\|")[[1]][1]
+  res <- strsplit(res, " ")[[1]]
+  res[length(res)]
+}
+
+get_re_signif <- function(x){
+  # x <- re_brms[[1]]
+  # tidybayes::get_variables(x)
+  print(as.character(x$formula)[1])
+  
+  re_global <- x %>%
+    spread_draws(!!rlang::parse_expr(
+      paste0("sd_hu4vzoneid__", get_re_text(as.character(x$formula)[1])))) %>%
+    dplyr::select(tail(names(.), 1)) %>%
+    pull(names(.)[1]) %>%
+    quantile(c(0.05, 0.5, 0.95))
+  
+  res <- x %>%
+    spread_draws(r_hu4vzoneid[hu4vzoneid,term]) %>%
+    dplyr::filter(term == get_re_text(as.character(x$formula)[1])) %>%
+    group_by(hu4vzoneid) %>%
+    do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
+    mutate(signif = case_when(`5%` > 0 ~ TRUE, 
+                              TRUE ~ FALSE))
+  x$re            <- res
+  x$re_global     <- re_global
+  x$re_signif     <- any(res$signif)
+  x$re_signif_ids <- dplyr::filter(res, signif == TRUE)$hu4vzoneid
+  x
+}
+
+get_residuals <- function(model, threshold = 0.1){
+  lg <- parent.env(environment())$lg
+  # model <- re_brms[[1]]
+  model$res_med <- dt %>%
+    add_residual_draws(model, allow_new_levels = TRUE) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.residual_median = median(.residual)) %>%
+    left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long),
+              by = "lagoslakeid")
+  
+  model$res_med <- dt %>%
+    add_fitted_draws(model, allow_new_levels = TRUE) %>%
+    group_by(lagoslakeid) %>%
+    summarize(.value_median = median(.value)) %>%
+    right_join(model$res_med, by = "lagoslakeid")
+  
+  model$res_test <- abs(
+    median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
+  model
+}

@@ -105,7 +105,7 @@ data/mcmc/re_brms.rds: scripts/03_model.R
 data/mcmc/re_brms_10.rds: scripts/03_model_10.R
 	Rscript $<
 
-data/mcmc/re_brms_nolulc.rds: scripts/03_model_nolulc.R
+data/mcmc/fe_brms_nolulc.rds: scripts/03_model_nolulc.R
 	Rscript $<
 
 data/mcmc/model_r2.csv: scripts/03_model.R
@@ -157,7 +157,7 @@ figures/fe_10-1.pdf: figures/07_model-selection_10.Rmd data/mcmc/re_brms_10.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 
-figures/fe_nolulc-1.pdf: figures/07_model-selection_nolulc.Rmd data/mcmc/re_brms_nolulc.rds
+figures/fe_nolulc-1.pdf: figures/07_model-selection_nolulc.Rmd data/mcmc/fe_brms_nolulc.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 
