@@ -42,3 +42,7 @@ tables/hu4.pdf
 data/mcmc/re
 data/mcmc/re_10
 data/mcmc/fe
+data/buffer_lulc/*.csv
+data/cdl/metadata.pdf
+mendota_iws.html
+scripts/construct_sql.R
