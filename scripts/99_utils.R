@@ -289,6 +289,8 @@ get_if_not_exists <- function(x, destfile, read_function = readRDS,
   }
 }
 
+# ----- model_tidying -----
+
 get_re_text <- function(x){
   # x <- "maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse + buffervcultivatedvcrops + (1 + ag | hu4vzoneid)"
   res <- strsplit(x, "\\|")[[1]][1]
