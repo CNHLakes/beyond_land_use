@@ -444,3 +444,23 @@ get_residuals <- function(model, threshold = 0.1){
     median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
   model
 }
+
+sort_loo <- function(x){
+  x_df       <- as.data.frame(x)
+  x_df$index <- row.names(x_df)
+  x_df$index <- as.numeric(stringr::str_extract(x_df$index, "\\d+"))
+  arrange(x_df, index)
+}
+
+get_re_response <- function(x){
+  trimws(strsplit(x, "\\~")[[1]][1])
+}
+
+get_r2 <- function(x){
+  # x <- re_brms[[1]]
+  res          <- data.frame(brms::bayes_R2(x))
+  res$term     <- get_re_text(as.character(x$formula)[1])
+  res$response <- get_re_response(as.character(x$formula)[1])
+  x$R2 <- res
+  x
+}

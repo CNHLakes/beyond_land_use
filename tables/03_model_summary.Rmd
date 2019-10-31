@@ -15,36 +15,27 @@ source("../scripts/99_utils.R")
 # setwd("tables")
 re_brms <- readRDS("../data/mcmc/re_brms.rds")
 
-r2_re <- dplyr::bind_rows(
-  lapply(re_brms, function(x) data.frame(brms::bayes_R2(x))))
-r2_re$term <- unlist(lapply(re_brms, 
-                                function(x) get_re_text(as.character(x$formula)[1])))
-r2_re$response <- c(rep("tp", nrow(r2_re) / 2), rep("tn", nrow(r2_re) / 2))
-r2_re <- dplyr::filter(r2_re, term != "rowvcropvpct")
+# filter out row crop from r2_brms
+predictors <- unlist(lapply(re_brms, function(x) get_re_text(
+  as.character(x$formula)[[1]])))
+re_brms    <- re_brms[-1 * which(predictors == "rowvcropvpct")]
+predictors <- unlist(lapply(re_brms, function(x) get_re_text(
+  as.character(x$formula)[[1]])))
 
-sort_loo <- function(x){
-  x_df       <- as.data.frame(x)
-  x_df$index <- row.names(x_df)
-  x_df$index <- as.numeric(stringr::str_extract(x_df$index, "\\d+"))
-  arrange(x_df, index)
-}
-
-# lapply(re_brms, function(x) x$formula)
+# get responses
+response <- unlist(lapply(re_brms, function(x) get_re_response(
+  as.character(x$formula)[[1]])))
 
 loo_re <- rbind(
-  sort_loo(loo_compare(loo(re_brms[[1]]), loo(re_brms[[2]]),
-                       loo(re_brms[[3]]), loo(re_brms[[4]]),
-                       loo(re_brms[[5]]), 
-                       loo(re_brms[[6]]))),
-  sort_loo(loo_compare(loo(re_brms[[7]]), loo(re_brms[[8]]),
-                       loo(re_brms[[9]]), loo(re_brms[[10]]),
-                       loo(re_brms[[11]]), 
-                       loo(re_brms[[12]])))
-  ) %>%
-  arrange(index)
+  loo_compare(lapply(which(response == "tp"), function(x) re_brms[[x]]$loo)), 
+  loo_compare(lapply(which(response == "tn"), function(x) re_brms[[x]]$loo))) 
+loo_re_df            <- data.frame(loo_re)
+row.names(loo_re_df) <- NULL
+loo_re_df$term       <- row.names(loo_re)
+loo_re_df$response   <- response
 
-dt           <- r2_re
-dt$elpd_diff <- loo_re$elpd_diff
+dt <- dplyr::bind_rows(lapply(re_brms, function(x) x$R2))
+dt <- left_join(loo_re_df, dt, by = c("term", "response"))
 dt <- dplyr::select(dt, 
                     response, term, r2 = Estimate, elpd_diff)
 dt <- dt[order(dt$response, dt$elpd_diff, decreasing = c(TRUE, FALSE)),]

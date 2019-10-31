@@ -12,52 +12,52 @@ good_hu4s <- readRDS("data/dt.rds") %>%
 dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
 
 # evaulate fixed effects
-(model_forms_fe <- list(
-  "tp" = bf(tp ~ ag),
-  "tp_nolulc" = bf(tp ~ maxdepth + iwslavratio +
-                     soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
-                     clayvpct + hu12vbaseflowvmean +
-                     nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
-                     hu4vnitrogenvatmosphericvdeposition +
-                     phosphorusvfertilizervuse +
-                     phosphorusvlivestockvmanure),
-  "tp_nuts" = bf(tp ~ nitrogenvfertilizervuse + nvinput + 
-                     nitrogenvlivestockvmanure +
-                     hu4vnitrogenvatmosphericvdeposition +
-                     phosphorusvfertilizervuse + pvinput + 
-                     phosphorusvlivestockvmanure),
-  "tp_depth" = bf(tp ~ ag + maxdepth), # lake
-  "tp_bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean), # transport
-  "tp_nfert" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + 
-                    phosphorusvfertilizervuse), # sources
-  "tp_buffer" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean +
-                     phosphorusvfertilizervuse + buffervcultivatedvcrops), # buffer
-  "tn" = bf(tn ~ ag), # proxy
-  "tn_nolulc" = bf(tn ~ maxdepth + iwslavratio +
-                     soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
-                     clayvpct + hu12vbaseflowvmean +
-                     nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
-                     hu4vnitrogenvatmosphericvdeposition +
-                     phosphorusvfertilizervuse + pvinput + 
-                     phosphorusvlivestockvmanure),
-  "tn_depth" = bf(tn ~ ag + maxdepth), # lake
-  "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon), # transport
-  "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
-                    nitrogenvfertilizervuse), # sources 
-  "tn_buffer" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
-                     nitrogenvfertilizervuse + buffervcultivatedvcrops), # buffer
-  "tn_ndep" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
-                   nitrogenvfertilizervuse + buffervcultivatedvcrops + 
-                   hu4vnitrogenvatmosphericvdeposition)
-))
-
-fe_brms <- list()
-i <- 3
-print(paste0("Fitting ", paste0("data/mcmc/fe/", names(model_forms_fe)[i])))
-fe_brms[[i]] <- brm(formula = model_forms_fe[[i]], data = dt,
-                      prior = set_prior("horseshoe(2)"), family = gaussian(),
-                      control = list(adapt_delta = 0.99))
-summary(fe_brms[[i]])
+# (model_forms_fe <- list(
+#   "tp" = bf(tp ~ ag),
+#   "tp_nolulc" = bf(tp ~ maxdepth + iwslavratio +
+#                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+#                      clayvpct + hu12vbaseflowvmean +
+#                      nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
+#                      hu4vnitrogenvatmosphericvdeposition +
+#                      phosphorusvfertilizervuse +
+#                      phosphorusvlivestockvmanure),
+#   "tp_nuts" = bf(tp ~ nitrogenvfertilizervuse + nvinput + 
+#                      nitrogenvlivestockvmanure +
+#                      hu4vnitrogenvatmosphericvdeposition +
+#                      phosphorusvfertilizervuse + pvinput + 
+#                      phosphorusvlivestockvmanure),
+#   "tp_depth" = bf(tp ~ ag + maxdepth), # lake
+#   "tp_bf" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean), # transport
+#   "tp_nfert" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean + 
+#                     phosphorusvfertilizervuse), # sources
+#   "tp_buffer" = bf(tp ~ ag + maxdepth + hu12vbaseflowvmean +
+#                      phosphorusvfertilizervuse + buffervcultivatedvcrops), # buffer
+#   "tn" = bf(tn ~ ag), # proxy
+#   "tn_nolulc" = bf(tn ~ maxdepth + iwslavratio +
+#                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
+#                      clayvpct + hu12vbaseflowvmean +
+#                      nitrogenvfertilizervuse + nvinput + nitrogenvlivestockvmanure +
+#                      hu4vnitrogenvatmosphericvdeposition +
+#                      phosphorusvfertilizervuse + pvinput + 
+#                      phosphorusvlivestockvmanure),
+#   "tn_depth" = bf(tn ~ ag + maxdepth), # lake
+#   "tn_sc" = bf(tn ~ ag + maxdepth + soilvorgvcarbon), # transport
+#   "tn_nfert" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
+#                     nitrogenvfertilizervuse), # sources 
+#   "tn_buffer" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
+#                      nitrogenvfertilizervuse + buffervcultivatedvcrops), # buffer
+#   "tn_ndep" = bf(tn ~ ag + maxdepth + soilvorgvcarbon + 
+#                    nitrogenvfertilizervuse + buffervcultivatedvcrops + 
+#                    hu4vnitrogenvatmosphericvdeposition)
+# ))
+# 
+# fe_brms <- list()
+# i <- 3
+# print(paste0("Fitting ", paste0("data/mcmc/fe/", names(model_forms_fe)[i])))
+# fe_brms[[i]] <- brm(formula = model_forms_fe[[i]], data = dt,
+#                       prior = set_prior("horseshoe(2)"), family = gaussian(),
+#                       control = list(adapt_delta = 0.99))
+# summary(fe_brms[[i]])
 
 #   saveRDS(re_brms[[i]], paste0("data/mcmc/re/", names(model_forms_re)[i]))
 # }# else{
@@ -65,20 +65,18 @@ summary(fe_brms[[i]])
 # }
 # }
 
+# fe_brms <- 
+#   lapply(seq_along(model_forms_fe), function(i) 
+#     get_if_not_exists(brm_fit, 
+#                       paste0("data/mcmc/fe/", names(model_forms_fe)[i]), 
+#                       formula = model_forms_fe[[i]], 
+#                       data = dt))
 
-fe_brms <- 
-  lapply(seq_along(model_forms_fe), function(i) 
-    get_if_not_exists(brm_fit, 
-                      paste0("data/mcmc/fe/", names(model_forms_fe)[i]), 
-                      formula = model_forms_fe[[i]], 
-                      data = dt))
-
-
-r2_fe <- dplyr::bind_rows(
-  lapply(fe_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
-  mutate(Model = names(model_forms_fe), 
-         Estimate = round(Estimate, 2)) %>%
-  dplyr::select(Model, Estimate) 
+# r2_fe <- dplyr::bind_rows(
+#   lapply(fe_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
+#   mutate(Model = names(model_forms_fe), 
+#          Estimate = round(Estimate, 2)) %>%
+#   dplyr::select(Model, Estimate) 
 
 # r2_fe$`Proxy`     <- c(rep("Ag", 5), 
 #                        rep("Ag", 5))
@@ -235,7 +233,6 @@ re_brms <-
                       formula = model_forms_re[[i]], 
                       data = dt))
 
-
 # (model_forms_resuper <- list("tn_crops"    = bf(tn ~  
 #                                                      maxdepth + iwslavratio +
 #                                                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -282,90 +279,21 @@ re_brms <-
 #                       data = dt))
 
 # evaluate hu4 re slope significance
-get_re_text <- function(x){
-  # x <- "maxdepth + hu12vbaseflowvmean + phosphorusvfertilizervuse + buffervcultivatedvcrops + (1 + ag | hu4vzoneid)"
-  res <- strsplit(x, "\\|")[[1]][1]
-  res <- strsplit(res, " ")[[1]]
-  res[length(res)]
-}
-
-get_re_signif <- function(x){
-  # x <- re_brms[[1]]
-  # tidybayes::get_variables(x)
-  print(as.character(x$formula)[1])
-  
-  re_global <- x %>%
-    spread_draws(!!rlang::parse_expr(
-      paste0("sd_hu4vzoneid__", get_re_text(as.character(x$formula)[1])))) %>%
-    dplyr::select(tail(names(.), 1)) %>%
-    pull(names(.)[1]) %>%
-    quantile(c(0.05, 0.5, 0.95))
-  
-  res <- x %>%
-    spread_draws(r_hu4vzoneid[hu4vzoneid,term]) %>%
-    dplyr::filter(term == get_re_text(as.character(x$formula)[1])) %>%
-    group_by(hu4vzoneid) %>%
-    do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
-    mutate(signif = case_when(`5%` > 0 ~ TRUE, 
-                              TRUE ~ FALSE))
-  x$re            <- res
-  x$re_global     <- re_global
-  x$re_signif     <- any(res$signif)
-  x$re_signif_ids <- dplyr::filter(res, signif == TRUE)$hu4vzoneid
-  x
-}
-  
 re_brms <- lapply(re_brms, function(x) get_re_signif(x))
 
 # save model residuals
-get_residuals <- function(model, threshold = 0.1){
-  lg <- parent.env(environment())$lg
-  # model <- re_brms[[1]]
-  model$res_med <- dt %>%
-    add_residual_draws(model, allow_new_levels = TRUE) %>%
-    group_by(lagoslakeid) %>%
-    summarize(.residual_median = median(.residual)) %>%
-    left_join(dplyr::select(lg$locus, lagoslakeid, nhd_lat, nhd_long),
-              by = "lagoslakeid")
-  
-  model$res_med <- dt %>%
-    add_fitted_draws(model, allow_new_levels = TRUE) %>%
-    group_by(lagoslakeid) %>%
-    summarize(.value_median = median(.value)) %>%
-    right_join(model$res_med, by = "lagoslakeid")
-  
-  model$res_test <- abs(
-    median(model$res_med$.residual_median, na.rm = TRUE)) < threshold
-  model
-}
 re_brms <- lapply(re_brms, function(x) get_residuals(x))
+
+# get r2
+re_brms <- lapply(re_brms, function(x) get_r2(x))
+
+# get loo
+re_brms <- lapply(re_brms, function(x){
+  x$loo <- loo(x, model_names = get_re_text(as.character(x$formula)[[1]])); x})
 
 saveRDS(re_brms, "data/mcmc/re_brms.rds")
 # unlink("data/mcmc/re_brms.rds")
 # re_brms <- readRDS("data/mcmc/re_brms.rds")
-
-r2_re <- dplyr::bind_rows(
-  lapply(re_brms, function(x) data.frame(brms::bayes_R2(x)))) %>%
-  mutate(Model = names(model_forms_re), 
-         Estimate = round(Estimate, 2)) %>%
-  dplyr::select(Model, Estimate)
-r2_re$re_signif <- unlist(lapply(re_brms, function(x) x$re_signif))
-
-# r2_re$`Proxy`     <- c("Ag", "Soybeans", "Pasture",
-#                        "Ag", "Corn", "Pasture") 
-# r2_re$`Lake`      <- c(rep("maxdepth", 6))
-# r2_re$`Transport` <- c(rep("Baseflow", 3), rep("Soil Org Carbon", 3))
-# r2_re$`Source`    <- c(rep("P fertilizer", 3), rep("N fertilizer", 3))
-# r2_re$`Buffer`    <- c(rep("Row Crop", 6))
-
-r2    <- dplyr::bind_rows(r2_fe, r2_re)
-
-if(!interactive()){
-  write.csv(r2, 
-            "data/mcmc/model_r2.csv",
-            row.names = FALSE)
-}
-# r2 <- read.csv("../data/mcmc/model_r2.csv")
 
 # ---- diagnostics ----
 if(interactive()){

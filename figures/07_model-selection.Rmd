@@ -53,10 +53,13 @@ re_global          <- left_join(re_global, pred_key, by = c("term" = "var")) %>%
 ```
 
 ```{r pre_tp_fe, out.width="3.45in", out.height="4in"}
-# lapply(re_brms, function(x) x$R2)
-# lapply(re_brms, function(x) x $formula) 
-# re_brms[[2]]$formula
-best_tp        <- 2 # 2 is best tp model with random effects
+# autoselect best model
+re_names <- unlist(lapply(re_brms, function(x) 
+  get_re_text(as.character(x$formula)[[1]])))[1:(length(re_brms)/2)]
+best_tp <- loo_compare(
+  lapply(seq_len(length(re_brms)/2), function(x) re_brms[[x]]$loo))
+best_tp <- which(re_names == row.names(best_tp)[1])
+
 fit_tp         <- re_brms[[best_tp]] 
 signif_hu4_ids <- fit_tp$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
@@ -99,11 +102,15 @@ gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
 ```
 
 ```{r pre_tn_fe, out.width="3.45in", out.height="4in"}
-# lapply(re_brms, function(x) x$formula) 
-# re_brms[[8]]$formula
-# brms::bayes_R2(re_brms[[8]])
-  
-best_tn        <- 8 # 11 is best tn model with random effects
+# autoselect best tn model
+re_names <- unlist(lapply(re_brms, function(x) 
+  get_re_text(as.character(x$formula)[[1]])))[seq((length(re_brms)/2) + 1,
+                                                  length(re_brms))]
+best_tn <- loo_compare(
+  lapply(seq((length(re_brms)/2) + 1, length(re_brms)), 
+         function(x) re_brms[[x]]$loo))
+best_tn <- which(re_names == row.names(best_tn)[1])
+
 fit_tn         <- re_brms[[best_tn]] 
 signif_hu4_ids <- fit_tn$re_signif_ids 
 signif_hu4     <- dplyr::filter(hu4, ZoneID %in% signif_hu4_ids)
@@ -197,9 +204,11 @@ gg_tp_re
 ```
 
 ```{r tn_re_hu4, fig.width = 3.77, fig.height = 4.5}
+# setwd("figures")
 study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
 states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
 hu4_all       <- st_read("../data/gis.gpkg", "hu4s_focal", quiet = TRUE)
+hu4_all       <- st_crop(hu4_all, st_transform(study_bbox, st_crs(hu4_all)))
 
 # map significant random effects hu4s
 gg_hu4 <- 
