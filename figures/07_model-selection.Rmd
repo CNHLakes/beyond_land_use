@@ -109,7 +109,7 @@ re_names <- unlist(lapply(re_brms, function(x)
 best_tn <- loo_compare(
   lapply(seq((length(re_brms)/2) + 1, length(re_brms)), 
          function(x) re_brms[[x]]$loo))
-best_tn <- which(re_names == row.names(best_tn)[1])
+best_tn <- which(re_names == row.names(best_tn)[1]) + (length(re_brms)/2)
 
 fit_tn         <- re_brms[[best_tn]] 
 signif_hu4_ids <- fit_tn$re_signif_ids 
