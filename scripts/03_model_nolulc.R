@@ -36,15 +36,14 @@ fe_brms <-
                       formula = model_forms_fe[[i]], 
                       data = dt))
 
-
 # save model residuals
-re_brms <- lapply(fe_brms, function(x) get_residuals(x))
+fe_brms <- lapply(fe_brms, function(x) get_residuals(x))
 
 # get r2
-re_brms <- lapply(fe_brms, function(x) get_r2(x))
+fe_brms <- lapply(fe_brms, function(x) get_r2(x))
 
 # get loo
-re_brms <- lapply(fe_brms, function(x){
-  x$loo <- loo(x, model_names = get_re_text(as.character(x$formula)[[1]])); x})
+fe_brms <- lapply(fe_brms, function(x){
+  x$loo <- loo(x, model_names = get_re_response(as.character(x$formula)[[1]])); x})
 
 saveRDS(fe_brms, "data/mcmc/fe_brms_nolulc.rds")
