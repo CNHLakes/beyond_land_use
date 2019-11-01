@@ -139,7 +139,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
 re_brms <- 
   lapply(seq_along(model_forms_re), function(i) 
     get_if_not_exists(brm_fit, 
-                      paste0("data/mcmc/re/", names(model_forms_re)[i]), 
+                      paste0("data/mcmc/re_40/", names(model_forms_re)[i]), 
                       formula = model_forms_re[[i]], 
                       data = dt))
 
