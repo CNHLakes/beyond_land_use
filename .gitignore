@@ -46,3 +46,4 @@ data/buffer_lulc/*.csv
 data/cdl/metadata.pdf
 mendota_iws.html
 scripts/construct_sql.R
+data/mcmc/re_40

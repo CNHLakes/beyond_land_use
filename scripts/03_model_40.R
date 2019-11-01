@@ -15,8 +15,6 @@ high_ag_llids <- dplyr::filter(dt_raw, ag > 40) %>%
   pull(lagoslakeid)
 dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
 
-# evaulate spatial random effects
-# {fixed effects} + 1/ag, 1/soybeans, 1/corn
 (model_forms_re <- list(
   "tp_ag"       = bf(tp ~  
                        maxdepth + iwslavratio +
@@ -141,7 +139,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
 re_brms <- 
   lapply(seq_along(model_forms_re), function(i) 
     get_if_not_exists(brm_fit, 
-                      paste0("data/mcmc/re_10/", names(model_forms_re)[i]), 
+                      paste0("data/mcmc/re/", names(model_forms_re)[i]), 
                       formula = model_forms_re[[i]], 
                       data = dt))
 
@@ -151,6 +149,11 @@ re_brms <- lapply(re_brms, function(x) get_re_signif(x))
 # save model residuals
 re_brms <- lapply(re_brms, function(x) get_residuals(x))
 
-saveRDS(re_brms, "data/mcmc/re_brms_10.rds")
-# unlink("data/mcmc/re_brms_10.rds")
-# re_brms <- readRDS("data/mcmc/re_brms_10.rds")
+# get r2
+re_brms <- lapply(re_brms, function(x) get_r2(x))
+
+# get loo
+re_brms <- lapply(re_brms, function(x){
+  x$loo <- loo(x, model_names = get_re_text(as.character(x$formula)[[1]])); x})
+
+saveRDS(re_brms, "data/mcmc/re_brms.rds")
