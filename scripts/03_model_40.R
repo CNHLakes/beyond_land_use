@@ -156,4 +156,4 @@ re_brms <- lapply(re_brms, function(x) get_r2(x))
 re_brms <- lapply(re_brms, function(x){
   x$loo <- loo(x, model_names = get_re_text(as.character(x$formula)[[1]])); x})
 
-saveRDS(re_brms, "data/mcmc/re_brms.rds")
+saveRDS(re_brms, "data/mcmc/re_brms_40.rds")
