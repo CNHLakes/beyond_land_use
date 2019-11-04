@@ -159,7 +159,7 @@ x_min <- c(gg_tp$`5%`, gg_tn$`5%`)[which.min(c(gg_tp$`5%`, gg_tn$`5%`))]
                         x_min, x_max, "TN"))
 ```
 
-```{r fe}
+```{r fe_40}
 cowplot::plot_grid(
 cowplot::plot_grid(
   equalize_panels(
@@ -199,7 +199,7 @@ gg_tp_re <- ggplot(data = fit_tp$re) +
 gg_tp_re
 ```
 
-```{r tn_re_hu4, fig.width = 3.77, fig.height = 4.5}
+```{r tn_re_hu4_40, fig.width = 3.77, fig.height = 4.5}
 # setwd("figures")
 study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
 states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
@@ -248,7 +248,7 @@ gg_tn_re <- ggplot(data = fit_tn$re) +
 
 ```
 
-```{r tn_re_compare, fig.height=3, fig.width=4}
+```{r tn_re_compare_40, fig.height=3, fig.width=4}
 # compare lakes in signif hu4s
 dt        <- readRDS("../data/dt_scaled.rds") %>%
   mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
@@ -328,7 +328,7 @@ gg_tn_re
 
 ```
 
-```{r re}
+```{r re_40}
 cowplot::plot_grid(
 cowplot::plot_grid(gg_tp_re + theme(axis.title.x = element_blank(), 
                                      plot.margin = unit(c(0,0,0,0), "cm")),
@@ -351,7 +351,7 @@ cowplot::plot_grid(gg_tp_re,
                    rel_widths = c(1, 0.9))
 ```
 
-```{r re-comparison, fig.width=4}
+```{r re-comparison_40, fig.width=4}
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
 gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
     geom_pointrange(aes(x = term, y = `50%`, 
