@@ -22,6 +22,7 @@ states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
 states_focal  <- st_read("../data/gis.gpkg", "states_focal", quiet = TRUE)
 hu4_focal     <- st_read("../data/gis.gpkg", "hu4s_focal", quiet = TRUE)
 hu4_focal     <- st_crop(st_transform(hu4_focal, st_crs(study_bbox)), study_bbox) 
+hu4_focal     <- rmapshaper::ms_simplify(hu4_focal)
 
 # outline <- ne_countries(country = c("canada", "mexico", "united states of america"), 
 #                      returnclass = "sf")
