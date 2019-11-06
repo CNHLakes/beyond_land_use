@@ -308,7 +308,9 @@ key_state <- function(x){
 }
 
 fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE, 
-                       x_min, x_max, plot_title){
+                       x_min, x_max, plot_title, tick_width = 0.4, 
+                       tick_accuracy = 0.1, y_label_padding = 2,
+                       plot_padding = 2.4){
   # x <- gg_tn
   # plot_title <- "Asdf"
   x_range <- x_min - x_max
@@ -316,19 +318,19 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
   if(y_label_side == "left"){
     # tp
     y_label_x <- x_min - 0.05
-    y_label_padding_min <- x_min - 2
+    y_label_padding_min <- x_min - y_label_padding
     y_label_padding_max <- x_max
     y_label_just <- "right"
-    expand_min <- x_min - 2.4
+    expand_min <- x_min - plot_padding
     expand_max <- x_max
   }else{
     # tn
     y_label_x <- x_max + 0.05
     y_label_padding_min <- x_min
-    y_label_padding_max <- x_max + 2
+    y_label_padding_max <- x_max + y_label_padding
     y_label_just <- "left"
     expand_min <- x_min
-    expand_max <- x_max + 2.4
+    expand_max <- x_max + plot_padding
   }
   
   res <- ggplot(data = x) + 
@@ -346,8 +348,8 @@ fe_dotplot <- function(x, y_label_side = "left", cat_labels = TRUE,
     # x-axis labels
     scale_y_continuous(breaks = seq(from = x_min, 
                                     to  = x_max, 
-                                    by = 0.4), 
-                       labels = scales::number_format(accuracy = 0.1)) +
+                                    by = tick_width), 
+                       labels = scales::number_format(accuracy = tick_accuracy)) +
     coord_flip() +
     theme(axis.text.y = element_blank(), 
           axis.ticks.y = element_blank(), 

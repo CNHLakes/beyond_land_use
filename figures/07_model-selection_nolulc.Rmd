@@ -120,12 +120,12 @@ x_min <- c(gg_tp$`5%`, gg_tn$`5%`)[which.min(c(gg_tp$`5%`, gg_tn$`5%`))]
 
 ```{r tp_fe, out.width="3.45in", out.height="4in"}
 (gg_tp_fe <- fe_dotplot(gg_tp, "left", cat_labels = TRUE,
-                        x_min, x_max, "TP"))
+                        x_min, x_max, "TP", tick_width = 2, tick_accuracy = 1, plot_padding = 13))
 ```
 
 ```{r tn_fe, out.width="3.45in", out.height="4in"}
 (gg_tn_fe <- fe_dotplot(gg_tn, "right", cat_labels = FALSE, 
-                        x_min, x_max, "TN"))
+                        x_min, x_max, "TN", tick_width = 2, tick_accuracy = 1, plot_padding = 13))
 ```
 
 ```{r fe_nolulc}
