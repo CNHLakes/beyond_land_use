@@ -16,9 +16,9 @@ dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
   "tp_nolulc" = bf(tp ~ maxdepth + iwslavratio +
                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
                      clayvpct + hu12vbaseflowvmean +
-                     nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
+                     nitrogenvfertilizervuse + nvinput +  nitrogenvlivestockvmanure +
                      hu4vnitrogenvatmosphericvdeposition +
-                     phosphorusvfertilizervuse +
+                     phosphorusvfertilizervuse + pvinput +
                      phosphorusvlivestockvmanure),
   "tn_nolulc" = bf(tn ~ maxdepth + iwslavratio +
                      soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
