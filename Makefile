@@ -165,7 +165,7 @@ figures/tn_re_compare-1.pdf: figures/07_model-selection.Rmd data/mcmc/re_brms.rd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 	
-figures/01_county_extent-1.pdf: figures/01_county_extent.Rmd scripts/explore_lagos_ag.R
+figures/tptn_maps-1.pdf: figures/01_county_extent.Rmd scripts/explore_lagos_ag.R data/ep.rds 
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	
 figures/02_hierarchical_demo-1.pdf: figures/02_hierarchical_demo.Rmd
