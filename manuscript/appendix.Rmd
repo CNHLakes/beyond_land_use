@@ -32,6 +32,26 @@ source("../scripts/99_utils.R")
 
 \pagebreak
 
+## Percent agriculture versus lake TP and TN
+
+```{r ag-scatter, fig.cap="Lake nutrient concentrations versus percent watershed agriculture.", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
+dt <- readRDS("../data/dt.rds")
+
+cowplot::plot_grid(
+ggplot(data = dt) + 
+  geom_point(aes(x = ag, y = tn)) + 
+  ylab("TN (ug/L)") +
+  xlab("Percent Agriculture"), 
+ggplot(data = dt) + 
+  geom_point(aes(x = ag, y = tp)) +
+  ylab("TP (ug/L)") +
+  xlab("Percent Agriculture")
+)
+  
+```
+
+\pagebreak
+
 ## Response variable maps
 
 Some obvious data availability differences in New York and Wisconsin. Wisconsin has quite a bit fewer TN measurements.
@@ -42,15 +62,15 @@ knitr::include_graphics("../figures/tptn_maps-1.pdf")
 
 ## Trophic state
 
-Over 50 percent of our study lakes were eutrophic to hypereutrophic.
+Over 35 percent of our study lakes were eutrophic to hypereutrophic.
 
 ```{r data_prep, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
-lg <- lagosne_load("1.087.1")
-focal_hu4s <- data.frame(hu4_zoneid = paste0("HU4_", 
-                                             c("56", "57", "36", "37", "38")), 
+lg         <- lagosne_load("1.087.1")
+dt         <- readRDS("../data/dt.rds")
+focal_hu4s <- data.frame(hu4_zoneid = unique(dt$hu4_zoneid), 
                          stringsAsFactors = FALSE)
 
-dt <- readRDS("../data/dt.rds") %>%
+dt <- dt %>%
   dplyr::filter(!is.na(chla)) %>%
   mutate(trophic_state = cut(chla, 
                              breaks = c(-Inf, 2.6, 20, 56, Inf), 
@@ -90,51 +110,64 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 # grid.draw(g)
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
-# waffle
-library(waffle)
+```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes in the study extent.", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
 
-total_cells <- 41.5
-dt_waffle <- dt %>% 
-  dplyr::rename(trophic_state = `Trophic State`) %>%
-  tidyr::gather(key = "key", value = "value", -trophic_state) %>%
-  dplyr::filter(key == "This Study") %>%
-  mutate(value = floor((value / 100) * total_cells)) %>%
-  arrange(trophic_state)
-# sum(dt_waffle$value)
-# add_row(`Trophic State` = "oligotrophic", `key` = "This Study", `value` = 2) %>%
+dt_bar <- tidyr::pivot_longer(dt, -`Trophic State`) %>%
+  group_by(name) %>%
+  mutate(ymax = cumsum(value),           
+         ymin = c(0, head(ymax, n = -1)))
 
-ggplot(dt_waffle,
-       aes(fill = trophic_state, values = value)) +
-  geom_waffle(color = "white", size = 3, n_rows = 4, flip = FALSE) +
-  # facet_wrap(~key, ncol = 1) +
-  scale_x_discrete(expand = c(0,0)) +
-  scale_y_discrete(expand = c(0,0)) +
-  shades::lightness(scale_fill_brewer(palette = "Greens", type = "seq"), 
-                    shades::delta(-10)) +
-  coord_equal() +
-  theme_enhance_waffle() + 
-  theme(strip.background = element_blank(), 
-        rect = element_rect(fill = "transparent"), 
-        legend.position = "bottom", 
-        title = element_blank(), 
-        strip.text = element_text(size = 16), 
-        legend.text = element_text(size = 10), 
-        legend.key.size = unit(0.5, "line")) + 
-  guides(fill = guide_legend(nrow = 1))
+ggplot(data = dt_bar) +
+  geom_rect(aes(fill = `Trophic State`, ymax = ymax, ymin = ymin, xmin = 3, xmax = 4)) +
+  theme(axis.text.x = element_blank(), 
+        axis.ticks.x = element_blank()) +
+  ylab("Percent of Lakes") +
+  facet_wrap(~name) 
 
-# highlighted regions
-test <- readRDS("../data/dt.rds") %>%
-  mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>%
-  dplyr::filter(!is.na(chla)) %>%
-  mutate(trophic_state = cut(chla, 
-                             breaks = c(-Inf, 2.6, 20, 56, Inf), 
-                             labels = c("oligotrophic", "mesotrophic", 
-                                        "eutrophic", "hypereutrophic"))) %>%
-  dplyr::select(lagoslakeid, is_focal, chla, hu4_zoneid, trophic_state) %>%
-  group_by(is_focal, trophic_state) %>%
-  count() %>%
-  tidyr::spread(trophic_state, n)
+# # waffle
+# library(waffle)
+# 
+# total_cells <- 41.5
+# dt_waffle <- dt %>% 
+#   dplyr::rename(trophic_state = `Trophic State`) %>%
+#   tidyr::gather(key = "key", value = "value", -trophic_state) %>%
+#   dplyr::filter(key == "This Study") %>%
+#   mutate(value = floor((value / 100) * total_cells)) %>%
+#   arrange(trophic_state)
+# # sum(dt_waffle$value)
+# # add_row(`Trophic State` = "oligotrophic", `key` = "This Study", `value` = 2) %>%
+# 
+# ggplot(dt_waffle,
+#        aes(fill = trophic_state, values = value)) +
+#   geom_waffle(color = "white", size = 3, n_rows = 4, flip = FALSE) +
+#   # facet_wrap(~key, ncol = 1) +
+#   scale_x_discrete(expand = c(0,0)) +
+#   scale_y_discrete(expand = c(0,0)) +
+#   shades::lightness(scale_fill_brewer(palette = "Greens", type = "seq"), 
+#                     shades::delta(-10)) +
+#   coord_equal() +
+#   theme_enhance_waffle() + 
+#   theme(strip.background = element_blank(), 
+#         rect = element_rect(fill = "transparent"), 
+#         legend.position = "bottom", 
+#         title = element_blank(), 
+#         strip.text = element_text(size = 16), 
+#         legend.text = element_text(size = 10), 
+#         legend.key.size = unit(0.5, "line")) + 
+#   guides(fill = guide_legend(nrow = 1))
+# 
+# # highlighted regions
+# test <- readRDS("../data/dt.rds") %>%
+#   mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>%
+#   dplyr::filter(!is.na(chla)) %>%
+#   mutate(trophic_state = cut(chla, 
+#                              breaks = c(-Inf, 2.6, 20, 56, Inf), 
+#                              labels = c("oligotrophic", "mesotrophic", 
+#                                         "eutrophic", "hypereutrophic"))) %>%
+#   dplyr::select(lagoslakeid, is_focal, chla, hu4_zoneid, trophic_state) %>%
+#   group_by(is_focal, trophic_state) %>%
+#   count() %>%
+#   tidyr::spread(trophic_state, n)
 ```
 
 ```{r predictor_maps}
@@ -145,7 +178,7 @@ test <- readRDS("../data/dt.rds") %>%
 
 ## Model results when lake are restricted to > 40% watershed agriculture
 
-```{r re-comparison_40-1, fig.cap = "Population level effect of watershed land-use cover on lake TP and TN for lakes with greater than 40% watershed agricultural land-use. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE}
+```{r re-comparison_40-1, fig.cap = "Population level effect of watershed land-use cover on lake TP and TN from six candidate models for lakes with greater than 40% watershed agricultural land-use. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-comparison_40-1.pdf")
 ```
 
