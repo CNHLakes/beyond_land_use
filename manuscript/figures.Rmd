@@ -19,6 +19,12 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
+```{r 01_predictors, results='asis', warning=FALSE, echo = FALSE}
+knitr::kable('\\includegraphics[width=5in]{"../tables/01_predictors"}', col.names = NULL, caption = "Medians followed by first and third quantiles of predictor variables for 928 lakes.")
+```
+
+\pagebreak
+
 ```{r re-comparison-1, fig.cap = "Population level effect of watershed land-use cover on lake TP and TN from six candidate models. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-comparison-1.pdf")
 ```

@@ -26,15 +26,23 @@ source("../scripts/99_utils.R")
 
 \pagebreak
 
-## Predictor summary table
+```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops. For illustration in this example, only corn, soybeans, and pasture are shown. Rather than all CDL land-use categories.", warning=FALSE, echo = FALSE, eval = TRUE}
+knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
+```
 
-\includegraphics[width=5in]{"../tables/01_predictors"}
+<!-- ## Predictor summary table -->
 
-\pagebreak
+<!-- \includegraphics[width=5in]{"../tables/01_predictors"} -->
 
-## Percent agriculture versus lake TP and TN
+<!-- ```{r 03_model_summary, results='asis', warning=FALSE, echo = FALSE} -->
+<!-- knitr::kable('', col.names = NULL, caption = "Diagnostics for each model listed by regionally varying coefficient. Table is sorted by decreasing R2 and expected log predictive density.") -->
+<!-- ``` -->
 
-```{r ag-scatter, fig.cap="Lake nutrient concentrations versus percent watershed agriculture.", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
+<!-- \pagebreak -->
+
+<!-- ## Percent agriculture versus lake TP and TN -->
+
+```{r ag-scatter, fig.cap="Lake nutrient concentrations versus percent watershed agriculture.", fig.width = 5, fig.height = 3.2, warning=FALSE, message=FALSE}
 dt <- readRDS("../data/dt.rds")
 
 cowplot::plot_grid(
@@ -52,17 +60,17 @@ ggplot(data = dt) +
 
 \pagebreak
 
-## Response variable maps
+<!-- ## Response variable maps -->
 
-Some obvious data availability differences in New York and Wisconsin. Wisconsin has quite a bit fewer TN measurements.
+<!-- Some obvious data availability differences in New York and Wisconsin. Wisconsin has quite a bit fewer TN measurements. -->
 
-```{r maps, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE, eval=TRUE}
-knitr::include_graphics("../figures/tptn_maps-1.pdf")
-```
+<!-- ```{r maps, fig.cap = "Quantile map of lake nutrients.", warning=FALSE, echo = FALSE, eval=TRUE} -->
+<!-- knitr::include_graphics("../figures/tptn_maps-1.pdf") -->
+<!-- ``` -->
 
-## Trophic state
+<!-- ## Trophic state -->
 
-Over 35 percent of our study lakes were eutrophic to hypereutrophic.
+<!-- Over 35 percent of our study lakes were eutrophic to hypereutrophic. -->
 
 ```{r data_prep, fig.cap="Lake trophic state", fig.width = 6, fig.height = 3.2, warning=FALSE, message=FALSE}
 lg         <- lagosne_load("1.087.1")
@@ -174,77 +182,69 @@ ggplot(data = dt_bar) +
 # 
 ```
 
+<!-- \pagebreak -->
+
+<!-- ## Model results when lake are restricted to > 40% watershed agriculture -->
+
+<!-- ```{r re-comparison_40-1, fig.cap = "Population level effect of watershed land-use cover on lake TP and TN from six candidate models for lakes with greater than 40% watershed agricultural land-use. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE} -->
+<!-- knitr::include_graphics("../figures/re-comparison_40-1.pdf") -->
+<!-- ``` -->
+
+<!-- ```{r fe_40-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models for lakes with greater than 40% watershed agricultural land-use. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE} -->
+<!-- knitr::include_graphics("../figures/fe_40-1.pdf") -->
+<!-- ``` -->
+
+<!-- ```{r re_40-1, fig.cap = "Regionally varying effect of watershed land-use cover for best-fit lake TP and TN models for lakes with greater than 40% watershed agricultural land-use. Lines shown are 95% credible intervals with median marked by a filled circle. Values that do not overlap the population level estimate are shaded in red.", warning=FALSE, echo = FALSE} -->
+<!-- knitr::include_graphics("../figures/re_40-1.pdf") -->
+<!-- ``` -->
 \pagebreak
 
-## Model results when lake are restricted to > 40% watershed agriculture
+<!-- ## Model results when land-use predictors are excluded -->
 
-```{r re-comparison_40-1, fig.cap = "Population level effect of watershed land-use cover on lake TP and TN from six candidate models for lakes with greater than 40% watershed agricultural land-use. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE}
-knitr::include_graphics("../figures/re-comparison_40-1.pdf")
-```
-
-```{r fe_40-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models for lakes with greater than 40% watershed agricultural land-use. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
-knitr::include_graphics("../figures/fe_40-1.pdf")
-```
-
-```{r re_40-1, fig.cap = "Regionally varying effect of watershed land-use cover for best-fit lake TP and TN models for lakes with greater than 40% watershed agricultural land-use. Lines shown are 95% credible intervals with median marked by a filled circle. Values that do not overlap the population level estimate are shaded in red.", warning=FALSE, echo = FALSE}
-knitr::include_graphics("../figures/re_40-1.pdf")
-```
-\pagebreak
-
-## Model results when land-use predictors are excluded
-
-```{r fe_nolulc-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models without a land-use predictor. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
+```{r fe_nolulc-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models when land-use predictors are excluded. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/fe_nolulc-1.pdf")
 ```
 
 \pagebreak
 
-## Bivariate relationships among predictors and lake nutrients
+<!-- ## Bivariate relationships among predictors and lake nutrients -->
 
-We examined bivariate relationships between lake nutrient concentrations and predictors to determine, at least to first-approximation, the likely drivers of lake nutrients (Figure 2). 
-We found large differences between the drivers of lake phosphorus and lake nitrogen concentrations. 
-For example, max depth and baseflow had a much larger effect on P than N. Pearson’s correlation coefficients for these relationships were XX and YY respectively. 
-In contrast, watershed land-use corn cover, fertilizer inputs, and riparian buffer configuration appear to have a larger effect on N than P Pearson’s correlation coefficients for these relationships were XX, YY, and ZZ respectively. 
+<!-- We examined bivariate relationships between lake nutrient concentrations and predictors to determine, at least to first-approximation, the likely drivers of lake nutrients (Figure 2).  -->
+<!-- We found large differences between the drivers of lake phosphorus and lake nitrogen concentrations.  -->
+<!-- For example, max depth and baseflow had a much larger effect on P than N. Pearson’s correlation coefficients for these relationships were XX and YY respectively.  -->
+<!-- In contrast, watershed land-use corn cover, fertilizer inputs, and riparian buffer configuration appear to have a larger effect on N than P Pearson’s correlation coefficients for these relationships were XX, YY, and ZZ respectively.  -->
 
-```{r exploratory_dotplot, fig.cap = "Dotplots showing absolute value Pearson's correlation coefficients. Dots are colored according to predictor categories.", warning=FALSE, echo = FALSE}
+```{r exploratory_dotplot, fig.cap = "Dotplots showing absolute value Pearson's correlation coefficients. Dots are colored according to predictor categories.", warning=FALSE, echo = FALSE, eval=FALSE}
 knitr::include_graphics("../figures/dotplot-1.pdf")
 ```
 
-\pagebreak
+<!-- \pagebreak -->
 
-## Correlations among predictor variables
+<!-- ## Correlations among predictor variables -->
 
-There is clearly a cluster of related predictor variables that includes most nutrient input, Ag land-use, and buffer configuration measures.
+<!-- There is clearly a cluster of related predictor variables that includes most nutrient input, Ag land-use, and buffer configuration measures. -->
 
-```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients.", warning=FALSE, echo = FALSE, eval=TRUE}
+```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients among predictor variables.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
-\pagebreak
+<!-- \pagebreak -->
 
-## The Cropland Data Layer
+<!-- ## The Cropland Data Layer -->
 
-The National land cover database (NLCD) is more typically used in macroecology studies. In our paper, we wanted to go beyond the coarse categories in the NLCD and test relationships with individual crops. The Cropland Data Layer (CDL) is a product that allowed us to do this. Because the CDL is more granular that the NLCD we could not directly compare them. Instead, we aggregated all the CDL categories associated with agriculture (also pasture) and compared these values for each watershed with the corresponding NLCD estimates.
+<!-- The National land cover database (NLCD) is more typically used in macroecology studies. In our paper, we wanted to go beyond the coarse categories in the NLCD and test relationships with individual crops. The Cropland Data Layer (CDL) is a product that allowed us to do this. Because the CDL is more granular that the NLCD we could not directly compare them. Instead, we aggregated all the CDL categories associated with agriculture (also pasture) and compared these values for each watershed with the corresponding NLCD estimates. -->
 
-```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD (2011) derived and CDL (2010) derived total watershed ag and watershed pasture cover. Line is 1:1 not a  regression best fit.", warning=FALSE, echo = FALSE, eval=TRUE}
+```{r nlcd-versus-cdl, fig.cap = "Comparison between NLCD (2011) derived and CDL (2010) derived total watershed ag and watershed pasture cover. Line is 1:1 not a  regression best fit.", warning=FALSE, echo = FALSE, eval=FALSE}
 knitr::include_graphics("../figures/04_nlcd-versus-cdl-1.pdf")
 ```
 
-```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops. For illustration in this example, only corn, soybeans, and pasture are shown. Rather than all CDL land-use categories.", warning=FALSE, echo = FALSE, eval = TRUE}
-knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
-```
+<!-- ## Demo of watersheds and buffer configuration -->
 
-\pagebreak
+<!-- Here are two lakes each with the same percent Ag in their watersheds (red outlines). However, the lake on the left (Lake Carleton) has a riparian buffer (teal outlines) with a much higher percentage of Ag relative to the lake on the right (Argyle Lake). -->
 
-## Demo of watersheds and buffer configuration
-
-Here are two lakes each with the same percent Ag in their watersheds (red outlines). However, the lake on the left (Lake Carleton) has a riparian buffer (teal outlines) with a much higher percentage of Ag relative to the lake on the right (Argyle Lake).
-
-```{r big_stream_ag, fig.cap = "Stream buffer Ag compared to IWS Ag.", warning=FALSE, echo = FALSE, eval = TRUE}
+```{r big_stream_ag, fig.cap = "Stream buffer Ag compared to IWS Ag.", warning=FALSE, echo = FALSE, eval = FALSE}
 knitr::include_graphics("../figures/satellite-1.pdf")
 ```
-
-\pagebreak
 
 ```{r lulc_vs_iws-lulc, fig.cap = "Stream buffer versus IWS lulc.", warning=FALSE, echo = FALSE, eval=FALSE}
 knitr::include_graphics("../figures/09_stream_buffer-1.pdf")
