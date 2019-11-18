@@ -12,22 +12,32 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.path =
 ```{r cdl_key, eval=TRUE}
 library(kableExtra)
 library(dplyr)
-library(magrittr)
 
 # setwd("tables")
 # ---- cdl_key ----
 cdl_key <- read.csv("../data/cdl/cdl_key.csv", stringsAsFactors = FALSE)
-cdl_key %>%
-  group_by(category) %>%
-  sample_n(1) %>%
-  arrange(is_ag, code) %>%
-  dplyr::select(-is_forage) %>%
-  dplyr::select(category, ag = is_ag, example = description, code) %>%
-  knitr::kable(digits = 0, format = "markdown", caption = "Example of CDL categorizations.") 
+# (example_full <- cdl_key %>%
+#   group_by(category) %>%
+#   sample_n(1) %>%
+#   arrange(is_ag, code) %>%
+#   dplyr::select(-is_forage) %>%
+#   dplyr::select(category, ag = is_ag, example = description, code) %>%
+#   knitr::kable(digits = 0, format = "markdown", caption = "Example of all CDL categorizations."))
+
+(example_filtered <- 
+  cdl_key %>%
+  dplyr::filter(category %in% c("corn", "soybeans", "forest", "wetlands", "pasture")) %>%
+  arrange(category) %>%
+  select(category, description) %>%
+  mutate_all(snakecase::to_sentence_case) %>%
+  setNames(snakecase::to_sentence_case(names(.))) %>%
+  knitr::kable(digits = 0, format = "markdown", caption = "CDL categorizations. See code supplement for listing of variables classified as 'ag'"))
+  
+  
 ```
 
 \pagebreak
-```{r cdl_summary}
+```{r cdl_summary, eval=FALSE}
 # setwd("tables")
 # ---- cdl summary ----
 cdl_data <- read.csv("../data/cdl/cdl_summary.csv", stringsAsFactors = FALSE)

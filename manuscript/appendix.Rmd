@@ -26,9 +26,21 @@ source("../scripts/99_utils.R")
 
 \pagebreak
 
-```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops. For illustration in this example, only corn, soybeans, and pasture are shown. Rather than all CDL land-use categories.", warning=FALSE, echo = FALSE, eval = TRUE}
+```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops. For illustration in this example, only corn, soybeans, and pasture are shown rather than all CDL land-use categories.", warning=FALSE, echo = FALSE, eval = TRUE}
 knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
 ```
+
+\pagebreak
+
+\begin{center}
+\includegraphics[width=5in]{"../tables/02_cdl_key"}
+\end{center}
+
+```{r 02_cdl_key, results='asis', warning=FALSE, echo = FALSE}
+knitr::kable('', col.names = NULL, caption = "CDL category definitions. See code supplement for listing of variables classified as 'ag'")
+```
+
+\pagebreak
 
 <!-- ## Predictor summary table -->
 
