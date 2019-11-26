@@ -42,6 +42,10 @@ ep_nutr <- lg$epi_nutr %>%
   filter(sampledate > date_start & sampledate < date_end) %>%
   mutate(count = n(), min_date = min(sampledate), max_date = max(sampledate)) %>%
   filter(count > min_sample_n) %>%
+  # filter sampledate >= jun 15 & <= sep 15
+  filter(strftime(sampledate, format = "%j") >= 166 & 
+         strftime(sampledate, format = "%j") <= 258) %>%
+  # range(strftime(ep_nutr$sampledate, format = "%j"))
   summarize(tp = median(tp, na.rm = TRUE), 
             tn = median(tn, na.rm = TRUE),
             no2no3 = median(no2no3, na.rm = TRUE), 
