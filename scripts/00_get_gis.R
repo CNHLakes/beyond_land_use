@@ -64,6 +64,10 @@ hu8s <- LAGOSNEgis::query_gis_(
                  paste0("HUC8 LIKE '", hu4s$HUC4, "%'", collapse = " OR ")))
 
 study_bbox   <- st_transform(st_as_sfc(st_bbox(hu4s_focal)), st_crs(study_bbox))
+hu4s_focal_simple <- rmapshaper::ms_simplify(
+  st_crop(hu4s_focal, st_transform(study_bbox, st_crs(hu4s_focal)))
+)
+
 # study_bbox   <- concaveman::concaveman(st_cast(hu4s_focal, "POINT"))
 
 # unlink("data/gis.gpkg")
@@ -75,6 +79,8 @@ st_write(states_all, gpkg_path, layer = "states_all",
 st_write(hu4s, gpkg_path, layer = "hu4s", update = TRUE,
          layer_options = c("OVERWRITE=yes"))
 st_write(hu4s_focal, gpkg_path, layer = "hu4s_focal", update = TRUE,
+         layer_options = c("OVERWRITE=yes"))
+st_write(hu4s_focal_simple, gpkg_path, layer = "hu4s_focal_simple", update = TRUE,
          layer_options = c("OVERWRITE=yes"))
 st_write(hu8s, gpkg_path, layer = "hu8s", update = TRUE,
          layer_options = c("OVERWRITE=yes"))

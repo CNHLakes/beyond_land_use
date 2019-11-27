@@ -207,10 +207,8 @@ gg_tp_re
 # setwd("figures")
 study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
 states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
-hu4_all       <- st_read("../data/gis.gpkg", "hu4s_focal", quiet = TRUE)
-hu4_all       <- st_crop(hu4_all, st_transform(study_bbox, st_crs(hu4_all)))
-hu4_all       <- rmapshaper::ms_simplify(hu4_all)
-  
+hu4_all       <- st_read("../data/gis.gpkg", "hu4s_focal_simple", quiet = TRUE)
+
 # map significant random effects hu4s
 gg_hu4 <- 
   ggplot() +
