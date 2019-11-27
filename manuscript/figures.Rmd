@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, fig.path = "../figures/", fig.width = 5, fig.
 
 \pagebreak
 
-```{r maps2, fig.cap = "A) Map of lake locations and B) hydrologic (HUC) regions.", warning=FALSE, echo = FALSE}
+```{r maps2, fig.cap = "A) Map of lake locations and B) hydrologic (HUC) regions.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
