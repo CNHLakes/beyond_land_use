@@ -230,7 +230,43 @@ knitr::include_graphics("../figures/fe_nolulc-1.pdf")
 knitr::include_graphics("../figures/dotplot-1.pdf")
 ```
 
-<!-- \pagebreak -->
+\pagebreak
+
+```{r eval = FALSE}
+# brute force check random slopes
+# dt <- readRDS("data/dt.rds")
+dt <- readRDS("data/dt_scaled.rds")
+
+ggplot(data = dt) +
+  geom_point(aes(x = forest, y = tp, color = hu4_zoneid))
+
+res <- list()
+for(i in unique(dt$hu4_zoneid)){
+  dt_sub <- dplyr::filter(dt, hu4_zoneid == i)
+  print(i)
+  print(nrow(dt_sub))
+  if(nrow(dt_sub) > 4){
+  res[[i]] <- data.frame(
+    n = nrow(dt_sub), 
+  estimate = broom::tidy(cor.test(
+    dt_sub$forest, dt_sub$tp
+    ))$estimate, 
+  stringsAsFactors = FALSE)
+  }else{
+    res[[i]] <- data.frame(n = NA, 
+                           estimate = NA,
+                           stringsAsFactors = FALSE)
+  }
+}
+  
+res <- dplyr::bind_rows(res)
+res <- dplyr::filter(res, !is.na(n))
+  
+ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
+  geom_point()
+```
+
+\pagebreak
 
 <!-- ## Correlations among predictor variables -->
 
