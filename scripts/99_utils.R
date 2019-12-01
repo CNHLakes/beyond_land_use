@@ -407,12 +407,12 @@ get_re_signif <- function(x){
   # tidybayes::get_variables(x)
   print(as.character(x$formula)[1])
   
-  re_global <- x %>%
-    spread_draws(!!rlang::parse_expr(
-      paste0("sd_hu4vzoneid__", get_re_text(as.character(x$formula)[1])))) %>%
-    dplyr::select(tail(names(.), 1)) %>%
-    pull(names(.)[1]) %>%
-    quantile(c(0.05, 0.5, 0.95))
+  # re_global <- x %>%
+  #   spread_draws(!!rlang::parse_expr(
+  #     paste0("sd_hu4vzoneid__", get_re_text(as.character(x$formula)[1])))) %>%
+  #   dplyr::select(tail(names(.), 1)) %>%
+  #   pull(names(.)[1]) %>%
+  #   quantile(c(0.05, 0.5, 0.95))
   
   res <- x %>%
     spread_draws(r_hu4vzoneid[hu4vzoneid,term]) %>%
@@ -421,6 +421,9 @@ get_re_signif <- function(x){
     do(tibble::as_tibble(t(quantile(.$r_hu4vzoneid, c(0.05, 0.5, 0.95))))) %>%
     mutate(signif = case_when(`5%` > 0 ~ TRUE, 
                               TRUE ~ FALSE))
+  
+  re_global <- quantile(res$`50%`, c(0.05, 0.5, 0.95))
+  
   x$re            <- res
   x$re_global     <- re_global
   x$re_signif     <- any(res$signif)
