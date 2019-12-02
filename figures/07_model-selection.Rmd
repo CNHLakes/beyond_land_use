@@ -41,10 +41,20 @@ pred_key       <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE
 ```{r re_global}
 # tp, tn
 # ag, row_crop, pasture, corn, soybeans
+
 re_global          <- dplyr::rbind_all(lapply(re_brms, function(x) x$re_global))
 re_global$term     <- unlist(lapply(re_brms, 
                                 function(x) get_re_text(as.character(x$formula)[1])))
 re_global$response <- c(rep("tp", nrow(re_global) / 2), rep("tn", nrow(re_global) / 2))
+re_vars         <- paste0("b_", re_global$term)
+re_global_l     <- lapply(seq_len(length(re_brms)), function(i){
+  spread_draws(re_brms[[i]], (!!sym(re_vars[i]))) %>% 
+    summarize(value = list(tibble::enframe(
+    quantile((!!sym(re_vars[i])), probs=c(0.05,0.5,0.95))))) %>% unnest() %>%
+      tidyr::spread(name, value)
+})
+re_global[,1:3] <- dplyr::bind_rows(re_global_l)
+
 re_global          <- left_join(re_global, pred_key, by = c("term" = "var")) %>%
   dplyr::select(pretty, `5%`:`95%`, term, response)
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct")
@@ -100,7 +110,8 @@ gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
                                         Buffer = "Buffer configuration", 
                                         LULC = "Land-use cover")) %>%
   arrange(category) %>%
-  ungroup() %>% mutate(pretty = factor(pretty, levels = pretty)) %>%
+  ungroup() %>% distinct(pretty, .keep_all = TRUE) %>%
+  mutate(pretty = factor(pretty, levels = pretty)) %>%
   arrange(category, pretty)
 ```
 
@@ -146,7 +157,8 @@ gg_tn <- spread_draws(fit_tn, `b_.*`, regex = TRUE) %>%
                                         Buffer = "Buffer configuration", 
                                         LULC = "Land-use cover")) %>%
   arrange(category) %>%
-  ungroup() %>% mutate(pretty = factor(pretty, levels = pretty)) %>%
+  ungroup() %>% distinct(pretty, .keep_all = TRUE) %>%
+  mutate(pretty = factor(pretty, levels = pretty)) %>%
   arrange(category, pretty)
 ```
 
@@ -186,9 +198,9 @@ ncol = 1, rel_heights = c(1, 0.05))
 
 ```{r tp_re, fig.width=3.25, fig.height=4.5}
 fit_tp$re$hu4vzoneid <- gsub("HU4_", "", fit_tp$re$hu4vzoneid)
-# fit_tp$re <- fit_tp$re %>%
-#   mutate_at(vars(matches("%")), function(x) x + 
-#               as.numeric(fit_tp$re_global["50%"]))
+fit_tp$re <- fit_tp$re %>%
+  mutate_at(vars(matches("%")), function(x) x +
+              as.numeric(fit_tp$re_global["50%"]))
 
 
 gg_tp_re <- ggplot(data = fit_tp$re) +
@@ -252,6 +264,7 @@ gg_tn_re <- ggplot(data = fit_tn$re) +
   theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
   theme(legend.position = 0)
 
+gg_tn_re
 ```
 
 ```{r tn_re_compare, fig.height=3, fig.width=4}
