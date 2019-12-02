@@ -22,7 +22,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                        clayvpct + hu12vbaseflowvmean +
                        nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
                        phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                       buffervcultivatedvcrops + buffervnatural +
+                       buffervcultivatedvcrops + buffervnatural + ag +
                        (1 + ag | hu4vzoneid)),
   "tp_forest"       = bf(tp ~  
                            maxdepth + iwslavratio +
@@ -30,7 +30,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                            clayvpct + hu12vbaseflowvmean +
                            nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
                            phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                           buffervcultivatedvcrops + buffervnatural +
+                           buffervcultivatedvcrops + buffervnatural + forest +
                            (1 + forest | hu4vzoneid)),
   "tp_wetlands"       = bf(tp ~  
                              maxdepth + iwslavratio +
@@ -38,7 +38,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                              clayvpct + hu12vbaseflowvmean +
                              nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
                              phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                             buffervcultivatedvcrops + buffervnatural +
+                             buffervcultivatedvcrops + buffervnatural + wetlands +
                              (1 + wetlands | hu4vzoneid)),
   "tp_rowcrop"       = bf(tp ~  
                             maxdepth + iwslavratio +
@@ -46,7 +46,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                             clayvpct + hu12vbaseflowvmean +
                             nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
                             phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                            buffervcultivatedvcrops + buffervnatural +
+                            buffervcultivatedvcrops + buffervnatural + rowvcropvpct +
                             (1 + rowvcropvpct | hu4vzoneid)),
   "tp_pasture" = bf(tp ~  
                       maxdepth + iwslavratio +
@@ -55,7 +55,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                      buffervcultivatedvcrops + buffervnatural +
+                      buffervcultivatedvcrops + buffervnatural + pasture +
                       (1 + pasture | hu4vzoneid)),
   "tp_soybeans" = bf(tp ~  
                        maxdepth + iwslavratio +
@@ -64,7 +64,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                        nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                        hu4vnitrogenvatmosphericvdeposition +
                        phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                       buffervcultivatedvcrops + buffervnatural +
+                       buffervcultivatedvcrops + buffervnatural + soybeans +
                        (1 + soybeans | hu4vzoneid)),
   "tp_corn" = bf(tp ~  
                    maxdepth + iwslavratio +
@@ -73,7 +73,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                    nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                    hu4vnitrogenvatmosphericvdeposition +
                    phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                   buffervcultivatedvcrops + buffervnatural +
+                   buffervcultivatedvcrops + buffervnatural + corn + 
                    (1 + corn | hu4vzoneid)),
   "tn_ag"      = bf(tn ~  maxdepth + iwslavratio +
                       soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -81,7 +81,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                      buffervcultivatedvcrops + buffervnatural +
+                      buffervcultivatedvcrops + buffervnatural + ag +
                       (1 + ag | hu4vzoneid)),
   "tn_forest"      = bf(tn ~  maxdepth + iwslavratio +
                           soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -89,7 +89,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                           nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                           hu4vnitrogenvatmosphericvdeposition +
                           phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                          buffervcultivatedvcrops + buffervnatural +
+                          buffervcultivatedvcrops + buffervnatural + forest +
                           (1 + forest | hu4vzoneid)),
   "tn_wetlands"       = bf(tn ~  
                              maxdepth + iwslavratio +
@@ -97,7 +97,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                              clayvpct + hu12vbaseflowvmean +
                              nitrogenvfertilizervuse + nitrogenvlivestockvmanure + hu4vnitrogenvatmosphericvdeposition +
                              phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                             buffervcultivatedvcrops + buffervnatural +
+                             buffervcultivatedvcrops + buffervnatural + wetlands +
                              (1 + wetlands | hu4vzoneid)),
   "tn_rowcrop"      = bf(tn ~  maxdepth + iwslavratio +
                            soilvorgvcarbon + wetlandvpotential + hu12vpptvmean + 
@@ -105,7 +105,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                            nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                            hu4vnitrogenvatmosphericvdeposition +
                            phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                           buffervcultivatedvcrops + buffervnatural +
+                           buffervcultivatedvcrops + buffervnatural + rowvcropvpct +
                            (1 + rowvcropvpct | hu4vzoneid)),
   "tn_pasture" = bf(tn ~  
                       maxdepth + iwslavratio +
@@ -114,7 +114,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                      buffervcultivatedvcrops + buffervnatural +
+                      buffervcultivatedvcrops + buffervnatural + pasture +
                       (1 + pasture | hu4vzoneid)),
   "tn_corn"    = bf(tn ~  
                       maxdepth + iwslavratio +
@@ -123,7 +123,7 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                      buffervcultivatedvcrops + buffervnatural +
+                      buffervcultivatedvcrops + buffervnatural + corn +
                       (1 + corn | hu4vzoneid)),
   "tn_soybeans"    = bf(tn ~  
                           maxdepth + iwslavratio +
@@ -132,8 +132,8 @@ dt <- dplyr::filter(dt, lagoslakeid %in% high_ag_llids)
                           nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                           hu4vnitrogenvatmosphericvdeposition +
                           phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                          buffervcultivatedvcrops + buffervnatural +
-                          (1 + soybeans | hu4vzoneid))
+                          buffervcultivatedvcrops + buffervnatural + soybeans
+                        (1 + soybeans | hu4vzoneid))
 ))
 
 re_brms <- 
