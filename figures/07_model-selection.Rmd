@@ -198,16 +198,18 @@ ncol = 1, rel_heights = c(1, 0.05))
 
 ```{r tp_re, fig.width=3.25, fig.height=4.5}
 fit_tp$re$hu4vzoneid <- gsub("HU4_", "", fit_tp$re$hu4vzoneid)
+global_offset <- dplyr::filter(re_global, 
+                               response == "tp", 
+                               term == get_re_text(
+                                 as.character(fit_tp$formula)))["50%"]
 fit_tp$re <- fit_tp$re %>%
-  mutate_at(vars(matches("%")), function(x) x +
-              as.numeric(fit_tp$re_global["50%"]))
-
+  mutate_at(vars(matches("%")), function(x) x + as.numeric(global_offset))
 
 gg_tp_re <- ggplot(data = fit_tp$re) +
   geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  geom_hline(yintercept = as.numeric(fit_tp$re_global["50%"])) +
+  geom_hline(yintercept = as.numeric(global_offset)) +
   coord_flip() +
   cowplot::theme_cowplot() +
   theme(rect = element_rect(fill = "transparent")) +
@@ -248,12 +250,15 @@ gg_hu4
 ```{r tn_re, fig.width=3.25, fig.height=4.5}
 # dotplot tn hu4 random effects
 fit_tn$re$hu4vzoneid <- gsub("HU4_", "", fit_tn$re$hu4vzoneid)
+global_offset <- dplyr::filter(re_global, 
+                               response == "tn", 
+                               term == get_re_text(
+                                 as.character(fit_tn$formula)))["50%"]
 fit_tn$re <- fit_tn$re %>%
-  mutate_at(vars(matches("%")), function(x) x + 
-              as.numeric(fit_tn$re_global["50%"]))
+  mutate_at(vars(matches("%")), function(x) x + as.numeric(global_offset))
 
 gg_tn_re <- ggplot(data = fit_tn$re) +
-  geom_hline(yintercept = as.numeric(fit_tn$re_global["50%"])) +
+  geom_hline(yintercept = as.numeric(global_offset)) +
   geom_pointrange(aes(x = hu4vzoneid, y = `50%`, 
                       ymin = `5%`, ymax = `95%`, color = signif)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
@@ -278,7 +283,7 @@ dt        <- readRDS("../data/dt_scaled.rds") %>%
 
 dt_predictors <- dplyr::filter(dt, key %in% 
                                  c(#"tp",
-                                   "nitrogen_atmospheric_deposition",
+                                   #"nitrogen_atmospheric_deposition",
                                    "clay_pct")) %>%
   dplyr::left_join(pred_key, by = c("key" = "var"))
 dt_predictors[is.na(dt_predictors$pretty), "pretty"] <- 
