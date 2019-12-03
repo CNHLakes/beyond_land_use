@@ -113,6 +113,24 @@ gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
   ungroup() %>% distinct(pretty, .keep_all = TRUE) %>%
   mutate(pretty = factor(pretty, levels = pretty)) %>%
   arrange(category, pretty)
+
+# compute posterior standard deviations
+gg_tp_sd <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
+  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  dplyr::filter(key != "b_Intercept") %>%
+  mutate(key = stringr::str_replace(key, "b_", "")) %>%
+  left_join(pred_key, by = c("key" = "varv")) %>%
+  group_by(pretty) %>%
+  summarize(value = list(tibble::enframe(
+    round(sd(value), 2)))) %>% unnest() %>%
+  tidyr::spread(name, value) %>%
+  setNames(c("pretty", "sd"))
+
+write.csv(
+  left_join(
+    dplyr::select(gg_tp, -matches("X")), 
+    gg_tp_sd), 
+          "../data/gg_tp.csv", row.names = FALSE)
 ```
 
 ```{r pre_tn_fe, out.width="3.45in", out.height="4in"}
@@ -160,6 +178,24 @@ gg_tn <- spread_draws(fit_tn, `b_.*`, regex = TRUE) %>%
   ungroup() %>% distinct(pretty, .keep_all = TRUE) %>%
   mutate(pretty = factor(pretty, levels = pretty)) %>%
   arrange(category, pretty)
+
+# compute posterior standard deviations
+gg_tn_sd <- spread_draws(fit_tn, `b_.*`, regex = TRUE) %>%
+  tidyr::gather(key = "key", value = "value", -.chain, -.iteration, -.draw) %>%
+  dplyr::filter(key != "b_Intercept") %>%
+  mutate(key = stringr::str_replace(key, "b_", "")) %>%
+  left_join(pred_key, by = c("key" = "varv")) %>%
+  group_by(pretty) %>%
+  summarize(value = list(tibble::enframe(
+    round(sd(value), 2)))) %>% unnest() %>%
+  tidyr::spread(name, value) %>%
+  setNames(c("pretty", "sd"))
+
+write.csv(
+  left_join(
+    dplyr::select(gg_tn, -matches("X")), 
+    gg_tn_sd), 
+          "../data/gg_tn.csv", row.names = FALSE)
 ```
 
 ```{r fe_axis}

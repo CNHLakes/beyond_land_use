@@ -76,12 +76,12 @@ dt <- readRDS("../data/dt.rds")
 cowplot::plot_grid(
 ggplot(data = dt) + 
   geom_point(aes(x = log(ag), y = log(tn))) + 
-  ylab("TN (ug/L)") +
-  xlab("Percent Agriculture"), 
+  ylab("log(TN) (ug/L)") +
+  xlab("log(Percent Agriculture)"), 
 ggplot(data = dt) + 
-  geom_point(aes(x = ag, y = tp)) +
-  ylab("TP (ug/L)") +
-  xlab("Percent Agriculture")
+  geom_point(aes(x = log(ag), y = log(tp))) +
+  ylab("log(TP) (ug/L)") +
+  xlab("log(Percent Agriculture)")
 )
   
 ```
@@ -290,6 +290,24 @@ ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
 
 ```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients among predictor variables.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
+```
+
+```{r coef-summary-table}
+gg_tp <- read.csv("../data/gg_tp.csv", stringsAsFactors = FALSE) %>%
+  dplyr::filter(nchar(pretty) > 0) %>%
+  dplyr::select(-signif, -category) %>%
+  setNames(c("variable", "5%", "50%", "95%", "SD")) %>%
+  mutate_if(is.numeric, function(x) round(x, 2))
+gg_tn <- read.csv("../data/gg_tn.csv", stringsAsFactors = FALSE) %>%
+  dplyr::filter(nchar(pretty) > 0) %>%
+  dplyr::select(-signif, -category) %>%
+  setNames(c("variable", "5%", "50%", "95%", "SD")) %>%
+  mutate_if(is.numeric, function(x) round(x, 2))
+
+knitr::kable(gg_tp, caption = "Coefficient summaries for top-ranked TP model.")
+
+knitr::kable(gg_tn, caption = "Coefficient summaries for top-ranked TN model.")
+
 ```
 
 <!-- \pagebreak -->
