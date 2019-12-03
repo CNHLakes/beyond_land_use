@@ -57,9 +57,25 @@ knitr::kable('', col.names = NULL, caption = "CDL category definitions. See code
 ```{r ag-scatter, fig.cap="Lake nutrient concentrations versus percent watershed agriculture.", fig.width = 5, fig.height = 3.2, warning=FALSE, message=FALSE}
 dt <- readRDS("../data/dt.rds")
 
+# fit_tn      <- lm(log(tn) ~ log(ag), data = dt)
+# fit_tn_pred <- data.frame(tn = fit_tn$model$`log(tn)`, 
+#                           tn_pred = fit_tn$fitted.values, 
+#                           stringsAsFactors = FALSE)
+# ggplot(data = fit_tn_pred) + 
+#   geom_point(aes(x = tn, y = tn_pred)) +
+#   geom_abline(slope = 1)
+# 
+# fit_tp      <- lm(log(tp) ~ log(ag), data = dt)
+# fit_tp_pred <- data.frame(tp = fit_tp$model$`log(tp)`, 
+#                           tp_pred = fit_tp$fitted.values, 
+#                           stringsAsFactors = FALSE)
+# ggplot(data = fit_tp_pred) + 
+#   geom_point(aes(x = tp, y = tp_pred)) +
+#   geom_abline(slope = 1)
+
 cowplot::plot_grid(
 ggplot(data = dt) + 
-  geom_point(aes(x = ag, y = tn)) + 
+  geom_point(aes(x = log(ag), y = log(tn))) + 
   ylab("TN (ug/L)") +
   xlab("Percent Agriculture"), 
 ggplot(data = dt) + 
