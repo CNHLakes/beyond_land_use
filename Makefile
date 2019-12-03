@@ -127,7 +127,6 @@ figures/08_exploratory_dotplot-1.pdf \
 figures/04_nlcd-versus-cdl-1.pdf \
 figures/cdl_vs_nlcd-1.pdf \
 figures/satellite-1.pdf \
-figures/fe_40-1.pdf \
 figures/fe_nolulc-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
