@@ -27,7 +27,6 @@ data/buffer_lulc/7032.csv
 data/buffer_lulc/1935.csv
 data/buffer_lulc/6970.csv
 data/buffer_lulc/3452.csv
-data/buffer_lulc/852.csv
 data/buffer_lulc/4417.csv
 data/buffer_lulc/5331.csv
 data/buffer_lulc/4284.csv
@@ -124,10 +123,8 @@ data/buffer_lulc/43928.csv
 data/buffer_lulc/1665.csv
 data/buffer_lulc/2510.csv
 data/buffer_lulc/2456.csv
-data/buffer_lulc/117329.csv
 data/buffer_lulc/2404.csv
 data/buffer_lulc/2484.csv
-data/buffer_lulc/1038.csv
 data/buffer_lulc/2515.csv
 data/buffer_lulc/481.csv
 data/buffer_lulc/671.csv
@@ -140,14 +137,12 @@ data/buffer_lulc/3498.csv
 data/buffer_lulc/2678.csv
 data/buffer_lulc/2288.csv
 data/buffer_lulc/1444.csv
-data/buffer_lulc/122639.csv
 data/buffer_lulc/34380.csv
 data/buffer_lulc/2956.csv
 data/buffer_lulc/3761.csv
 data/buffer_lulc/3751.csv
 data/buffer_lulc/1689.csv
 data/buffer_lulc/1787.csv
-data/buffer_lulc/21864.csv
 data/buffer_lulc/1286.csv
 data/buffer_lulc/3281.csv
 data/buffer_lulc/99816.csv
@@ -655,7 +650,6 @@ data/buffer_lulc/4742.csv
 data/buffer_lulc/4356.csv
 data/buffer_lulc/6469.csv
 data/buffer_lulc/1541.csv
-data/buffer_lulc/4693.csv
 data/buffer_lulc/5901.csv
 data/buffer_lulc/5565.csv
 data/buffer_lulc/2703.csv
@@ -813,7 +807,6 @@ data/buffer_lulc/3152.csv
 data/buffer_lulc/7446.csv
 data/buffer_lulc/6557.csv
 data/buffer_lulc/7017.csv
-data/buffer_lulc/1509.csv
 data/buffer_lulc/6971.csv
 data/buffer_lulc/6453.csv
 data/buffer_lulc/7020.csv
