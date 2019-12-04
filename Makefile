@@ -100,17 +100,15 @@ data/buffer_stats.csv: scripts/00_get_buffers.R
 
 data/mcmc/re_brms.rds: scripts/03_model.R
 	Rscript $<
-	
-data/mcmc/re_brms_40.rds: scripts/03_model_40.R
-	Rscript $<
 
 data/mcmc/fe_brms_nolulc.rds: scripts/03_model_nolulc.R
 	Rscript $<
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
 figures/11_map-1.pdf \
-tables/03_model_summary.pdf \
+tables/01_predictors.pdf \
 figures/re-comparison-1.pdf \
+tables/03_model_summary.pdf \
 figures/fe-1.pdf \
 figures/re-1.pdf \
 figures/tn_re_hu4-1.pdf \
@@ -174,12 +172,6 @@ figures/03_wetland_potential-1.pdf: figures/03_wetland_potential.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 figures/04_nlcd-versus-cdl-1.pdf: figures/04_nlcd-versus-cdl.Rmd
-	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
-
-figures/05_cafos-1.pdf: figures/05_cafos.Rmd
-	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
-
-figures/06_lulc_buffer_demo-1.pdf: figures/06_lulc_buffer_demo.Rmd
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 figures/08_exploratory_dotplot-1.pdf: figures/08_exploratory_dotplot.Rmd data/dt.rds data/predictor_key.csv

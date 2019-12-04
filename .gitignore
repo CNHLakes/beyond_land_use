@@ -48,3 +48,6 @@ mendota_iws.html
 scripts/construct_sql.R
 data/mcmc/re_40
 data/mcmc/fe_nolulc
+data/mcmc/backup_yearround/
+data/mcmc/old
+reilly_2.R

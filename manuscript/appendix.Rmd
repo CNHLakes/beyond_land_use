@@ -42,16 +42,6 @@ knitr::kable('', col.names = NULL, caption = "CDL category definitions. See code
 
 \pagebreak
 
-<!-- ## Predictor summary table -->
-
-<!-- \includegraphics[width=5in]{"../tables/01_predictors"} -->
-
-<!-- ```{r 03_model_summary, results='asis', warning=FALSE, echo = FALSE} -->
-<!-- knitr::kable('', col.names = NULL, caption = "Diagnostics for each model listed by regionally varying coefficient. Table is sorted by decreasing R2 and expected log predictive density.") -->
-<!-- ``` -->
-
-<!-- \pagebreak -->
-
 <!-- ## Percent agriculture versus lake TP and TN -->
 
 ```{r ag-scatter, fig.cap="Lake nutrient concentrations versus percent watershed agriculture.", fig.width = 5, fig.height = 3.2, warning=FALSE, message=FALSE}
@@ -160,71 +150,10 @@ ggplot(data = dt_bar) +
   ylab("Percent of Lakes") +
   facet_wrap(~name) 
 
-# # waffle
-# library(waffle)
-# 
-# total_cells <- 41.5
-# dt_waffle <- dt %>% 
-#   dplyr::rename(trophic_state = `Trophic State`) %>%
-#   tidyr::gather(key = "key", value = "value", -trophic_state) %>%
-#   dplyr::filter(key == "This Study") %>%
-#   mutate(value = floor((value / 100) * total_cells)) %>%
-#   arrange(trophic_state)
-# # sum(dt_waffle$value)
-# # add_row(`Trophic State` = "oligotrophic", `key` = "This Study", `value` = 2) %>%
-# 
-# ggplot(dt_waffle,
-#        aes(fill = trophic_state, values = value)) +
-#   geom_waffle(color = "white", size = 3, n_rows = 4, flip = FALSE) +
-#   # facet_wrap(~key, ncol = 1) +
-#   scale_x_discrete(expand = c(0,0)) +
-#   scale_y_discrete(expand = c(0,0)) +
-#   shades::lightness(scale_fill_brewer(palette = "Greens", type = "seq"), 
-#                     shades::delta(-10)) +
-#   coord_equal() +
-#   theme_enhance_waffle() + 
-#   theme(strip.background = element_blank(), 
-#         rect = element_rect(fill = "transparent"), 
-#         legend.position = "bottom", 
-#         title = element_blank(), 
-#         strip.text = element_text(size = 16), 
-#         legend.text = element_text(size = 10), 
-#         legend.key.size = unit(0.5, "line")) + 
-#   guides(fill = guide_legend(nrow = 1))
-# 
-# # highlighted regions
-# test <- readRDS("../data/dt.rds") %>%
-#   mutate(is_focal = hu4_zoneid %in% focal_hu4s$hu4_zoneid) %>%
-#   dplyr::filter(!is.na(chla)) %>%
-#   mutate(trophic_state = cut(chla, 
-#                              breaks = c(-Inf, 2.6, 20, 56, Inf), 
-#                              labels = c("oligotrophic", "mesotrophic", 
-#                                         "eutrophic", "hypereutrophic"))) %>%
-#   dplyr::select(lagoslakeid, is_focal, chla, hu4_zoneid, trophic_state) %>%
-#   group_by(is_focal, trophic_state) %>%
-#   count() %>%
-#   tidyr::spread(trophic_state, n)
-```
-
-```{r predictor_maps}
-# 
 ```
 
 <!-- \pagebreak -->
 
-<!-- ## Model results when lake are restricted to > 40% watershed agriculture -->
-
-<!-- ```{r re-comparison_40-1, fig.cap = "Population level effect of watershed land-use cover on lake TP and TN from six candidate models for lakes with greater than 40% watershed agricultural land-use. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (dashed line).", warning=FALSE, echo = FALSE} -->
-<!-- knitr::include_graphics("../figures/re-comparison_40-1.pdf") -->
-<!-- ``` -->
-
-<!-- ```{r fe_40-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models for lakes with greater than 40% watershed agricultural land-use. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE} -->
-<!-- knitr::include_graphics("../figures/fe_40-1.pdf") -->
-<!-- ``` -->
-
-<!-- ```{r re_40-1, fig.cap = "Regionally varying effect of watershed land-use cover for best-fit lake TP and TN models for lakes with greater than 40% watershed agricultural land-use. Lines shown are 95% credible intervals with median marked by a filled circle. Values that do not overlap the population level estimate are shaded in red.", warning=FALSE, echo = FALSE} -->
-<!-- knitr::include_graphics("../figures/re_40-1.pdf") -->
-<!-- ``` -->
 \pagebreak
 
 <!-- ## Model results when land-use predictors are excluded -->
@@ -292,7 +221,7 @@ ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
-```{r coef-summary-table}
+```{r coef-summary-table, eval = FALSE}
 gg_tp <- read.csv("../data/gg_tp.csv", stringsAsFactors = FALSE) %>%
   dplyr::filter(nchar(pretty) > 0) %>%
   dplyr::select(-signif, -category) %>%
@@ -332,24 +261,12 @@ knitr::include_graphics("../figures/satellite-1.pdf")
 knitr::include_graphics("../figures/09_stream_buffer-1.pdf")
 ```
 
-```{r cdl_viewport, fig.cap = "CDL landuse cover in example IWS.", warning=FALSE, echo = FALSE, eval=FALSE}
-knitr::include_graphics("../figures/cdl_viewport-1.pdf")
-```
-
 ```{r hierarchical_demo, fig.cap = "A) Global (dashed line) and regional (solid lines) fits to the relationship between lake phosphorus and IWS Ag. land use cover from the 2011 NLCD. A hierarchical model would weight these relationships by sample size (darker lines = higher sample size). B) Number of lakes per region.", warning=FALSE, echo = FALSE, eval=FALSE}
 knitr::include_graphics("../figures/02_hierarchical_demo-1.pdf")
 ```
 
 ```{r wetland_potential, fig.cap = "A) gSSURGO wetland potential versus National Wetlands Inventory cover. B) Locations of lakes where these number differ by more than 30 percent.", warning=FALSE, echo = FALSE, eval=FALSE}
 knitr::include_graphics("../figures/03_wetland_potential-1.pdf")
-```
-
-```{r cafos, fig.cap = "Livestock data from the 2007 USDA Census of Agriculture.", warning=FALSE, echo = FALSE, eval=FALSE, eval=FALSE}
-knitr::include_graphics("../figures/05_cafos-1.pdf")
-```
-
-```{r lulc_buffers, fig.cap = "Landuse cover in stream buffers.", warning=FALSE, echo = FALSE, eval=FALSE}
-knitr::include_graphics("../figures/06_lulc_buffer_demo-1.pdf")
 ```
 
 ```{r county_extent, fig.cap = "Number of lake watersheds per county where lakes are limited to those with high agricultural land-use cover (greater than 40 percent) and water quality data in LAGOS from at least 3 sampling events between 2000 and 2010.", warning=FALSE, echo = FALSE, eval = FALSE}
