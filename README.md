@@ -3,7 +3,7 @@
 Code and data
 for:
 
-**Stachelek et al. Submitted**. Agricultural land-use and lake water quality relationships at macroscales differ by lake nutrient when considering predictor granularity.
+**Stachelek et al. Submitted**. Agricultural land-use and lake water quality relationships differ by lake nutrient when considering predictor granularity at macroscales.
 
 ### Products
 
