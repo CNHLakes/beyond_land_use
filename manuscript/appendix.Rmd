@@ -10,6 +10,9 @@ header-includes:
 - \usepackage{colortbl}
 ---
 
+\def\figurename{Figure A}
+\def\tablename{Table A}
+
 \arrayrulecolor{white}
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, fig.path = "../figures/", fig.width = 5, fig.height = 5, dev = c("pdf"))
