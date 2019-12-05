@@ -81,4 +81,4 @@ Appendix: [manuscript/appendix.pdf](manuscript/figures.pdf)
 
 ### Dependencies
 
-Primary dependencies include the `dplyr`, `sf`, `LAGOSNE`, `nhdR`, and `brms` R packages. See [scripts\99_utils.R](scripts\99_utils.R) for a full list.
+Primary dependencies include the `dplyr`, `sf`, `LAGOSNE`, `nhdR`, and `brms` R packages. See [scripts/99_utils.R](scripts\99_utils.R) for a full list.
