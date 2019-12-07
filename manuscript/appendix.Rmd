@@ -29,7 +29,7 @@ source("../scripts/99_utils.R")
 
 \pagebreak
 
-```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops. For illustration in this example, only corn, soybeans, and pasture are shown rather than all CDL land-use categories.", warning=FALSE, echo = FALSE, eval = TRUE}
+```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops. For illustration, only corn, soybeans, and pasture are shown rather than all CDL land-use categories.", warning=FALSE, echo = FALSE, eval = TRUE}
 knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
 ```
 
@@ -47,7 +47,7 @@ knitr::kable('', col.names = NULL, caption = "CDL category definitions. See code
 
 <!-- ## Percent agriculture versus lake TP and TN -->
 
-```{r ag-scatter, fig.cap="Lake nutrient concentrations versus percent watershed agriculture.", fig.width = 5, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r ag-scatter, fig.cap="Lake nutrient concentrations plotted against percent watershed agriculture.", fig.width = 5, fig.height = 3.2, warning=FALSE, message=FALSE}
 dt <- readRDS("../data/dt.rds")
 
 # fit_tn      <- lm(log(tn) ~ log(ag), data = dt)
@@ -139,7 +139,7 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 # grid.draw(g)
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes in the study extent.", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes in the study extent. Trophic state based on the chlorophyll critera from Carlson (1996)", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
 
 dt_bar <- tidyr::pivot_longer(dt, -`Trophic State`) %>%
   group_by(name) %>%
@@ -161,7 +161,7 @@ ggplot(data = dt_bar) +
 
 <!-- ## Model results when land-use predictors are excluded -->
 
-```{r fe_nolulc-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models when land-use predictors are excluded. Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE}
+```{r fe_nolulc-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models when land-use predictors are excluded. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance and correspond with $\\beta$ from Equation 1.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/fe_nolulc-1.pdf")
 ```
 
