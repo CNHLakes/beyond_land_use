@@ -311,12 +311,22 @@ gg_tn_re
 
 ```{r tn_re_compare, fig.height=3, fig.width=4}
 # compare lakes in signif hu4s
-dt        <- readRDS("../data/dt_scaled.rds") %>%
+dt <- readRDS("../data/dt.rds") %>%
   mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
   tidyr::gather(key = "key", value = "value", 
                       -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4) %>%
   group_by(key, signif_hu4) %>%
   mutate(median = median(value, na.rm = TRUE))
+
+dt_scaled        <- readRDS("../data/dt_scaled.rds") %>%
+  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
+  tidyr::gather(key = "key", value = "value", 
+                      -lagoslakeid, -hu4_zoneid, -hu12_zoneid, -signif_hu4) %>%
+  group_by(key, signif_hu4) %>%
+  mutate(median_scaled = median(value, na.rm = TRUE)) %>%
+  rename(value_scaled = value)
+
+dt <- dplyr::left_join(dt, dt_scaled)
 
 dt_predictors <- dplyr::filter(dt, key %in% 
                                  c(#"tp",
@@ -337,13 +347,15 @@ gg_hist <- ggplot(data = dt_predictors) +
              linetype = "dashed") +
   scale_fill_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  labs(fill = "LULC Sensitive", color = "LULC Sensitive") +
   cowplot::theme_cowplot() +
-  theme(legend.position = 0) +
+  theme(legend.position = c(0.7, 0.8)) +
   theme(rect = element_rect(fill = "transparent"), 
         strip.background = element_rect(fill = "transparent"), 
-        strip.text = element_text(face = "bold")) +
+        strip.text = element_blank()) +
   facet_wrap(~pretty) +
-  xlab("Standardized value")
+  # xlim(c(0, 34)) + 
+  xlab("Clay (percent)")
 
 # line graph tn vs tp
 dt        <- readRDS("../data/dt_scaled.rds") %>%
