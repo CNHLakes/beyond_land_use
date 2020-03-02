@@ -40,7 +40,7 @@ knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
 \end{center}
 
 ```{r 02_cdl_key, results='asis', warning=FALSE, echo = FALSE}
-knitr::kable('', col.names = NULL, caption = "2010 CDL category definitions. See code supplement for listing of variables classified as 'ag'")
+knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010 CDL. See code supplement for listing of variables classified as 'ag'")
 ```
 
 \pagebreak
@@ -139,7 +139,7 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 # grid.draw(g)
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes in the study extent. Trophic state based on the chlorophyll critera from Carlson (1996)", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes from Soranno et al. (2017) located with our study extent. Trophic state based on the chlorophyll critera from Carlson (1996)", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
 
 dt_bar <- tidyr::pivot_longer(dt, -`Trophic State`) %>%
   group_by(name) %>%
@@ -148,6 +148,7 @@ dt_bar <- tidyr::pivot_longer(dt, -`Trophic State`) %>%
 
 ggplot(data = dt_bar) +
   geom_rect(aes(fill = `Trophic State`, ymax = ymax, ymin = ymin, xmin = 3, xmax = 4)) +
+  cowplot::theme_cowplot() +
   theme(axis.text.x = element_blank(), 
         axis.ticks.x = element_blank()) +
   ylab("Percent of Lakes") +
