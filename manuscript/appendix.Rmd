@@ -68,13 +68,15 @@ dt <- readRDS("../data/dt.rds")
 
 cowplot::plot_grid(
 ggplot(data = dt) + 
-  geom_point(aes(x = log(ag), y = log(tn))) + 
+  geom_point(aes(x = ag, y = tn)) + 
   ylab("log(TN) (ug/L)") +
-  xlab("log(Percent Agriculture)"), 
+  xlab("log(Percent Agriculture)") +
+  scale_x_log10() + scale_y_log10(), 
 ggplot(data = dt) + 
-  geom_point(aes(x = log(ag), y = log(tp))) +
+  geom_point(aes(x = ag, y = tp)) + 
   ylab("log(TP) (ug/L)") +
-  xlab("log(Percent Agriculture)")
+  xlab("log(Percent Agriculture)") +
+  scale_x_log10() + scale_y_log10()
 )
   
 ```
