@@ -37,7 +37,7 @@ knitr::kable('\\includegraphics[width=5in]{"../tables/03_model_summary"}', col.n
 knitr::include_graphics("../figures/fe-1.pdf")
 ```
 
-```{r re-1, fig.cap = "Regionally varying effect of watershed land-use cover for best-fit lake TP and TN models. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line. Values that do not overlap the population level effect are shaded in red. Coefficient estimates correspond with $\\gamma$ from Equation 1.", warning=FALSE, echo = FALSE}
+```{r re-1, fig.cap = "Regionally varying effect of watershed land-use cover for best-fit lake TP and TN models. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines) for individual hydrologic units (HUC4s) ordered from top to bottom (west to east). Also shown is a comparison to a zero effect (solid vertical line. Values that do not overlap the population level effect are shaded in red. Coefficient estimates correspond with $\\gamma$ from Equation 1.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/re-1.pdf")
 ```
 
