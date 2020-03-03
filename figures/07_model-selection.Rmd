@@ -433,7 +433,29 @@ cowplot::plot_grid(gg_tp_re,
 
 ```{r re-comparison, fig.width=4}
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct") %>%
-mutate(signif = (`5%` > 0 & `95%` > 0)| (`5%` < 0 & `95%` < 0))
+mutate(signif = (`5%` > 0 & `95%` > 0)| (`5%` < 0 & `95%` < 0)) %>%
+  mutate(term = factor(term, levels = c("wetlands", "forest", 
+                                        "pasture", "soybeans", "corn", "ag")))
+
+gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
+    geom_pointrange(aes(x = term, y = `50%`, 
+                      ymin = `5%`, ymax = `95%`, color = signif)) +
+  scale_color_manual(values = c("black", "red")) +
+  geom_hline(yintercept = 0) +
+  expand_limits(y = c(-0.2, 0.5)) +
+  coord_flip() +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        strip.placement = "outside", 
+        strip.background = element_blank(), 
+        panel.background = element_rect(fill = "transparent", color = NA),
+        plot.background = element_rect(fill = "transparent", color = NA), 
+        panel.grid = element_blank(),
+        rect = element_rect(fill = "transparent"), 
+        axis.line = element_line(), 
+        legend.position = "none") +
+  ggtitle("TP") + 
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
     geom_pointrange(aes(x = term, y = `50%`, 
@@ -454,26 +476,6 @@ gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
         axis.text.y = element_blank(), 
         legend.position = "none") +
   ggtitle("TN") + 
-  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
-
-gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
-    geom_pointrange(aes(x = term, y = `50%`, 
-                      ymin = `5%`, ymax = `95%`, color = signif)) +
-  scale_color_manual(values = c("black", "red")) +
-  geom_hline(yintercept = 0) +
-  expand_limits(y = c(-0.2, 0.5)) +
-  coord_flip() +
-  theme(axis.title.y = element_blank(),
-        axis.title.x = element_blank(),
-        strip.placement = "outside", 
-        strip.background = element_blank(), 
-        panel.background = element_rect(fill = "transparent", color = NA),
-        plot.background = element_rect(fill = "transparent", color = NA), 
-        panel.grid = element_blank(),
-        rect = element_rect(fill = "transparent"), 
-        axis.line = element_line(), 
-        legend.position = "none") +
-  ggtitle("TP") + 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 cowplot::plot_grid(
