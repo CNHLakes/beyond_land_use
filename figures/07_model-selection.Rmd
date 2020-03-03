@@ -431,11 +431,11 @@ cowplot::plot_grid(gg_tp_re,
                    rel_widths = c(1, 0.9))
 ```
 
-```{r re-comparison, fig.width=4}
+```{r re-comparison, fig.width=5}
 re_global <- dplyr::filter(re_global, term != "rowvcropvpct") %>%
 mutate(signif = (`5%` > 0 & `95%` > 0)| (`5%` < 0 & `95%` < 0)) %>%
   mutate(term = factor(term, levels = c("wetlands", "forest", 
-                                        "pasture", "soybeans", "corn", "ag")))
+                                        "soybeans", "corn", "pasture", "ag")))
 
 gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
     geom_pointrange(aes(x = term, y = `50%`, 
@@ -456,6 +456,17 @@ gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
         legend.position = "none") +
   ggtitle("TP") + 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+label_key <- data.frame(labels = c("Aggregate", "Granular", "Other"), 
+                        x = c(0, 0, 0), 
+                        y = c(0.62, 0.49, 0.37), 
+                        stringsAsFactors = FALSE)
+gg_labels <- ggplot() + geom_text(data = label_key, 
+                                        aes(x = x, y = y, label = labels), angle = 90) +
+    expand_limits(y = c(0.3, 0.7)) +
+    theme_void()
+gg_tp <- cowplot::plot_grid(gg_labels, 
+                   gg_tp, rel_widths = c(0.3, 1))
 
 gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
     geom_pointrange(aes(x = term, y = `50%`, 
@@ -479,7 +490,7 @@ gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 cowplot::plot_grid(
-cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.75)),
+cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.6)),
 ggplot(data.frame(x = 1, y = 1, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
   geom_text(aes(x = x, y = y, label = label)) +
   theme_void(),
