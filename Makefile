@@ -189,7 +189,10 @@ tables/03_model_summary.pdf
 	# tables/03_model_summary.pdf
 	pdftk $^ cat output manuscript/tables.pdf
 	
-tables/01_predictors.pdf: tables/01_predictors.Rmd data/dt.rds data/dt_units.rds
+tables/01_predictors.pdf: tables/01_predictors.Rmd \
+data/dt.rds \
+data/dt_units.rds \
+data/predictor_key.csv
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	pdfcrop $@ $@
 

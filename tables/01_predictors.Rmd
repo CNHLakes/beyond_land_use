@@ -68,9 +68,22 @@ dt <- mutate(dt, pretty = case_when(
   nchar(units) > 0 ~ paste0(pretty, " (", units, ")"),
   TRUE ~ pretty), 
   IQR = paste0(q25, " - ", q75))
-dt <- dplyr::select(dt, Variable = pretty, 
-                    Median = q50, Q25 = q25, Q75 = q75)
+dt <- dplyr::select(dt, Variable = pretty, Granularity = granularity,
+                    Median = q50, Q25 = q25, Q75 = q75, category) 
+dt <- dt %>%
+  mutate(Granularity = factor(Granularity, levels = c("Other", "Granular", "Aggregate")), 
+         category = factor(category, levels = c("Land-use cover", "Buffer configuration", "Nutrient inputs", "Nutrient transport", "Lake"))) %>%
+  arrange(desc(Granularity), category) %>%
+  dplyr::select(-category)
 
+unfill_vec <- function(x) {
+  # https://github.com/tidyverse/tidyr/issues/250#issuecomment-344984802
+  same <- x == dplyr::lag(x)
+  ifelse(!is.na(same) & same, NA, x)
+}
+dt$Granularity <- unfill_vec(as.character(dt$Granularity))
+
+options(knitr.kable.NA = " - ")
 knitr::kable(dt, digits = 0, format = "markdown") 
 #%>%
  # add_header_above(c(" ", " ", Ranges = 3, " ", " "))
