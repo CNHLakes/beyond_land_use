@@ -223,7 +223,7 @@ ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
 
 <!-- There is clearly a cluster of related predictor variables that includes most nutrient input, Ag land-use, and buffer configuration measures. -->
 
-```{r exploratory_heatmap, fig.cap = "Heatmap showing absolute value correlation coefficients among predictor variables.", warning=FALSE, echo = FALSE, eval=TRUE}
+```{r exploratory_heatmap, fig.cap = "Heatmap showing Pearson correlation coefficients among predictor variables. Grey cells denote correlation matrix diagonals.", warning=FALSE, echo = FALSE, eval=TRUE}
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
