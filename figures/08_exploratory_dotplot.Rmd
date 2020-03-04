@@ -15,7 +15,8 @@ pred_key <- read.csv("../data/predictor_key.csv", stringsAsFactors = FALSE)
 
 dt       <- readRDS("../data/dt_scaled.rds")
 dt_sub   <-  dt %>% 
-  dplyr::select(-lagoslakeid) %>%
+  dplyr::select(names(.)[names(.) %in% c(pred_key$var, "tn", "tp")]) %>%
+  # dplyr::select(-lagoslakeid) %>%
   # dplyr::select(tp, tn, lake_area_ha:wheat, 
   #               matches("cultivated_crops")) %>%
   # dplyr::select(-row_crop_pct, -ag_pct, -pasture_pct) %>% # rm nlcd
@@ -63,8 +64,8 @@ dt_tp_hmap <- dt_sub %>%
 
 dt_tp_rows       <- dt_tp_hmap$rowname
 dt_tp_hmap            <- dt_tp_hmap %>%
-  dplyr::select(-rowname) %>%
-  mutate_all(abs)
+  dplyr::select(-rowname) # %>%
+  # mutate_all(abs)
 row.names(dt_tp_hmap) <- dt_tp_rows
 
 # prettyfi variable labels
@@ -74,17 +75,43 @@ names(dt_tp_hmap)[which(!is.na(match(names(dt_tp_hmap), pred_key$var)))] <-
   pretty_names
 pretty_names <- pred_key$pretty[match(row.names(dt_tp_hmap), pred_key$var)] 
 pretty_names <- pretty_names[!is.na(pretty_names)]
-row.names(dt_tp_hmap)[which(!is.na(match(row.names(dt_tp_hmap), pred_key$var)))] <- 
-  pretty_names
+row.names(dt_tp_hmap)[
+  which(!is.na(match(row.names(dt_tp_hmap), pred_key$var)))] <- pretty_names
 
-# rm tp and tn
-dt_tp_hmap <- dplyr::select(dt_tp_hmap, -tp, -tn)
-dt_tp_hmap <- dt_tp_hmap[-!(row.names(dt_tp_hmap) %in% c("tp", "tn")),]
+# rm tp and tn also row crop ag and stream-buffer ag
+dt_tp_hmap <- dplyr::select(dt_tp_hmap, -tp, -tn, 
+                            -`Row-crop Ag`, -`Stream-buffer Ag`)
+dt_tp_hmap <- dt_tp_hmap[!(row.names(dt_tp_hmap) %in% 
+                              c("tp", "tn", "Row-crop Ag", "Stream-buffer Ag")),]
+
+# manually sort according to the clustering shown when cluster_rows/cols TRUE
+# see jsta/jsta #15 
+rowcol_order <- c("Manure N", "Manure P", "Fertilizer N", 
+                  "Fertilizer P", "N input", "P input", 
+                  "Max depth", "Watershed-lake ratio",
+                  "N deposition", "Baseflow", "Clay",
+                  "Wetlands", "Pasture", "Precipitation",
+                  "Soil organic carbon", "Wetland potential",
+                  "Buffer natural", "Buffer Ag", "Ag", 
+                  "Soybeans", "Forest", "Corn")
+dt_tp_hmap <- dt_tp_hmap[match(rowcol_order, row.names(dt_tp_hmap)),]
+dt_tp_hmap <- dt_tp_hmap[,match(rowcol_order, names(dt_tp_hmap))]
+
+dt_tp_hmap_abs <- mutate_all(dt_tp_hmap, abs) %>%
+  data.frame()
+row.names(dt_tp_hmap_abs) <- rowcol_order
+pheatmap::pheatmap(
+  t(dt_tp_hmap_abs),
+  color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+                                            "Reds"))(100),
+  cluster_cols = TRUE, cluster_rows = TRUE,
+  na.col = "grey",
+  cellheight = 7)
 
 pheatmap::pheatmap(
   t(dt_tp_hmap),
-  color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
-                                            "Reds"))(100),
+  # color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+  #                                          "Reds"))(100),
   cluster_cols = TRUE, cluster_rows = TRUE,
   na.col = "grey",
   cellheight = 7)

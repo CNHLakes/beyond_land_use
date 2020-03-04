@@ -15,7 +15,7 @@ pred_key <- data.frame(var = c(
     "N deposition", "Max depth", "Watershed-lake ratio", 
     "Baseflow", "Precipitation", 
     "Stream-buffer Ag", "Wetlands", "Ag", "Forest", "Row-crop",
-    "Buffer Ag", "Buffer Natural",
+    "Buffer Ag", "Buffer natural",
     "Non-ag", "N-fixer", "Clay", "Lake area",
     "Wetland potential", "Corn", "Manure N", 
     "Soil organic carbon", "Soybeans", "N input",

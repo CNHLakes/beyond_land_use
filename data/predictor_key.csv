@@ -10,7 +10,7 @@
 "forest","Forest","Other","Land-use cover","forest"
 "rowvcropvpct","Row-crop","Aggregate","Land-use cover","rowvcropvpct"
 "buffer_cultivated_crops","Buffer Ag","Granular","Buffer configuration","buffervcultivatedvcrops"
-"buffer_natural","Buffer Natural","Granular","Buffer configuration","buffervnatural"
+"buffer_natural","Buffer natural","Granular","Buffer configuration","buffervnatural"
 "clay_pct","Clay","Other","Nutrient transport","clayvpct"
 "wetland_potential","Wetland potential","Other","Nutrient transport","wetlandvpotential"
 "corn","Corn","Granular","Land-use cover","corn"
