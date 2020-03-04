@@ -47,7 +47,7 @@ knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010
 
 <!-- ## Percent agriculture versus lake TP and TN -->
 
-```{r ag-scatter, fig.cap="Lake nutrient concentrations plotted against percent watershed agriculture.", fig.width = 5, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r ag-scatter, fig.cap="Lake nutrient concentrations plotted against percent watershed agriculture.", fig.width = 5.5, fig.height = 3, warning=FALSE, message=FALSE}
 dt <- readRDS("../data/dt.rds")
 
 fit_tn      <- lm(log(tn) ~ log(ag), data = dt)
