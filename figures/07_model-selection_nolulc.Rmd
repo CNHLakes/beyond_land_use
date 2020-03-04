@@ -128,7 +128,7 @@ x_min <- c(gg_tp$`5%`, gg_tn$`5%`)[which.min(c(gg_tp$`5%`, gg_tn$`5%`))]
                         x_min, x_max, "TN", tick_width = 2, tick_accuracy = 1, plot_padding = 13))
 ```
 
-```{r fe_nolulc}
+```{r fe_nolulc, fig.width=7.5}
 cowplot::plot_grid(
 cowplot::plot_grid(
   equalize_panels(
