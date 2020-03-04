@@ -97,16 +97,16 @@ rowcol_order <- c("Manure N", "Manure P", "Fertilizer N",
 dt_tp_hmap <- dt_tp_hmap[match(rowcol_order, row.names(dt_tp_hmap)),]
 dt_tp_hmap <- dt_tp_hmap[,match(rowcol_order, names(dt_tp_hmap))]
 
-dt_tp_hmap_abs <- mutate_all(dt_tp_hmap, abs) %>%
-  data.frame()
-row.names(dt_tp_hmap_abs) <- rowcol_order
-pheatmap::pheatmap(
-  t(dt_tp_hmap_abs),
-  color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
-                                            "Reds"))(100),
-  cluster_cols = TRUE, cluster_rows = TRUE,
-  na.col = "grey",
-  cellheight = 7)
+# dt_tp_hmap_abs <- mutate_all(dt_tp_hmap, abs) %>%
+#   data.frame()
+# row.names(dt_tp_hmap_abs) <- rowcol_order
+# pheatmap::pheatmap(
+#   t(dt_tp_hmap_abs),
+#   color = colorRampPalette(RColorBrewer::brewer.pal(n = 7, name =
+#                                             "Reds"))(100),
+#   cluster_cols = TRUE, cluster_rows = TRUE,
+#   na.col = "grey",
+#   cellheight = 7)
 
 pheatmap::pheatmap(
   t(dt_tp_hmap),
@@ -114,7 +114,7 @@ pheatmap::pheatmap(
   #                                          "Reds"))(100),
   cluster_cols = TRUE, cluster_rows = TRUE,
   na.col = "grey",
-  cellheight = 7, cellwidth = 7)
+  cellheight = 8, cellwidth = 8, treeheight_col = 20, treeheight_row = 40)
 ```
 
 \pagebreak
