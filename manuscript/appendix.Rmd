@@ -50,35 +50,60 @@ knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010
 ```{r ag-scatter, fig.cap="Lake nutrient concentrations plotted against percent watershed agriculture.", fig.width = 5, fig.height = 3.2, warning=FALSE, message=FALSE}
 dt <- readRDS("../data/dt.rds")
 
-# fit_tn      <- lm(log(tn) ~ log(ag), data = dt)
-# fit_tn_pred <- data.frame(tn = fit_tn$model$`log(tn)`, 
-#                           tn_pred = fit_tn$fitted.values, 
-#                           stringsAsFactors = FALSE)
+fit_tn      <- lm(log(tn) ~ log(ag), data = dt)
+fit_tn_pred <- data.frame(tn = fit_tn$model$`log(tn)`,
+                          tn_pred = fit_tn$fitted.values,
+                          ag = fit_tn$model$`log(ag)`,
+                          stringsAsFactors = FALSE)
 # ggplot(data = fit_tn_pred) + 
 #   geom_point(aes(x = tn, y = tn_pred)) +
 #   geom_abline(slope = 1)
 # 
-# fit_tp      <- lm(log(tp) ~ log(ag), data = dt)
-# fit_tp_pred <- data.frame(tp = fit_tp$model$`log(tp)`, 
-#                           tp_pred = fit_tp$fitted.values, 
-#                           stringsAsFactors = FALSE)
+fit_tp      <- lm(log(tp) ~ log(ag), data = dt)
+fit_tp_pred <- data.frame(tp = fit_tp$model$`log(tp)`,
+                          tp_pred = fit_tp$fitted.values,
+                          ag = fit_tp$model$`log(ag)`,
+                          stringsAsFactors = FALSE)
 # ggplot(data = fit_tp_pred) + 
 #   geom_point(aes(x = tp, y = tp_pred)) +
 #   geom_abline(slope = 1)
 
+get_formula <- function(response_var, model){
+  # https://stackoverflow.com/a/26640226/3362993
+  res <- as.formula(
+    paste0(response_var, " ~ ", round(coefficients(model)[1],2), "", 
+      paste(sprintf(" %+.2f*%s ", 
+                    coefficients(model)[-1],  
+                    names(coefficients(model)[-1])), 
+            collapse="")
+    )
+  )
+  paste(res[2], res[3], sep=' ~ ')
+}
+
 cowplot::plot_grid(
 ggplot(data = dt) + 
   geom_point(aes(x = ag, y = tn)) + 
+  geom_line(data = fit_tn_pred, aes(x = exp(ag), y = exp(tn_pred)), 
+             color = "red") +
+  annotate("text", x = 14, y = 12000, label = get_formula("log(tn)", fit_tn), 
+           size = 2) +
   ylab("log(TN) (ug/L)") +
   xlab("log(Percent Agriculture)") +
-  scale_x_log10() + scale_y_log10(), 
+  scale_x_log10() + scale_y_log10() +
+  theme_cowplot(), 
 ggplot(data = dt) + 
   geom_point(aes(x = ag, y = tp)) + 
+    geom_line(data = fit_tp_pred, aes(x = exp(ag), y = exp(tp_pred)), 
+             color = "red") +
+  annotate("text", x = 14, y = 900, label = get_formula("log(tp)", fit_tp), 
+           size = 2) +
   ylab("log(TP) (ug/L)") +
   xlab("log(Percent Agriculture)") +
-  scale_x_log10() + scale_y_log10()
+  scale_x_log10() + scale_y_log10() +
+  theme_cowplot()
 )
-  
+ 
 ```
 
 \pagebreak
