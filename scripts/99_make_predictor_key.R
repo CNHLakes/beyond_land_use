@@ -31,7 +31,7 @@ pred_key <- data.frame(var = c(
                   "Other", "Granular", "Granular", 
                   "Granular", "Granular", "Granular",
                   "Granular", 
-                  "Granular", "Granular", "Aggregate", "Aggregate"),
+                  "Granular", "Granular", "Granular", "Aggregate"),
                       category = c(
   "Nutrient inputs", "Lake", "Lake", 
   "Nutrient transport", "Nutrient transport", 
