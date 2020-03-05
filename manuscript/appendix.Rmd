@@ -166,7 +166,7 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 # grid.draw(g)
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes from Soranno et al. (2017) located with our study extent. Trophic state based on the chlorophyll critera from Carlson (1996)", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes from Soranno et al. (2017) located within our study extent. Trophic state based on the chlorophyll critera from Carlson (1996)", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
 
 dt_bar <- tidyr::pivot_longer(dt, -`Trophic State`) %>%
   group_by(name) %>%
