@@ -48,6 +48,6 @@ knitr::include_graphics("../figures/re-1.pdf")
 knitr::include_graphics("../figures/tn_re_hu4-1.pdf")
 ```
 
-```{r tn_re_compare-1, fig.cap = "Histograms showing the distribution of soil clay content for regions sensitive to watershed land-use (see highlighted credible intervals in Figure 4) relative to all other regions. Medians for each group are shown as vertical dashed lines.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
+```{r tn_re_compare-1, fig.cap = "Histograms showing the distribution of soil clay content for watersheds in regions sensitive to watershed land-use (see highlighted credible intervals in Figure 4) relative to watersheds all other regions. Medians for each group are shown as vertical dashed lines.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
 knitr::include_graphics("../figures/tn_re_compare-1.pdf")
 ```
