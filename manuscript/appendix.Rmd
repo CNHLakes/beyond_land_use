@@ -252,6 +252,44 @@ ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
+```{r tile_drainage_vs_clay, fig.cap = "Scatterplot showing the median clay content of watersheds in our hydrologic regions plotted against percent tile drainage from Nakagaki and Wieczorek (2016). Our regions highly sensitive to agriculture land-use from Figure 4 are highlighted.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
+# load huc4 clay estimates
+signif_hu4_ids <- c("HU4_56", "HU4_57")
+dt <- readRDS("../data/dt.rds") %>%
+  mutate(signif_hu4 = hu4_zoneid %in% signif_hu4_ids) %>%
+  dplyr::select(lagoslakeid, hu4_zoneid, clay_pct, signif_hu4) %>%
+  group_by(hu4_zoneid) %>%
+  mutate(median = median(clay_pct, na.rm = TRUE)) %>%
+  distinct(hu4_zoneid, median, signif_hu4)
+
+# compute per huc tile drainage
+# load huc4s
+# study_bbox    <- st_read("data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
+# hu4_focal     <- st_read("data/gis.gpkg", "hu4s_focal_simple", quiet = TRUE)
+# hu4_focal     <- st_crop(st_transform(hu4_focal, st_crs(study_bbox)), study_bbox)
+# http://dx.doi.org/10.5066/F7W37TDP
+# library(exactextractr)
+# r <- raster("data/SubsurfaceDrainExtentMW_2012.tif")
+# test <- st_cast(hu4_focal, "MULTIPOLYGON")
+# test$tile_drainage <- exact_extract(r, test, "sum")
+# saveRDS(test, "data/tile_drainage.rds")
+test <- readRDS("../data/tile_drainage.rds")
+test2 <- left_join(test, dt, by = c("ZoneID" = "hu4_zoneid"))
+
+# scatter plot clay versus tile drainage highlighting sensitve hucs
+ggplot(data = test2) +
+  geom_point(aes(x = tile_drainage/900, # grid cells are 30x30 = 900
+                 y = median, color = signif_hu4)) +
+  scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
+  xlab("Percent tile drainage") + ylab("Median clay content (percent)") +
+  cowplot::theme_cowplot() +
+  theme(legend.position = c(0.6, 0.3), 
+        legend.background = element_rect(fill = "white", color = "black"),
+        legend.text = element_text(size = 10), 
+        legend.title = element_text(size = 11)) +
+  labs(color = "LULC Sensitive")
+```
+
 ```{r coef-summary-table, eval = FALSE}
 gg_tp <- read.csv("../data/gg_tp.csv", stringsAsFactors = FALSE) %>%
   dplyr::filter(nchar(pretty) > 0) %>%
