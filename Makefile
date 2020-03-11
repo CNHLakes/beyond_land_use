@@ -116,7 +116,8 @@ figures/tn_re_compare-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/figures.pdf cat 2-end output manuscript/figures2.pdf
 	-mv manuscript/figures2.pdf manuscript/figures.pdf
-	cd figures && make pnglatest
+	
+#cd figures && make pnglatest
 
 manuscript/appendix.pdf: manuscript/appendix.Rmd \
 figures/tptn_maps-1.pdf \
