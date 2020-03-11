@@ -252,7 +252,7 @@ ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
-```{r tile_drainage_vs_clay, fig.cap = "Scatterplot showing the median clay content of watersheds in our hydrologic regions plotted against percent tile drainage from Nakagaki and Wieczorek (2016). Our regions highly sensitive to agriculture land-use from Figure 4 are highlighted.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
+```{r tile_drainage_vs_clay, fig.cap = "Scatterplot showing the median clay content of watersheds in our hydrologic regions plotted against percent tile drainage from Nakagaki and Wieczorek (2016). The regions that are highly sensitive to agriculture land-use from Figure 4 are highlighted.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
 # load huc4 clay estimates
 signif_hu4_ids <- c("HU4_56", "HU4_57")
 dt <- readRDS("../data/dt.rds") %>%

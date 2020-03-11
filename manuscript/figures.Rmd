@@ -27,7 +27,7 @@ knitr::include_graphics("../figures/11_map-1.pdf")
 \includegraphics{../tables/01_predictors}
 \end{center}
 
-```{r re-comparison-1, fig.cap = "Population level estimates (i.e. slopes, $\\mu_\\gamma$) for the effect of watershed land-use cover on lake TP and TN from six candidate models. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
+```{r re-comparison-1, fig.cap = "Population level slope estimates ($\\mu_\\gamma$) for the effect of watershed land-use cover on lake TP and TN from six candidate models. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
 knitr::include_graphics("../figures/re-comparison-1.pdf")
 ```
 
@@ -36,7 +36,7 @@ knitr::include_graphics("../figures/re-comparison-1.pdf")
 \includegraphics{../tables/03_model_summary}
 \end{center}
 
-```{r fe-1, fig.cap = "Global (fixed effect) coefficient values ($\\beta$, for all non-LULC predictors) and population level estimates for the effect of watershed land-use ($\\mu_\\gamma$, LULC) on lake TP and TN for each respective top-ranked model. Note that the values for LULC here are identical to their corresponding values in Figure 2. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance and correspond with $\\beta$ (and $\\mu_\\gamma$ for LULC) from Equation 1.", warning=FALSE, echo = FALSE, out.extra=''}
+```{r fe-1, fig.cap = "Global (fixed effect) coefficient values ($\\beta$, for all non-LULC predictors) and population level estimates for the effect of watershed land-use ($\\mu_\\gamma$, for LULC) on lake TP and TN for each respective top-ranked model. Note that the values for LULC here are identical to their corresponding values in Figure 2. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance and correspond with $\\beta$ (and $\\mu_\\gamma$ for LULC) from Equation 1. Note that the LULC coefficients are identical to their corresponding lines in Figure 2.", warning=FALSE, echo = FALSE, out.extra=''}
 knitr::include_graphics("../figures/fe-1.pdf")
 ```
 
