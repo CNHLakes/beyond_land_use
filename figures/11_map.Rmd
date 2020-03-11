@@ -43,7 +43,7 @@ gg_states <-
     # geom_sf(data = outline, color = "black", alpha = 0, size = 0.8) +
     # geom_sf(data = hu4, fill = "grey") +
     geom_sf(data = states_focal, fill = "white", color = "black", size = 0.4) + 
-    geom_sf(data = ep, size = 0.9) +
+    geom_sf(data = ep, size = 0.5) +
     coord_sf(datum = NA) +
     theme_void()
 
