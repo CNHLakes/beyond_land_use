@@ -290,7 +290,8 @@ ggplot(data = test2) +
   labs(color = "LULC Sensitive")
 ```
 
-```{r clay-nonlinear, fig.cap = "Scatterplot showing the non-linear relationship between watersehd clay content and lake TN concentration. Vertical dashed line shows transition between a positive and a negative correlation (r) between the two variables. Solid red line shows the fit of a generalized additive model from the mgcv R package.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
+```{r clay-nonlinear, fig.cap = "Scatterplot showing the non-linear relationship between watershed clay content and lake TN concentration. Vertical dashed line shows transition between a positive and a negative correlation (r) between the two variables. Solid red line shows the fit of a generalized additive model from the mgcv R package.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3, message=FALSE}
+library(magrittr)
 # Why was the clay coefficient negative in the TN model?
 # re_brms <- readRDS("data/mcmc/re_brms.rds")
 # re_brms[[8]]$formula
