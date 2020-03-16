@@ -104,6 +104,9 @@ data/mcmc/re_brms.rds: scripts/03_model.R
 data/mcmc/fe_brms_nolulc.rds: scripts/03_model_nolulc.R
 	Rscript $<
 
+manuscript/combined.pdf: manuscript/figures.pdf manuscript/appendix.pdf
+	pdftk manuscript/figures.pdf manuscript/appendix.pdf output manuscript/combined.pdf
+
 manuscript/figures.pdf: manuscript/figures.Rmd \
 figures/11_map-1.pdf \
 tables/01_predictors.pdf \
