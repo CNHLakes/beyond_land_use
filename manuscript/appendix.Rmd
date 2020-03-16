@@ -88,8 +88,8 @@ ggplot(data = dt) +
              color = "red") +
   annotate("text", x = 14, y = 12000, label = get_formula("log(tn)", fit_tn), 
            size = 2) +
-  ylab("log(TN) (ug/L)") +
-  xlab("log(Percent Agriculture)") +
+  ylab("TN (ug/L)") +
+  xlab("Percent Agriculture") +
   scale_x_log10() + scale_y_log10() +
   theme_cowplot(), 
 ggplot(data = dt) + 
@@ -98,8 +98,8 @@ ggplot(data = dt) +
              color = "red") +
   annotate("text", x = 14, y = 900, label = get_formula("log(tp)", fit_tp), 
            size = 2) +
-  ylab("log(TP) (ug/L)") +
-  xlab("log(Percent Agriculture)") +
+  ylab("TP (ug/L)") +
+  xlab("Percent Agriculture") +
   scale_x_log10() + scale_y_log10() +
   theme_cowplot()
 )
@@ -288,6 +288,49 @@ ggplot(data = test2) +
         legend.text = element_text(size = 10), 
         legend.title = element_text(size = 11)) +
   labs(color = "LULC Sensitive")
+```
+
+```{r clay-nonlinear, fig.cap = "Scatterplot showing the non-linear relationship between watersehd clay content and lake TN concentration. Vertical dashed line shows transition between a positive and a negative correlation (r) between the two variables. Solid red line shows the fit of a generalized additive model from the mgcv R package.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
+# Why was the clay coefficient negative in the TN model?
+# re_brms <- readRDS("data/mcmc/re_brms.rds")
+# re_brms[[8]]$formula
+dt       <- # readRDS("data/dt.rds") %>%
+  readRDS("../data/dt_scaled.rds") %>%
+  dplyr::select(clay_pct, hu12_ppt_mean, hu12_baseflow_mean, 
+                buffer_cultivated_crops, iwsla_ratio, soil_org_carbon,
+                wetlands,
+                maxdepth, ag, tn, lagoslakeid) 
+
+test <- readRDS("../data/dt_scaled.rds") %>%
+  dplyr::select(lagoslakeid, clay_pct, tn) %>%
+  left_join(
+    dplyr::select(readRDS("../data/dt.rds"), lagoslakeid, clay_pct, tn), 
+    by = "lagoslakeid") %>%
+  setNames(c("lagoslakeid", "clay_pct_scaled", "tn_scaled", 
+  "clay_pct_raw", "tn_raw")) %>%
+  mutate_all(as.numeric)
+labs_key              <- data.frame(clay_pct_raw = seq(0, 30, length.out = 5))
+fit <- lm(clay_pct_scaled ~ clay_pct_raw, data = test)
+labs_key$clay_pct_scaled <- round(predict(fit, newdata = labs_key), 1)
+
+# https://stats.stackexchange.com/a/35922/49019
+library(mgcViz)
+b <- bamV(tn ~ s(clay_pct, k = 4), data = dt)
+o <- plot(sm(b, 1), nsim = 50) # 50 posterior simulations 
+o + l_fitLine(colour = "red") + l_points(size = 0.8, shape = 19) +
+  geom_vline(xintercept = 0.765, linetype = "dashed") +
+  scale_x_continuous(breaks = labs_key$clay_pct_scaled, 
+                     labels = labs_key$clay_pct_raw, 
+                     limits = c(-2, 3)) +
+  xlab("Clay content (%)") + ylab("log(TN (ug/L))") +
+  annotate("text", x = -1, y = 3.3, label = paste0("r = ", 
+           round(broom::tidy({
+             dplyr::filter(dt, clay_pct < 0.765) %$% cor.test(clay_pct, tn)
+           })$estimate, 3))) +
+  annotate("text", x = 2, y = 3.3, label = paste0("r = ", 
+        round(broom::tidy({
+          dplyr::filter(dt, clay_pct > 0.765) %$% cor.test(clay_pct, tn)
+          })$estimate, 3)))
 ```
 
 ```{r coef-summary-table, eval = FALSE}
