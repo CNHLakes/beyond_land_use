@@ -107,7 +107,7 @@ gg_tp <- spread_draws(fit_tp, `b_.*`, regex = TRUE) %>%
                                       "Buffer configuration", "Lake", 
                                       "Land-use cover")))) %>%
   mutate(category = forcats::fct_recode(category, 
-                                        Buffer = "Buffer configuration", 
+                                        `Spatial\nconfig.` = "Buffer configuration", 
                                         LULC = "Land-use cover")) %>%
   arrange(category) %>%
   ungroup() %>% distinct(pretty, .keep_all = TRUE) %>%
