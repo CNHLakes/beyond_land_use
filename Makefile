@@ -3,7 +3,7 @@ VARLLIDS := $(shell cat ${RAWLLIDS})
 
 .PHONY: data all figures
 
-all: data tables manuscript/figures.pdf data/dt.rds
+all: data tables manuscript/figures.pdf data/dt.rds manuscript/combined.pdf
 
 data: data/ep.rds \
 data/usgs/usgs.rds \
