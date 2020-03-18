@@ -459,7 +459,7 @@ gg_tp <- ggplot(data = dplyr::filter(re_global, response == "tp")) +
 
 label_key <- data.frame(labels = c("Aggregate", "Granular", "Other"), 
                         x = c(0, 0, 0), 
-                        y = c(0.62, 0.49, 0.37), 
+                        y = c(0.665, 0.54, 0.37), 
                         stringsAsFactors = FALSE)
 gg_labels <- ggplot() + geom_text(data = label_key, 
                                         aes(x = x, y = y, label = labels), angle = 90) +
