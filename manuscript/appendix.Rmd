@@ -50,19 +50,19 @@ knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010
 ```{r ag-scatter, fig.cap="Lake nutrient concentrations plotted against percent watershed agriculture.", fig.width = 5.5, fig.height = 3, warning=FALSE, message=FALSE}
 dt <- readRDS("../data/dt.rds")
 
-fit_tn      <- lm(log(tn) ~ log(ag), data = dt)
+fit_tn      <- lm(log(tn) ~ ag, data = dt)
 fit_tn_pred <- data.frame(tn = fit_tn$model$`log(tn)`,
                           tn_pred = fit_tn$fitted.values,
-                          ag = fit_tn$model$`log(ag)`,
+                          ag = fit_tn$model$ag,
                           stringsAsFactors = FALSE)
 # ggplot(data = fit_tn_pred) + 
 #   geom_point(aes(x = tn, y = tn_pred)) +
 #   geom_abline(slope = 1)
 # 
-fit_tp      <- lm(log(tp) ~ log(ag), data = dt)
+fit_tp      <- lm(log(tp) ~ ag, data = dt)
 fit_tp_pred <- data.frame(tp = fit_tp$model$`log(tp)`,
                           tp_pred = fit_tp$fitted.values,
-                          ag = fit_tp$model$`log(ag)`,
+                          ag = fit_tp$model$ag,
                           stringsAsFactors = FALSE)
 # ggplot(data = fit_tp_pred) + 
 #   geom_point(aes(x = tp, y = tp_pred)) +
@@ -84,23 +84,23 @@ get_formula <- function(response_var, model){
 cowplot::plot_grid(
 ggplot(data = dt) + 
   geom_point(aes(x = ag, y = tn)) + 
-  geom_line(data = fit_tn_pred, aes(x = exp(ag), y = exp(tn_pred)), 
+  geom_line(data = fit_tn_pred, aes(x = ag, y = exp(tn_pred)), 
              color = "red") +
-  annotate("text", x = 14, y = 12000, label = get_formula("log(tn)", fit_tn), 
+  annotate("text", x = 24, y = 12000, label = get_formula("log(tn)", fit_tn), 
            size = 2) +
   ylab("TN (ug/L)") +
   xlab("Percent Agriculture") +
-  scale_x_log10() + scale_y_log10() +
+  scale_y_log10() +
   theme_cowplot(), 
 ggplot(data = dt) + 
   geom_point(aes(x = ag, y = tp)) + 
-    geom_line(data = fit_tp_pred, aes(x = exp(ag), y = exp(tp_pred)), 
+    geom_line(data = fit_tp_pred, aes(x = ag, y = exp(tp_pred)), 
              color = "red") +
-  annotate("text", x = 14, y = 900, label = get_formula("log(tp)", fit_tp), 
+  annotate("text", x = 24, y = 900, label = get_formula("log(tp)", fit_tp), 
            size = 2) +
   ylab("TP (ug/L)") +
   xlab("Percent Agriculture") +
-  scale_x_log10() + scale_y_log10() +
+  scale_y_log10() +
   theme_cowplot()
 )
  
@@ -252,7 +252,7 @@ ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
-```{r tile_drainage_vs_clay, fig.cap = "Scatterplot showing the median clay content of watersheds in our hydrologic regions plotted against percent tile drainage from Nakagaki and Wieczorek (2016). The regions that are highly sensitive to agriculture land-use from Figure 4 are highlighted.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
+```{r tile_drainage_vs_clay, fig.cap = "Scatterplot showing the median clay content of watersheds in our hydrologic regions plotted against percent tile drainage from Nakagaki and Wieczorek (2016). The regions that are highly sensitive to agricultural land-use from Figure 4 are highlighted in red.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
 # load huc4 clay estimates
 signif_hu4_ids <- c("HU4_56", "HU4_57")
 dt <- readRDS("../data/dt.rds") %>%
@@ -278,12 +278,12 @@ test2 <- left_join(test, dt, by = c("ZoneID" = "hu4_zoneid"))
 
 # scatter plot clay versus tile drainage highlighting sensitve hucs
 ggplot(data = test2) +
-  geom_point(aes(x = tile_drainage/900, # grid cells are 30x30 = 900
+  geom_point(aes(x = (tile_drainage/900) * 100, # grid cells are 30x30 = 900
                  y = median, color = signif_hu4)) +
   scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red")) +
-  xlab("Percent tile drainage") + ylab("Median clay content (percent)") +
+  xlab("Tile drainage (percent)") + ylab("Median clay content (percent)") +
   cowplot::theme_cowplot() +
-  theme(legend.position = c(0.6, 0.3), 
+  theme(legend.position = "none", 
         legend.background = element_rect(fill = "white", color = "black"),
         legend.text = element_text(size = 10), 
         legend.title = element_text(size = 11)) +
