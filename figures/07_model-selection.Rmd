@@ -225,10 +225,11 @@ cowplot::plot_grid(
       theme(axis.text.y = element_blank(), 
             axis.title.x = element_blank())), 
   rel_widths = c(1, 0.95)),
-
+cowplot::plot_grid(
+  ggplot() + geom_blank() + theme(panel.background = element_blank()), 
 ggplot(data.frame(x = 1, y = 1, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
   geom_text(aes(x = x, y = y, label = label)) +
-  theme_void(),
+  theme_void(), rel_widths = c(0.03, 1)),
 ncol = 1, rel_heights = c(1, 0.05))
 ```
 
@@ -415,12 +416,15 @@ cowplot::plot_grid(gg_tp_re + theme(axis.title.x = element_blank(),
                    gg_tn_re + theme(axis.text.y = element_blank(), 
                                     axis.title.y = element_blank(), 
                                     axis.title.x = element_blank(),
-                                    plot.margin = unit(c(0,0,0,0), "cm")), 
-                   rel_widths = c(1, 0.8)), 
+                                    plot.margin = unit(c(0,0.3,0,0), "cm")), 
+                   rel_widths = c(1, 0.8)),
+cowplot::plot_grid(
+  ggplot() + geom_blank() + theme(panel.background = element_blank()),
 ggplot(data.frame(x = 0, y = 0, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
   geom_text(aes(x = x, y = y, label = label), size = 5) +
   theme_void() + 
-  theme(plot.margin = unit(c(0,0,0,0), "cm")),
+  theme(plot.margin = unit(c(0,0,0,0), "cm")), 
+rel_widths = c(0.15, 1)),
 ncol = 1, rel_heights = c(1, 0.05))
 
 cowplot::plot_grid(gg_tp_re, 
@@ -491,9 +495,11 @@ gg_tn <- ggplot(data = dplyr::filter(re_global, response == "tn")) +
 
 cowplot::plot_grid(
 cowplot::plot_grid(gg_tp, gg_tn, rel_widths = c(1, 0.6)),
-ggplot(data.frame(x = 1, y = 1, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
+cowplot::plot_grid(
+  ggplot() + geom_blank() + theme(panel.background = element_blank()), 
+ggplot(data.frame(x = 4, y = 1, label = "Standardized coefficients", stringsAsFactors = FALSE)) + 
   geom_text(aes(x = x, y = y, label = label)) +
-  theme_void(),
+  theme_void(), rel_widths = c(0.3, 1)),
 ncol = 1, rel_heights = c(1, 0.05))
 ```
 
