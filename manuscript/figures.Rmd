@@ -23,7 +23,7 @@ knitr::include_graphics("../figures/11_map-1.pdf")
 ```
 
 \begin{center}
-\captionof{table}{Medians followed by first and third quantiles of predictor variables for 928 lakes. Also shown is whether each predictor is defined as an aggregate or granular measure of agriculture.}
+\captionof{table}{Medians followed by first and third quantiles of predictor variables for 928 lakes. Also shown is whether each predictor is defined as an aggregate or granular measure of agriculture or as a non-agriculture (other) predictor. Dashed entries for the granularity cateogry indicate an identical categorization as the preceding predictor.}
 \includegraphics{../tables/01_predictors}
 \end{center}
 
@@ -32,7 +32,7 @@ knitr::include_graphics("../figures/re-comparison-1.pdf")
 ```
 
 \begin{center}
-\captionof{table}{Diagnostics for each model listed by regionally varying coefficient. Table is sorted by decreasing $R^2$ and expected log predictive density (ELPD). ELPD has a similar interpretation to information criterion measures like AIC. Typically models are considered to be different if they are separated by an AIC value of greater than 2, which is equivalent to an ELPD value of -1.}
+\captionof{table}{Diagnostics for each model listed by regionally varying coefficient. Table is sorted by decreasing $R^2$ and expected log predictive density (ELPD). ELPD has a similar interpretation to information criterion measures like AIC. Typically models are considered to be different if they are separated by an Akaike information criterion (AIC) value of greater than 2, which is equivalent to an ELPD value of -1.}
 \includegraphics{../tables/03_model_summary}
 \end{center}
 
@@ -40,7 +40,7 @@ knitr::include_graphics("../figures/re-comparison-1.pdf")
 knitr::include_graphics("../figures/fe-1.pdf")
 ```
 
-```{r re-1, fig.cap = "Effect of watershed land-use ($\\gamma_j$) for individual regions in the top-ranked lake N and P models. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines) for individual hydrologic units (HUC4s) ordered from top to bottom according to longitude (west to east). Also shown is a comparison to a zero effect (solid vertical line. Values that do not overlap the population level effect are shaded in red.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
+```{r re-1, fig.cap = "Effect of watershed land-use ($\\gamma_j$) for individual regions in the top-ranked lake N and P models. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines) for individual hydrologic units (HUC4s) ordered from top to bottom according to longitude (west to east). Also shown is a comparison to a zero effect (solid vertical line). Values that are different from the population level effect are shaded in red.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
 knitr::include_graphics("../figures/re-1.pdf")
 ```
 

@@ -40,7 +40,7 @@ knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
 \end{center}
 
 ```{r 02_cdl_key, results='asis', warning=FALSE, echo = FALSE}
-knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010 CDL. See code supplement for listing of variables classified as 'ag'")
+knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010 CDL. See code supplement for listing of variables classified as 'ag'.")
 ```
 
 \pagebreak
@@ -166,7 +166,7 @@ dt <- setNames(dt, c("Trophic State", "This Study", "All Lakes"))
 # grid.draw(g)
 ```
 
-```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes from Soranno et al. (2017) located within our study extent. Trophic state based on the chlorophyll critera from Carlson (1996)", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
+```{r trophic_state, fig.cap="Lake trophic state in our study lakes versus all lakes from Soranno et al. (2017) located within our study extent. Trophic state based on the chlorophyll critera from Carlson (1996).", fig.width = 4, fig.height = 3.2, warning=FALSE, message=FALSE}
 
 dt_bar <- tidyr::pivot_longer(dt, -`Trophic State`) %>%
   group_by(name) %>%
@@ -189,7 +189,7 @@ ggplot(data = dt_bar) +
 
 <!-- ## Model results when land-use predictors are excluded -->
 
-```{r fe_nolulc-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for best-fit lake TP and TN models when land-use predictors are excluded. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance and correspond with $\\beta$ from Equation 1.", warning=FALSE, echo = FALSE}
+```{r fe_nolulc-1, fig.cap = "Global (fixed effect) coefficient values and credible intervals for top-ranked lake TP and TN models when land-use predictors are excluded. Values shown are posterior medians (filled circles) and 95% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance and correspond with $\\beta$ from Equation 1.", warning=FALSE, echo = FALSE}
 knitr::include_graphics("../figures/fe_nolulc-1.pdf")
 ```
 
