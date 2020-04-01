@@ -114,7 +114,7 @@ pheatmap::pheatmap(
   #                                          "Reds"))(100),
   cluster_cols = TRUE, cluster_rows = TRUE,
   na.col = "grey",
-  cellheight = 8, cellwidth = 8, treeheight_col = 20, treeheight_row = 40)
+  cellheight = 8, cellwidth = 8, treeheight_col = 0, treeheight_row = 0)
 ```
 
 \pagebreak
