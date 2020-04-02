@@ -86,7 +86,7 @@ ggplot(data = dt) +
   geom_point(aes(x = ag, y = tn)) + 
   geom_line(data = fit_tn_pred, aes(x = ag, y = exp(tn_pred)), 
              color = "red") +
-  annotate("text", x = 24, y = 12000, label = get_formula("log(tn)", fit_tn), 
+  annotate("text", x = 29, y = 12000, label = get_formula("log(tn)", fit_tn), 
            size = 2) +
   ylab("TN (ug/L)") +
   xlab("Percent Agriculture") +
@@ -96,7 +96,7 @@ ggplot(data = dt) +
   geom_point(aes(x = ag, y = tp)) + 
     geom_line(data = fit_tp_pred, aes(x = ag, y = exp(tp_pred)), 
              color = "red") +
-  annotate("text", x = 24, y = 900, label = get_formula("log(tp)", fit_tp), 
+  annotate("text", x = 29, y = 900, label = get_formula("log(tp)", fit_tp), 
            size = 2) +
   ylab("TP (ug/L)") +
   xlab("Percent Agriculture") +
