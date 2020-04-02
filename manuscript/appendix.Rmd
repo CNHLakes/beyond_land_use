@@ -1,5 +1,5 @@
 ---
-title: "Appendix"
+title: "Appendix S1"
 output:
   pdf_document:
     fig_caption: yes
@@ -8,10 +8,15 @@ header-includes:
 - \usepackage{float}
 - \floatplacement{figure}{H}
 - \usepackage{colortbl}
+- \usepackage{setspace, caption}
+- \usepackage{times}
+- \DeclareCaptionFont{blah}{\doublespacing\normalsize\fontseries{n}\fontfamily{ptm}\selectfont}
+- \captionsetup{font=blah}
+- \pagenumbering{gobble}
 ---
 
-\def\figurename{Figure A}
-\def\tablename{Table A}
+\def\figurename{Figure S\hspace{-0.3em}}
+\def\tablename{Table S\hspace{-0.3em}}
 
 \arrayrulecolor{white}
 ```{r setup, include=FALSE}
@@ -28,6 +33,19 @@ source("../scripts/99_utils.R")
 ```
 
 \pagebreak
+
+\centering
+# Appendix S1
+
+\begin{flushleft}
+Title: Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales.
+
+Authors: Joseph Stachelek, W. Weng, C.C. Carey, A.R. Kemanian, K.M. Cobourn, T. Wagner, K.C. Weathers, P.A. Soranno
+
+Journal: Ecological Applications
+\end{flushleft}
+
+\vspace{6em}
 
 ```{r nlcd-versus-cdl_map, fig.cap = "Example of increasing granularity for total Ag to Ag versus pasture, to pasture versus specific crops. For illustration, only corn, soybeans, and pasture are shown rather than all CDL land-use categories.", warning=FALSE, echo = FALSE, eval = TRUE}
 knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
@@ -252,6 +270,8 @@ ggplot(data = res, aes(x = estimate, y = 1, color = n)) +
 knitr::include_graphics("../figures/08_exploratory_dotplot-1.pdf")
 ```
 
+\pagebreak
+
 ```{r tile_drainage_vs_clay, fig.cap = "Scatterplot showing the median clay content of watersheds in our hydrologic regions plotted against percent tile drainage from Nakagaki and Wieczorek (2016). The regions that are highly sensitive to agricultural land-use from Figure 4 are highlighted in red.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3}
 # load huc4 clay estimates
 signif_hu4_ids <- c("HU4_56", "HU4_57")
@@ -289,6 +309,8 @@ ggplot(data = test2) +
         legend.title = element_text(size = 11)) +
   labs(color = "LULC Sensitive")
 ```
+
+\pagebreak
 
 ```{r clay-nonlinear, fig.cap = "Scatterplot showing the non-linear relationship between watershed clay content and lake TN concentration. Vertical dashed line shows transition between a positive and a negative correlation (r) between the two variables. Solid red line shows the fit of a generalized additive model from the mgcv R package.", warning=FALSE, echo = FALSE, eval=TRUE, fig.height=3, fig.width=3.3, message=FALSE}
 library(magrittr)

@@ -6,8 +6,12 @@ output:
     keep_tex: yes
 header-includes: 
 - \usepackage{colortbl}
-- \usepackage{caption}
+- \usepackage{setspace, caption}
 - \usepackage{float}
+- \usepackage{times}
+- \DeclareCaptionFont{blah}{\doublespacing\normalsize\fontseries{n}\fontfamily{ptm}\selectfont}
+- \captionsetup{font=blah}
+- \setcounter{page}{37}
 ---
 
 \arrayrulecolor{white}
@@ -18,35 +22,59 @@ knitr::opts_chunk$set(fig.pos = 'H')
 
 \pagebreak
 
-```{r maps2, fig.cap = "A) Map of lake locations and B) hydrologic (HUC4) regions.", warning=FALSE, echo = FALSE, eval=TRUE, out.extra=''}
-knitr::include_graphics("../figures/11_map-1.pdf")
-```
-
 \begin{center}
 \captionof{table}{Medians followed by first and third quantiles of predictor variables for 928 lakes. Also shown is whether each predictor is defined as an aggregate or granular measure of agriculture or as a non-agriculture (other) predictor. Dashed entries for the granularity cateogry indicate an identical categorization as the preceding predictor.}
 \includegraphics{../tables/01_predictors}
 \end{center}
 
-```{r re-comparison-1, fig.cap = "Population level slope estimates ($\\mu_\\gamma$) for the effect of watershed land-use cover on lake TN and TP from six candidate models. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
-knitr::include_graphics("../figures/re-comparison-1.pdf")
-```
+\pagebreak
 
 \begin{center}
 \captionof{table}{Diagnostics for each model listed by regionally varying coefficient. Table is sorted by decreasing $R^2$ and expected log predictive density (ELPD). ELPD has a similar interpretation to information criterion measures like AIC. Typically models are considered to be different if they are separated by an Akaike information criterion (AIC) value of greater than 2, which is equivalent to an ELPD value of -1.}
 \includegraphics{../tables/03_model_summary}
 \end{center}
 
+\pagebreak
+
+\renewcommand{\listfigurename}{Figure legends}
+\doublespacing
+\renewcommand*\numberline[1]{Figure\,#1:\space}
+\makeatletter
+\renewcommand*\l@figure[2]{\noindent#1\par}
+\makeatother
+\listoffigures
+
+\pagebreak
+
+```{r maps2, fig.cap = "A) Map of lake locations and B) hydrologic (HUC4) regions.", warning=FALSE, echo = FALSE, eval=TRUE, out.extra=''}
+knitr::include_graphics("../figures/11_map-1.pdf")
+```
+
+\pagebreak
+
+```{r re-comparison-1, fig.cap = "Population level slope estimates ($\\mu_\\gamma$) for the effect of watershed land-use cover on lake TN and TP from six candidate models. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
+knitr::include_graphics("../figures/re-comparison-1.pdf")
+```
+
+\pagebreak
+
 ```{r fe-1, fig.cap = "Global (fixed effect) coefficient values ($\\beta$, for all non-LULC predictors) and population level estimates for the effect of watershed land-use ($\\mu_\\gamma$, for LULC) on lake TN and TP for each respective top-ranked model. Note that the values for LULC here are identical to their corresponding values in Figure 2. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance and correspond with $\\beta$ (and $\\mu_\\gamma$ for LULC) from Equation 1.", warning=FALSE, echo = FALSE, out.extra=''}
 knitr::include_graphics("../figures/fe-1.pdf")
 ```
+
+\pagebreak
 
 ```{r re-1, fig.cap = "Effect of watershed land-use ($\\gamma_j$) for individual regions in the top-ranked lake N and P models. Values shown are posterior medians (filled circles) and 95\\% credible intervals (solid lines) for individual hydrologic units (HUC4s) ordered from top to bottom according to longitude (west to east). Also shown is a comparison to a zero effect (solid vertical line). Values that are different from the population level effect are shaded in red.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
 knitr::include_graphics("../figures/re-1.pdf")
 ```
 
+\pagebreak
+
 ```{r tn_re_hu4-1, fig.cap = "Location of hydrologic regions sensitive to watershed land-use cover corresponding to highlighted credible intervals in Figure 4.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
 knitr::include_graphics("../figures/tn_re_hu4-1.pdf")
 ```
+
+\pagebreak
 
 ```{r tn_re_compare-1, fig.cap = "Histograms showing the distribution of soil clay content for watersheds in regions sensitive to watershed land-use (see highlighted credible intervals in Figure 4) relative to watersheds all other regions. Medians for each group are shown as vertical dashed lines.", warning=FALSE, echo = FALSE, out.extra='', fig.align='center'}
 knitr::include_graphics("../figures/tn_re_compare-1.pdf")
