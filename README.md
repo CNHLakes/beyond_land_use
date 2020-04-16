@@ -1,9 +1,9 @@
-[![Paper DOI](https://img.shields.io/badge/Paper-DOI-blue.svg)]() [![Code DOI](https://zenodo.org/badge/123951266.svg)](https://zenodo.org/badge/latestdoi/123951266)
+[![Paper DOI](https://img.shields.io/badge/Paper-DOI-blue.svg)]() [![Paper DOI](https://img.shields.io/badge/Code-DOI-blue.svg)](https://zenodo.org)
 
 Code and data
 for:
 
-**Stachelek et al. Submitted**. Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales.
+**Stachelek et al. In press**. Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales. _Ecological Applications_
 
 ### Products
 
