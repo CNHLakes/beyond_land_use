@@ -3,7 +3,7 @@
 Code and data
 for:
 
-**Stachelek et al. In press**. Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales. _Ecological Applications_
+**Stachelek et al. In press**. Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales. _Ecological Applications_.
 
 ### Products
 
