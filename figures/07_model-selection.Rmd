@@ -411,8 +411,11 @@ gg_tn_re
 
 ```{r re, fig.width=4.25}
 cowplot::plot_grid(
-cowplot::plot_grid(gg_tp_re + theme(axis.title.x = element_blank(), 
-                                     plot.margin = unit(c(0,0,0,0), "cm")),
+  ggplot() + geom_blank() + theme(panel.background = element_blank()),
+cowplot::plot_grid(
+cowplot::plot_grid(gg_tp_re + theme(axis.text.y = element_text(size = 9),
+                                    axis.title.x = element_blank(), 
+                                    plot.margin = unit(c(0,0,0,0), "cm")),
                    gg_tn_re + theme(axis.text.y = element_blank(), 
                                     axis.title.y = element_blank(), 
                                     axis.title.x = element_blank(),
@@ -425,7 +428,8 @@ ggplot(data.frame(x = 0, y = 0, label = "Standardized coefficients", stringsAsFa
   theme_void() + 
   theme(plot.margin = unit(c(0,0,0,0), "cm")), 
 rel_widths = c(0.15, 1)),
-ncol = 1, rel_heights = c(1, 0.05))
+ncol = 1, rel_heights = c(1, 0.05)), 
+ncol = 2, rel_widths = c(0.05, 1))
 
 cowplot::plot_grid(gg_tp_re, 
                    gg_tn_re + 
