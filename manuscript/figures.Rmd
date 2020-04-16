@@ -23,7 +23,7 @@ knitr::opts_chunk$set(fig.pos = 'H')
 \pagebreak
 
 \begin{center}
-\captionof{table}{Medians followed by first and third quantiles of predictor variables for 928 lakes. Also shown is whether each predictor is defined as an aggregate or granular measure of agriculture or as a non-agriculture (other) predictor. Dashed entries for the granularity cateogry indicate an identical categorization as the preceding predictor.}
+\captionof{table}{Medians followed by first and third quantiles of predictor variables for 928 lakes. Also shown is whether each predictor is defined as an aggregate or granular measure of agriculture or as a non-agriculture (other) predictor. Dashed entries for the granularity category indicate an identical categorization as the preceding predictor.}
 \includegraphics{../tables/01_predictors}
 \end{center}
 
