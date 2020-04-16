@@ -1,4 +1,4 @@
-[![Paper DOI](https://img.shields.io/badge/Paper-DOI-blue.svg)](https://doi.org) [![Code DOI](https://img.shields.io/badge/Code-DOI-blue.svg)](https://zenodo.org)
+[![Paper DOI](https://img.shields.io/badge/Paper-DOI-blue.svg)](https://doi.org) [![Code DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3754916.svg)](https://doi.org/10.5281/zenodo.3754916)
 
 Code and data
 for:
