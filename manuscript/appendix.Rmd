@@ -58,7 +58,7 @@ knitr::include_graphics("../figures/cdl_vs_nlcd-1.pdf")
 \end{center}
 
 ```{r 02_cdl_key, results='asis', warning=FALSE, echo = FALSE}
-knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010 CDL. See code supplement for listing of variables classified as 'ag'.")
+knitr::kable('', col.names = NULL, caption = "Category definitions from the 2010 CDL. See code supplement for listing of variables classified as 'ag' (https://doi.org/10.5281/zenodo.3754916).")
 ```
 
 \pagebreak
