@@ -72,7 +72,7 @@ skip_final_break: true
 
 # Optional: Bibliography 
 bibliography: lagosag
-biblio-style: elsarticle-harv
+biblio-style: jsta
 
 # Optional: Enable a 'Draft' watermark on the document
 #watermark: true
