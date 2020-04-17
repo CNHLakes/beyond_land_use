@@ -17,7 +17,7 @@ ofile <- paste0(sfile, "x")
 
 if(!file.exists(ofile)){
   # convert xls to xlsx
-  jsta::get_if_not_exists("https://pubs.usgs.gov/sir/2006/5012/excel/Nutrient_Inputs_1982-2001jan06.xls", sfile, overwrite = FALSE)
+  get_if_not_exists("https://pubs.usgs.gov/sir/2006/5012/excel/Nutrient_Inputs_1982-2001jan06.xls", sfile, overwrite = FALSE)
   writexl::write_xlsx(readxl::read_excel(sfile), ofile)
 
   # # file.exists(sfile)

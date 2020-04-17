@@ -471,3 +471,23 @@ get_r2 <- function(x){
   x$R2 <- res
   x
 }
+
+# jsta::pdf_table
+pdf_table <- function(x, out_name = "test.pdf"){
+  if(is.data.frame(x)){
+    pdf(file = out_name)
+    # Only fits 25 rows of data. Warn if greater?
+    gridExtra::grid.table(x, rows = rep("", nrow(x)))
+    dev.off()
+  }
+  if(is.character(x)){
+    zz <- file("test.md", "w")
+    sink(zz)
+    cat("\\pagenumbering{gobble}")
+    print(x)
+    sink()
+    close(zz)
+    system(paste0("pandoc -s test.md -o ", out_name))
+    unlink("test.md")
+  }
+}

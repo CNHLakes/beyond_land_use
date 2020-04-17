@@ -73,9 +73,9 @@ dt        <- suppressWarnings(
 dt_scaled <- suppressWarnings(
   compare_focal(readRDS("../data/dt_scaled.rds"), focal_hu4s$hu4_zoneid, threshold = 0.9))
 
-jsta::pdf_table(dt, "../tables/dt.pdf")
-jsta::pdf_table(dt_scaled, "../tables/dt_scaled.pdf")
-jsta::pdf_table(hu4, "../tables/hu4.pdf")
+pdf_table(dt, "../tables/dt.pdf")
+pdf_table(dt_scaled, "../tables/dt_scaled.pdf")
+pdf_table(hu4, "../tables/hu4.pdf")
 
 View(dt)
 
