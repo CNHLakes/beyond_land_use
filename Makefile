@@ -212,6 +212,8 @@ manuscript/reviewer_comments.pdf: manuscript/reviewer_comments.md
 	pandoc $< -H manuscript/quote_setup.tex -o $@ 
 	
 manuscript/manuscript.pdf: manuscript/manuscript.Rmd \
-manuscript/pinp.cls
+manuscript/pinp.cls \
+manuscript/lagosag.bib \
+manuscript/jsta.bst
 	cd manuscript && make manuscript.pdf
 	
