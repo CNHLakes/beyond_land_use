@@ -210,3 +210,7 @@ tables/03_model_summary.pdf: tables/03_model_summary.Rmd data/mcmc/re_brms.rds
 	
 manuscript/reviewer_comments.pdf: manuscript/reviewer_comments.md
 	pandoc $< -H manuscript/quote_setup.tex -o $@ 
+	
+manuscript/manuscript.pdf: manuscript/manuscript.Rmd
+	cd manuscript && make manuscript.pdf
+	

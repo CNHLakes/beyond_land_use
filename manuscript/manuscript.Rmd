@@ -1,0 +1,241 @@
+---
+title: Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales
+
+# Use letters for affiliations
+author:
+  - name: Joseph Stachelek
+    affiliation: a
+  - name: Weizhe Weng
+    affiliation: b
+  - name: Patricia A. Soranno
+    affiliation: a
+address:
+  - code: a
+    address: Department of Fisheries and Wildlife, Michigan State University, 480 Wilson Rd., East Lansing, MI 48824, USA
+  - code: b
+    address: School of Business, State University of New York College at Geneseo, 1 College Circle, Geneseo, NY 14454, USA
+    
+# Optional: line of arbitrary text with additional information.
+# Could be used, for example, to mention the bibliographic info in a post-print.
+# If not specified, defaults to "This version was compiled on \today"
+#date_subtitle: Published in *Journal of Statistical Software*, 2018
+date_subtitle: > 
+  This is the accepted version of the following article: J. Stachelek et al., Ecological Applications. In Press, which has been published in final form at DOI:  [DOI](https://doi.org).  This article may be used for non-commercial purposes in accordance with Wiley Terms and Conditions for Use of Self-Archived Versions.
+
+# For footer text  TODO(fold into template, allow free form two-authors)
+lead_author_surname: Stachelek et al.
+
+# Place eg a DOI URL or CRAN Package URL here
+doi_footer: "https://doi.org/10.5281/zenodo.3754916"
+
+# Abstract
+abstract: |
+  Agricultural land-use is typically associated with high stream nutrient concentrations and increased nutrient loading to lakes. For lakes, evidence for these associations mostly comes from studies on individual lakes or watersheds that relate concentrations of nitrogen (N) or phosphorus (P) to aggregate measures of agricultural land-use, such as the proportion of land used for agriculture in a lake’s watershed. However, at macroscales (i.e., in hundreds to thousands of lakes across large spatial extents), there is high variability around such relationships and it is unclear whether considering more granular (or detailed) agricultural data, such as fertilizer application, planting of specific crops, or the extent of near-stream cropping, would improve prediction and inform understanding of lake nutrient drivers. Furthermore, it is unclear whether lake N and P would have different relationships to such measures and whether these relationships would vary by region, since regional variation has been observed in prior studies using aggregate measures of agriculture. To address these knowledge gaps, we examined relationships between granular measures of agricultural activity and lake total phosphorus (TP) and total nitrogen (TN) concentrations in 928 lakes and their watersheds in the Northeastern and Midwest U.S. using a Bayesian hierarchical modelling approach. We found that both lake TN and TP concentrations were related to these measures of agriculture, especially near-stream agriculture. The relationships between measures of agriculture and lake TN concentrations were more regionally variable than those for TP. Conversely, TP concentrations were more strongly related to lake-specific measures like depth and watershed hydrology relative to TN. Our finding that lake TN and TP concentrations have different relationships with granular measures of agricultural activity has implications for the design of effective and efficient policy approaches to maintain and improve water quality.
+
+# Optional: Acknowledgements
+acknowledgements: |
+  This work was supported by the U.S. National Science Foundation’s Dynamics of Coupled Natural and Human Systems (CNH) Program (award 1517823) and Macrosystems Biology Program (awards EF-1638679, EF-1638554, EF-1638539, and EF-1638550). PAS was also supported by the USDA National Institute of Food and Agriculture, Hatch project 1013544. ARK supported by Hatch Appropriations under Project #PEN04571 and Accession #1003346. We thank Sarah Collins for early input on the design and motivation for this study. Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government. Author contributions: JS conceived of the study, built models, analyzed data, and wrote the paper. CCC, ARK, and PAS contributed to the conception of the manuscript and edited the paper. WW, KMC, TW, KCW, and PAS provided interpretation of results and edited the paper.
+
+# Optional: One or more keywords
+keywords:
+  - agriculture
+  - fertilizer
+  - lakes
+  - manure
+  - nitrogen
+  - phosphorus
+  - water quality
+
+# Paper size for the document, values of letter and a4
+papersize: letter
+
+# Font size of the document, values of 9pt (default), 10pt, 11pt and 12pt
+fontsize: 9pt
+
+# Optional: Force one-column layout, default is two-column
+#one_column: true
+
+# Optional: Enables lineno mode, but only if one_column mode is also true
+#lineno: true
+
+# Optional: Enable one-sided layout, default is two-sided
+#one_sided: true
+
+# Optional: Enable section numbering, default is unnumbered
+#numbersections: true
+
+# Optional: Specify the depth of section number, default is 5
+#secnumdepth: 5
+
+# Optional: Skip inserting final break between acknowledgements, default is false
+skip_final_break: true
+
+# Optional: Bibliography 
+bibliography: lagosag
+biblio-style: elsarticle-harv
+
+# Optional: Enable a 'Draft' watermark on the document
+#watermark: true
+
+# Customize footer, eg by referencing the vignette
+footer_contents: "Agriculture-lake nutrient relationships"
+
+# Produce a pinp document
+output: pinp::pinp
+
+# Required: Vignette metadata for inclusion in a package.
+vignette: >
+  %\VignetteIndexEntry{YourPackage-vignetteentry}
+  %\VignetteKeywords{YourPackage, r, anotherkeyword}
+  %\VignettePackage{YourPackage}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+## Introduction 
+
+Freshwaters are vulnerable to eutrophication in areas of high agricultural land-use and land cover because agricultural activities are associated with high nutrient runoff and loading to groundwater and streams (Allan 2004, Arbuckle and Downing, 2001, Daniel et al. 2010, Taranu et al. 2008). High runoff and loading in these areas is a result of high rates of nutrient input combined with hydrologic modifications that decrease the travel time of these inputs from the land surface to lakes \citep{blannEffectsAgriculturalDrainage2009}. Surprisingly, while some studies have found strong relationships between agricultural land-use and land cover (hereafter referred to as “land-use” or LULC) and lake nutrient concentrations (Arbuckle and Downing 2001, Taranu et al. 2008), others have found more mixed results (Jones et al. 2008), particularly in studies that include many lakes located in multiple regions (Soranno et al. 2015). Further examples of such macroscale studies (see Heffernan et al. 2014) in which lakes are spread across many regions at distances spanning hundreds to thousands of kilometers include Collins et al. (2017) and Read et al. (2015), who found that the strength of agriculture and lake nutrient relationships varied depending on geographic region and lake characteristics. 
+
+Mixed results from prior studies may be due to two difficulties in quantifying lake nutrient and agricultural land-use relationships. First, the pathways of nutrients from fields to streams and ultimately to lakes are complex and indirect (Cherry et al. 2008, Heathwaite et al. 2003, King et al. 2005). For example, in order for nitrogen applied as fertilizer to reach a lake, it must be transported to streams or groundwater in excess of microbial denitrification, plant use, and microbial uptake. Then, it must travel, again, often undergoing repeated chemical transformation as it passes through riparian buffers and along stream networks before finally entering the lake (Maranger et al. 2018). Each step of the journey represents an opportunity for those nutrients to be sequestered or removed. Further, overall hydrologic transport is influenced by soil type (Naiman et al. 2010), and topography. Thus, the nutrients that ultimately enter a lake are a function of filtering by the landscape as well as geochemical transformation processes that are difficult to capture at broad scales (Canham et al. 2012, Maranger et al. 2018). 
+
+Second, much of our evidence for a connection between agricultural land-use and increased nutrient concentrations comes from studies focusing on a single watershed or on several watersheds within a single geographic region (Capel et al. 2018b, Daniel et al. 2010, Hayes et al. 2015, Renwick et al. 2008). These studies tend to focus on very detailed measures of agricultural activity such as tillage and other practices, nutrient amendments, and their spatial arrangement. However, studies at broader spatial scales (i.e., the macroscale, Heffernan et al. 2014), which aim to provide a more general view of relationships between lake nutrient concentrations and agriculture, tend to focus only on relatively coarse measures of agricultural activity (Fergus et al. 2016, Filstrup et al. 2018, Read et al. 2015, Schmadel et al. 2019). As a result, it is unclear to what extent the mixed results from prior broad-scale studies might be due to the limited use of detailed measures of agricultural activity or simply from regional variation. 
+
+There are two ways in which detailed (i.e., granular) measures of agricultural activity may be substituted for their coarse (i.e., aggregate) counterparts. The first is by using granular measures that are recorded in the same locations as their aggregate equivalents but are more descriptive. For example, in broad-scale studies, the proportion of land used for agriculture in a lake watershed is sometimes replaced by separate representations of the land used for pasture and the land used for row-crops (Abell et al. 2011, Collins et al., 2017). The second is by using granular measures that have the same description as their aggregate equivalents, but that are measured in more specific locations. For example, a small number of lake studies have compared the proportion of land used for agriculture in near-stream buffers versus the watershed as a whole (Gemesi et al. 2011, Soranno et al. 2015). Although the term granular can be used in a general sense to describe any detailed agricultural measure, we define the term more narrowly as only those that have a specific aggregate counterpart (Table 1). 
+
+Prior use of granular data in broad-scale studies of lake water quality has been limited. For this reason, findings from broad-scale studies may be less useful in applied management settings because coarse (i.e. aggregate) land-use and land cover change metrics have become less widely used policy instruments (Morefield et al. 2016). Instead, recent policy interventions go beyond aggregate measures of agricultural activity to target more specific measures such as implementation of specific farming practices, no-till agriculture, and construction of riparian buffer strips (Capel et al. 2018a, NRC 2010, Yang et al. 2005). Thus, broad-scale studies could be made more relevant for informing policy interventions if they used covariates that have a similar level of granularity to those used in fine-scale studies. For example, implementation of no-till agriculture policies may be better informed by covariates at the granular crop level rather than solely by aggregate covariates like land used for agriculture (Figure S1). 
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.48\textwidth,keepaspectratio]{../tables/01_predictors}
+    \captionsetup{labelformat=empty}
+    \caption{\textbf{Table 1. } Medians followed by first and third quantiles of predictor variables for 928 lakes. Also shown is whether each predictor is defined as an aggregate or granular measure of agriculture or as a non-agriculture (other) predictor. Dashed entries for the granularity category indicate an identical categorization as the preceding predictor.} \customlabel{table1}{1}     
+  \end{center}
+\end{figure}
+
+One likely reason that broad-scale studies have rarely used granular agricultural data is that until recently, such data have not been available with corresponding lake nutrient concentration data over large geographic extents. Although a few examples exist of studies connecting granular agricultural data to either stream nitrogen or phosphorus concentrations at the macroscale (Boyer et al. 2002, Bellmore et al. 2018, Metson et al. 2017), most studies have focused on either nitrogen (N) or phosphorus (P) but not on both at the same time (Alexander et al. 2008). Crucially, we are not aware of prior work examining relationships between a multiple granular measures of agricultural activity on either lake N or P concentrations at macroscales. 
+
+There are several plausible expectations, which are based on the findings of broad-scale stream studies as well as the findings of fine-scale lake studies, for the type of relationships between such measures and lake nutrient concentrations that may emerge at macroscales. First, we expect that increased nutrient inputs to the land surface as fertilizer and manure will increase lake nutrient concentrations (Bellmore and other 2018, Renwick et al. 2008). Second, we expect that lakes with watersheds that have high soil clay content and high soil organic carbon content will have higher lake nutrient concentrations. This will occur because clay soils tend to have higher rates of surface runoff and have higher organic matter content relative to sandy soils, despite the tendency for higher organic matter content to increase water storage and reduce surface runoff (Capel et al. 2018b). Finally, we expect that lakes with stream networks characterized by extensive near-stream agriculture will have higher nutrient concentrations because there will be less interception of agricultural runoff (Naiman et al. 2010). 
+
+Although we can formulate potential expectations for relationships between agricultural activities and lake nutrients at the macroscale by building on the findings of prior studies, several key uncertainties remain. The first key uncertainty is the extent to which lake and watershed characteristics, such as watershed hydrology and soil type, affect relationships between granular measures of agricultural activity and lake nutrient concentrations at the macroscale. For example, macroscale studies have found that lake P concentrations are strongly dependent on lake depth (Collins et al. 2017), but the degree to which granular agricultural data provide additional explanatory power is unknown. Similarly, Abell et al. (2011) found that watershed to lake area ratio (i.e. lake water residence time) was positively related to lake N concentrations after controlling for aggregate measures of agricultural land-use, but it is unknown whether this mediation effect would also affect relationships with more granular measures of agriculture. 
+
+The second key uncertainty is the extent to which relationships between granular measures of agricultural activity and lake nutrient concentrations vary regionally. For example, previous macroscale studies on lake nutrient concentrations have found that relationships between lake chlorophyll and nutrient concentrations vary regionally according to hydrologic subregions (Wagner et al. 2011, Qian et al. 2019). Models in which separate relationships (e.g. slopes) are estimated for different regions, such as those used by Wagner et al. (2011), can be used to test differences among regions in the sensitivity to nutrient predictors. Wagner et al. (2011) found that the slope of the chlorophyll to P relationship was notably higher in several of their study regions and found that lakes with high pasture land-use in their watershed were more sensitive to changes in P concentrations (larger, positive slope estimate). They suggest that elevated sensitivity in high pasture regions is due to dual N and P nutrient enrichment associated with this land cover type. Given the findings of this and other studies in stream ecosystems (Alexander et al. 2008), it follows that other relationships in lakes may vary regionally, but whether or not this includes relationships with granular measures of agricultural activity remains unknown. 
+
+We addressed the knowledge gaps described above by asking two questions using data from approximately 900 lakes in the Northeastern and Midwestern US: 1) How do granular measures of agricultural activity relate to lake N and P concentrations? And, 2) How do relationships between agricultural activities and lake nutrients vary regionally among hydrologic and climatic regions? To answer these questions, we fit statistical models of lake nutrient concentrations as a function of granular measures of agricultural activity such as the proportion of watershed area land-use of specific crops, and near-stream land-use, as well as fertilizer and manure applications. We also included a variety of lake and watershed characteristics as predictors to account for the influence of other drivers. Finally, our models included a hierarchical component where relationships between watershed land-use and lake nutrient concentrations were allowed to vary among hydrologic subregions to examine potential regional variation in these relationships.
+
+## Methods
+
+### Data description
+
+We analyzed data on lake total nitrogen (TN) and total phosphorus (TP) concentrations from the LAGOS-NE data product (Soranno and Cheruvelil 2017). The LAGOS-NE nutrient data are limited to surface (or “epilimnetic”) samples and were derived from federal, state, tribal, and non-profit agencies, as well as university researchers and citizen scientist data collections (Soranno et al. 2017). We collapsed lake nutrient data to long-term median values computed using all data from the summer stratified period (i.e. 15 June through 15 September) available for each lake between 2000 and 2010. For the lakes that met our selection criteria (see below) the median number of samples per lake was nine (range = 3-94) and the median number of years sampled was four (range = 2-10).
+
+Our first source for granular agricultural information was the 2010 Cropland Data Layer (CDL, USDA 2019), which we used to generate lake watershed and stream buffer estimates of the proportion of land cover due to specific crops such as corn and soybeans. We used the R package cdlTools to access CDL products (Chen 2018). We used the 2010 CDL data because this was the first year of high resolution (30 x 30m) CDL data collection that matched our lake nutrient data collection window. Because the CDL contains detailed coverage for dozens of crops, including rare crops with little to no coverage, we re-categorized CDL data based on Lark et al. (2015) to a more limited set of categories (Table A1). 
+
+As a more granular representation of watershed agricultural land use, we measured the proportion of land cover in agricultural and “natural” land-uses in 100-m buffers of lake shorelines and streams for each lake watershed. We chose a 100-m buffer width because this width is inclusive of nearly all “riparian buffers” (Mayer et al. 2007). Here agricultural land-use is defined in the aggregate sense as the proportion of land used for agriculture in a lake’s watershed whereas “natural” land-uses include the sum of all non-agriculture and non-developed CDL classes. We identified the streams associated with each lake using the stream network extraction tool in the nhdR interface e (Stachelek 2019) to the National Hydrography Network (USGS 2019). We compiled soil characteristics for each lake watershed using the Gridded Soil Survey Geographic Database (gSSURGO, USDA 2019) where we used the python package gssurgo (Stachelek 2019) to access gSSURGO  products. One such product was wetland potential, defined as the percentage of the soil grid that meets the criteria for hydric soils formed under conditions of saturation, flooding, or ponding long enough to develop anaerobic conditions but not so long as to be classified as a permanent waterbody (USDA 2019). Finally, we compiled mean annual nutrient inputs via fertilizer and manure to lake watersheds from 1982-2001 using county level data provided by Ruddy et al. (2006). We spatially aligned these county level estimates to lake watershed polygons provided by LAGOS-NE (Soranno and Cheruvelil 2017) using the area-weighted interpolation functions provided by the sf R package (Pebesma 2019). All of our data and data processing code are available at [Zenodo DOI].
+
+### Location information
+
+We restricted the lakes included in the study to those located within the footprint of LAGOS-NE which includes lakes located in 17 Northeastern and Midwest U.S. states (Soranno et al., 2017). We excluded lakes from our analysis if they had a surface area > 400 km2 or a maximum depth > 35 m. These removals resulted in exclusion of approximately 40 lakes which we regarded as outliers that would likely have undue influence on model results because such large and deep lakes are likely to respond differently to enrichment as a result of enhanced stratification. To ensure an adequate comparison between aggregate and granular measures of agriculture, we
+further limited lakes in our study to those with at least 10% of the total watershed area devoted to agricultural land-use and those that were sampled at least three times between 2000 and 2010. A total of 928 lakes met these selection criteria (Figure 1). Because we focused on lakes in agricultural watersheds, more than 35  percent of lakes in our study are considered eutrophic to hypereutrophic using chlorophyll a as a diagnostic e versus only 15 percent for all lakes from Soranno et al. (2017) located within our study extent (Figure A3). For the regional terms in our models, we used hydrologic regions at the subbasin (i.e. HUC4) level because this level was small enough to give a sense of overall spatial variation but large enough to encompass sufficient numbers of lakes to estimate within region variance.
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.49\textwidth, height=3.5in,keepaspectratio]{../figures/11_map-1}
+  \end{center}
+  \caption{asdfdd}\label{fig1}
+\end{figure}
+
+## References 
+
+Here we differ from PNAS and suggest natbib. References will appear in
+author-year form. Use `\citet{}`, `\citep{}`, etc as usual.
+
+## Inline R Code 
+
+The PNAS sample included a fixed PNG image here, but this document prefers
+to show the results and embedding of _R_ code. 
+
+```{r figex, fig.width=3, fig.height=3, cache=TRUE, echo=TRUE, fig.cap="Narrow ggplot2 figure"}
+library(ggplot2)
+ggplot(mtcars, aes(wt, mpg)) +
+    geom_point(size=3, aes(colour=factor(cyl))) +
+    theme(legend.position="none")
+```
+
+Here we use a standard knitr bloc with explicit options for
+
+- figure width and height (`fig.width`, `fig.height`), both set to three inches;
+- whether the code is shown (`echo=TRUE`); and
+- the caption (`fig.cap`) as shown above.
+
+
+## Digital Figures 
+
+Markdown, Pandoc and LaTeX support `.eps` and `.pdf` files.
+
+Figures and Tables should be labelled and referenced in the standard way
+using the `\label{}` and `\ref{}` commands.
+
+The R examples above show how to insert a column-wide
+figure. To insert a figure wider than one column, please use the
+`\begin{figure*}...\end{figure*}` environment. 
+
+One (roundabout) way of doing this is to _not_ actually plot a figure, but to
+save it in a file as the following segment shows:
+
+This file is then included via standard LaTeX commands.
+
+
+## Typeset Code (But Do Not Run It) 
+
+We can also just show code.
+
+```r
+xx <- faithful[,"eruptions"]
+fit <- density(xx)
+plot(fit)
+```
+
+This simply used a pandoc bloc started and ended by three backticks,
+with `r` as the language choice.  Similarly, _many_ other languages
+can be typeset directly simply by relying on pandoc.
+
+
+## Single column equations 
+
+Authors may use 1- or 2-column equations in their article, according to
+their preference.
+
+To allow an equation to span both columns, options are to use the
+`\begin{figure*}...\end{figure*}` environment mentioned above for
+figures. The `\begin{widetext}...\end{widetext}` environment as shown
+in equation \ref{eqn:example} below is deprecated, but \LaTeX commands
+`\onecolumn` and `\twocolumn` work fine.
+
+Please note that this option may run into problems with floats and
+footnotes, as mentioned in the [cuted package
+documentation](http://texdoc.net/pkg/cuted). In the case of problems
+with footnotes, it may be possible to correct the situation using
+commands `\footnotemark` and `\footnotetext`.
+
+\begin{equation}
+  \begin{aligned}
+(x+y)^3&=(x+y)(x+y)^2\\
+       &=(x+y)(x^2+2xy+y^2) \\
+       &=x^3+3x^2y+3xy^3+x^3. 
+       \label{eqn:example} 
+  \end{aligned}
+\end{equation}
+
+
+<!-- pandoc writes all tables using longtable, which fails in 2-column mode
+
+  Species                    CBS     CV     G3
+  ----------------------- ------ ------ ------
+  1\. Acetaldehyde           0.0    0.0    0.0
+  2\. Vinyl alcohol          9.1    9.6   13.5
+  3\. Hydroxyethylidene     50.8   51.2   54.0
+
+  : Comparison of the fitted potential energy surfaces and ab initio
+  benchmark electronic energy calculations
+
+-->
+

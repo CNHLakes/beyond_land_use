@@ -56,3 +56,7 @@ data/usgs/usgs_nutrient_inputs.xlsx
 *.docx
 manuscript/reviewer_comments.md
 manuscript/reviewer_comments.pdf
+manuscript/manuscript.log
+manuscript/manuscript.tex
+manuscript/manuscript_cache/
+manuscript/manuscript_files/
