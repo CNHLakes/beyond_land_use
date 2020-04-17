@@ -7,13 +7,35 @@ author:
     affiliation: a
   - name: Weizhe Weng
     affiliation: b
+  - name: Cayelan C. Carey
+    affiliation: c
+  - name: Armen R. Kemanian
+    affiliation: d
+  - name: Kelly M. Cobourn
+    affiliation: e
+  - name: Tyler Wagner
+    affiliation: f
+  - name: Kathleen C. Weathers
+    affiliation: g
   - name: Patricia A. Soranno
     affiliation: a
+  
 address:
   - code: a
     address: Department of Fisheries and Wildlife, Michigan State University, 480 Wilson Rd., East Lansing, MI 48824, USA
   - code: b
     address: School of Business, State University of New York College at Geneseo, 1 College Circle, Geneseo, NY 14454, USA
+  - code: c
+    address: Department of Biological Sciences, Virginia Tech, 926 W Campus Dr., Blacksburg, Virginia 24061 USA
+  - code: d
+    address: Department of Plant Science, The Pennsylvania State University, 247 Agricultural Sciences and Industries Bldg., University Park, Pennsylvania 16802 USA
+  - code: e
+    address: Department of Forest Resources and Environmental Conservation, Virginia Tech, 310 W Campus Dr., Blacksburg, Virginia 24061 USA
+  - code: f
+    address: U.S. Geological Survey, Pennsylvania Cooperative Fish and Wildlife Research Unit, The Pennsylvania State University, University Park, Pennsylvania
+  - code: g
+    address: Cary Institute of Ecosystem Studies, 2801 Sharon Tpke., Millbrook, New York 12545 USA
+
     
 # Optional: line of arbitrary text with additional information.
 # Could be used, for example, to mention the bibliographic info in a post-print.
@@ -93,7 +115,7 @@ vignette: >
 
 ## Introduction 
 
-Freshwaters are vulnerable to eutrophication in areas of high agricultural land-use and land cover because agricultural activities are associated with high nutrient runoff and loading to groundwater and streams (Allan 2004, Arbuckle and Downing, 2001, Daniel et al. 2010, Taranu et al. 2008). High runoff and loading in these areas is a result of high rates of nutrient input combined with hydrologic modifications that decrease the travel time of these inputs from the land surface to lakes \citep{blannEffectsAgriculturalDrainage2009}. Surprisingly, while some studies have found strong relationships between agricultural land-use and land cover (hereafter referred to as “land-use” or LULC) and lake nutrient concentrations (Arbuckle and Downing 2001, Taranu et al. 2008), others have found more mixed results (Jones et al. 2008), particularly in studies that include many lakes located in multiple regions (Soranno et al. 2015). Further examples of such macroscale studies (see Heffernan et al. 2014) in which lakes are spread across many regions at distances spanning hundreds to thousands of kilometers include Collins et al. (2017) and Read et al. (2015), who found that the strength of agriculture and lake nutrient relationships varied depending on geographic region and lake characteristics. 
+Freshwaters are vulnerable to eutrophication in areas of high agricultural land-use and land cover because agricultural activities are associated with high nutrient runoff and loading to groundwater and streams (Allan 2004, Arbuckle and Downing, 2001, Daniel et al. 2010, Taranu et al. 2008). High runoff and loading in these areas is a result of high rates of nutrient input combined with hydrologic modifications that decrease the travel time of these inputs from the land surface to lakes \citep{blannEffectsAgriculturalDrainage2009}. Surprisingly, while some studies have found strong relationships between agricultural land-use and land cover (hereafter referred to as “land-use” or LULC) and lake nutrient concentrations (Arbuckle and Downing 2001, Taranu et al. 2008), others have found more mixed results (Jones et al. 2008), particularly in studies that include many lakes located in multiple regions (Soranno et al. 2015). Further examples of such macroscale studies (see Heffernan et al. 2014) in which lakes are spread across many regions at distances spanning hundreds to thousands of kilometers include \citet{collinsLakeNutrientStoichiometry2017} and Read et al. (2015), who found that the strength of agriculture and lake nutrient relationships varied depending on geographic region and lake characteristics. 
 
 Mixed results from prior studies may be due to two difficulties in quantifying lake nutrient and agricultural land-use relationships. First, the pathways of nutrients from fields to streams and ultimately to lakes are complex and indirect (Cherry et al. 2008, Heathwaite et al. 2003, King et al. 2005). For example, in order for nitrogen applied as fertilizer to reach a lake, it must be transported to streams or groundwater in excess of microbial denitrification, plant use, and microbial uptake. Then, it must travel, again, often undergoing repeated chemical transformation as it passes through riparian buffers and along stream networks before finally entering the lake (Maranger et al. 2018). Each step of the journey represents an opportunity for those nutrients to be sequestered or removed. Further, overall hydrologic transport is influenced by soil type (Naiman et al. 2010), and topography. Thus, the nutrients that ultimately enter a lake are a function of filtering by the landscape as well as geochemical transformation processes that are difficult to capture at broad scales (Canham et al. 2012, Maranger et al. 2018). 
 
@@ -134,38 +156,137 @@ As a more granular representation of watershed agricultural land use, we measure
 ### Location information
 
 We restricted the lakes included in the study to those located within the footprint of LAGOS-NE which includes lakes located in 17 Northeastern and Midwest U.S. states (Soranno et al., 2017). We excluded lakes from our analysis if they had a surface area > 400 km2 or a maximum depth > 35 m. These removals resulted in exclusion of approximately 40 lakes which we regarded as outliers that would likely have undue influence on model results because such large and deep lakes are likely to respond differently to enrichment as a result of enhanced stratification. To ensure an adequate comparison between aggregate and granular measures of agriculture, we
-further limited lakes in our study to those with at least 10% of the total watershed area devoted to agricultural land-use and those that were sampled at least three times between 2000 and 2010. A total of 928 lakes met these selection criteria (Figure 1). Because we focused on lakes in agricultural watersheds, more than 35  percent of lakes in our study are considered eutrophic to hypereutrophic using chlorophyll a as a diagnostic e versus only 15 percent for all lakes from Soranno et al. (2017) located within our study extent (Figure A3). For the regional terms in our models, we used hydrologic regions at the subbasin (i.e. HUC4) level because this level was small enough to give a sense of overall spatial variation but large enough to encompass sufficient numbers of lakes to estimate within region variance.
+further limited lakes in our study to those with at least 10% of the total watershed area devoted to agricultural land-use and those that were sampled at least three times between 2000 and 2010. A total of 928 lakes met these selection criteria (Figure \ref{fig1}). Because we focused on lakes in agricultural watersheds, more than 35  percent of lakes in our study are considered eutrophic to hypereutrophic using chlorophyll a as a diagnostic e versus only 15 percent for all lakes from Soranno et al. (2017) located within our study extent (Figure A3). For the regional terms in our models, we used hydrologic regions at the subbasin (i.e. HUC4) level because this level was small enough to give a sense of overall spatial variation but large enough to encompass sufficient numbers of lakes to estimate within region variance.
+
+\setcounter{figure}{0}
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=0.68\textwidth, height=3.5in,keepaspectratio]{../figures/11_map-1}
+  \end{center}
+  \caption{A) Map of lake locations and B) hydrologic (HUC4) regions.}\label{fig1}
+\end{figure*}
+
+### Model overview
+
+We evaluated the effects of agricultural activities on lake TN and TP concentrations using a Bayesian hierarchical modelling approach. A list of lake and watershed covariates with their summary statistics is available in Table 1. In the first part of our model evaluation, we compared models that each had only a single measure of watershed land-use along with all remaining non-watershed land-use predictors. These non-watershed land-use predictors were included in every fitted model and were defined as measures of near-stream land-use, soil characteristics, and lake and watershed characteristics. We took this approach of evaluating one watershed land-use measure at a time for two reasons: 1) because measures of watershed land-use were highly correlated, and 2) because it allowed us to more rigorously test our expectation that granular measures of agriculture provide additional explanatory power beyond that offered by more typical aggregate measures of agriculture. In the second part of our model evaluation, we selected the top-ranked watershed land-use model according to our selection criteria for lake N and P (see below) for further inspection of their standardized coefficient values (See Table \ref{table1}). Our models were of the form:
+
+\begin{equation}
+\begin{split}
+& y_i = N(\alpha_{j(i)} + \beta_1 * X_{1i}...\beta_n * X_{ni} + \gamma_{1j(i)} * W_{1i} + \gamma_{mj{i}} * W_{mi})\\
+& \binom{\alpha_j}{\gamma_{1j}} \sim MVN\left( \binom{\mu_\alpha}{\mu_{\gamma1}}, \Sigma \right)
+\label{eqn1} 
+\end{split}
+\end{equation}
+
+\noindent where yi is either TN or TP concentration for lake i, and $\beta$ are “global” (i.e. fixed effect) coefficients. This set of global coefficients included estimates for watershed soil characteristics, near-stream land-use, as well as fertilizer and manure inputs for each lake (Xi). Whereas $\beta$ coefficients were estimated as fixed effects, $\gamma$ coefficients and $\alpha$ intercepts were estimated as varying (i.e. random) slopes and intercepts respectively among m hydrologic regions j on watershed land-use (Wij). Region specific intercepts $\alpha$ and $\gamma$ slopes were assumed to come from a multivariate normal distribution (MVN) where $\mu_\alpha$ and $\mu_{\gamma1}$ are their respective grand mean (i.e., population level) estimates. We tested a variety of watershed land-use types for Wij, including both granular and more aggregate measures of agricultural activity. Our only aggregate measure of agricultural activity was agricultural land-use whereas we used several granular measures of agricultural activity. These included both detailed measures of watershed land-use such as corn and soybean cover as well as more detailed measures of nutrient inputs and near-stream land-use (Table 1). We included measures of both N and P inputs in both N and P models because of the possibility for stoichiometric interaction. Given our regularization scheme (i.e. our use of “horseshoe priors” described below) there was little reason to exclude P inputs from N models (and vice versa) because unless P inputs are strongly related to lake TN concentration, their coefficient will be forced close to zero.
+
+All models had the same set of fixed effect coefficients while each individual model used a single different watershed land-use variable as a random effect. This modelling strategy is supported by our view that watershed land-use is an indirect proxy (sensu Burcher et al. 2007, Hayes et al. 2015, King et al. 2005) for other unquantifiable agricultural activities. Therefore, we expect the makeup of specific activities represented by this indirect measure to vary regionally. This contrasts with other predictor variables e like lake depth, where we have little evidence from prior studies that its effect on lake nutrient concentrations is spatially variable. Prior to model fitting, we examined the bivariate relationships between lake nutrient concentrations and all predictor variables using Pearson’s correlation coefficients (Figure A5) to determine the overall structure of the predictor dataset. We did not use the results of this exercise for building our model, performing model selection, or variable selection. For qualitative analysis of our model results, we classified predictor variables following Collins et al. (2017) into categories based on the dominant mechanism affecting lake nutrient concentrations, which includes nutrient inputs, nutrient transport, spatial configuration of land-use in stream buffers (Spatial config.), lake characteristics, and watershed land-use (LULC).
+
+We fit all models in a Bayesian framework using the brms R package interface to the Stan statistical program (Bürkner et al., 2017; Stan Development Team, 2017). We used horseshoe shrinkage priors on all fixed effect coefficients to evaluate variable importance (Carvalho et al. 2010). We considered a response variable sensitive to a given predictor if the predictor’s 95% credible interval did not overlap 0. We standardized all predictor variables by subtracting the mean of each variable and dividing by their respective standard deviation so that model coefficients could be compared on roughly the same scale. As a result, the relative sensitivity of a response variable to a particular predictor is related to the relative magnitude of its coefficient estimate. We evaluated model fit of each watershed land-use variable (i.e., each model having one regionally varying coefficient) in two ways. First, we computed a Bayesian R2 following the method of Gelman et al. (2017) and second, we computed differences in expected log predictive density (ELPD) using the leave-one-out cross e validation routines provided by the loo R package and implemented in brms (Vehtari et al. 2017). The loo package uses leave-one-out cross validation to estimate overall model error by computing O the average error of models iteratively trained on all the data except for a single point. ELPD values have a similar interpretation to information criterion measures such as Akaike information criterion (AIC) or Watanabe-Akaike information criterion (WAIC) except that values are on a different scale (Gelman et al. 2013). Typically, models are considered to be different if they are separated by an AIC value of greater than 2 (Anderson and Burnham 2002), which is equivalent to an ELPD value of -1 (Gelman et al. 2013). We report differences in ELPD among models using the notation $\Delta$ELPD. We selected the model with the lowest absolute value ELPD as the “top-ranked” model for detailed reporting and discussion as this signifies the model with the lowest leave one out cross-validation error for N and P respectively. 
+
+We used the default settings of brms to generate posterior estimates using four chains of 4,000 iterations each with no thinning and discarding the first 1,000 iterations. We examined model fits to ensure that all models had acceptable convergence of MCMC chains and had approximately normal model residuals. We further tested for spatial correlation among model residuals using the spind R package (Carl et al. 2018). All of our code for model fitting and evaluation is available at [Zenodo DOI].
+
+## Results
+
+### Effects of agriculture on lake nitrogen and phosphorus
+
+Lake characteristics (e.g., maximum depth and watershed to lake area ratio) along with measures of nutrient transport (e.g., baseflow) and near-stream agriculture were significant predictors in all lake N and P models that we fit. When we  compared among different models for each nutrient individually, we found that those with agricultural watershed O land-use (in the aggregate sense) were top-ranked (i.e., had the lowest absolute value leave-one-out cross validation score) for models of both TN and TP concentrations (Figure 2, Table 2). Although we observed no difference in the specific watershed land-use predictor used in each top-ranked model, we found differences in the extent to which each top-ranked model was substantially different from lower ranked models. For example, in the case of P, all models had nearly identical R2 (0.63) and the difference between the top-ranked model and second ranked model was modest ($\Delta$ELPD = 0.41). For N models, however, agricultural and corn land-use models had higher R2 (0.58) compared to other models and the difference between the top-ranked and second ranked model was more substantial ($\Delta$ELPD = 2.58, Figure 2, Table 1).
 
 \begin{figure}
   \begin{center}
-    \includegraphics[width=0.49\textwidth, height=3.5in,keepaspectratio]{../figures/11_map-1}
+    \includegraphics[width=0.49\textwidth, height=3.5in,keepaspectratio]{../figures/re-comparison-1}
   \end{center}
-  \caption{asdfdd}\label{fig1}
+  \caption{Population level slope estimates ($\mu_\gamma$) for the effect of watershed land-use cover on lake TN and TP from six candidate models. Values shown are posterior medians (filled circles) and 95\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance.}\label{fig2}
 \end{figure}
 
-## References 
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.3\textwidth,keepaspectratio]{../tables/03_model_summary}
+    \captionsetup{labelformat=empty}
+    \caption{\textbf{Table 2. } Diagnostics for each model listed by regionally varying coefficient. Table is sorted by decreasing $R^2$ and expected log predictive density (ELPD). ELPD has a similar interpretation to information criterion measures like AIC. Typically models are considered to be different if they are separated by an Akaike information criterion (AIC) value of greater than 2, which is equivalent to an ELPD value of -1.} \customlabel{table2}{2}   
+  \end{center}
+\end{figure}
 
-Here we differ from PNAS and suggest natbib. References will appear in
-author-year form. Use `\citet{}`, `\citep{}`, etc as usual.
+When we looked more closely at each top-ranked model, we found similarities in the
+types of predictors that contributed significantly to the top-ranked N and P models (Figure 3). First, both N and P models included measures of lake characteristics such as maximum depth and watershed to lake area ratio as significant predictors, with the sign of these associated coefficients matching our conventional understanding, in which shallower lakes and lakes with greater hydrologic loads have higher TN and TP concentrations. Second, both models included measures of nutrient transport such as baseflow and precipitation, in which lakes with a “flashier” hydrology (i.e., having lower baseflow) where incoming water is primarily from surface runoff rather than from groundwater, had higher TN and TP concentrations. Finally, both models indicated that high near-stream agriculture (i.e., a high proportion of the area adjacent to the stream network was in agricultural land-use) was associated with lakes having higher TN and TP concentrations. Where N and P models differed was in the effect of soil clay content, in which soils with low clay content were associated with high lake N but had no significant relationship with P.
 
-## Inline R Code 
+\setcounter{figure}{2}
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=0.7\textwidth, height=3.5in,keepaspectratio]{../figures/fe-1}
+  \end{center}
+  \caption{Global (fixed effect) coefficient values ($\beta$, for all non-LULC predictors) and population level estimates for the effect of watershed land-use ($\mu_\gamma$, for LULC) on lake TN and TP for each respective top-ranked model. Note that the values for LULC here are identical to their corresponding values in Figure 2. Values shown are posterior medians (filled circles) and 95\% credible intervals (solid lines). Also shown is a comparison to a zero effect (solid vertical line). Values that do not overlap zero are shaded in red. Horizontal bars separate coefficients in distinct predictor categories. Coefficient estimates are reported relative to standardized predictor variables centered at zero with unit variance and correspond with $\beta$ (and $\mu_\gamma$ for LULC) from Equation 1.}\label{fig3}
+\end{figure*}
 
-The PNAS sample included a fixed PNG image here, but this document prefers
-to show the results and embedding of _R_ code. 
+Although top-ranked N and P models shared some similarities in the type of predictors that contributed significantly to each model, the coefficients of these models differed in magnitude, and thus the top-ranked models varied in their sensitivity to specific predictors (Figure 3). For example, the top-ranked P model was more sensitive to lake characteristics, whereas the top-ranked N model was more sensitive to watershed land-use. Quantitatively, lake TP concentrations were more sensitive to maximum depth ($\beta_{depth}$: median = -0.39, SD = 0.04) compared to lake TN concentrations ($\beta_{depth}$: median = -0.14, SD = 0.04); whereas lake TN concentrations were more sensitive to watershed agriculture land-use ($\beta_{ag}$: median = 0.44, SD = 0.11) compared to lake TP concentrations ($\beta_{ag}$: median = 0.10, SD = 0.08). Finally, although we found that near-stream agriculture was associated with both higher TN and TP concentrations (i.e., a source-effect of near-stream agriculture), there was not a significant difference in the magnitude (i.e., sensitivity) of this coefficient between N ($\beta_{bufferag}$: median = 0.16, SD = 0.06) and P ($\beta_{bufferag}$: median = 0.12, SD = 0.06) models.
 
-```{r figex, fig.width=3, fig.height=3, cache=TRUE, echo=TRUE, fig.cap="Narrow ggplot2 figure"}
-library(ggplot2)
-ggplot(mtcars, aes(wt, mpg)) +
-    geom_point(size=3, aes(colour=factor(cyl))) +
-    theme(legend.position="none")
-```
+No predictors in the nutrient input category appeared to be strongly related to either TN or TP concentrations. One explanation may be that these variables co-varied with watershed and near-stream land-use variables (Figure A5). In an attempt to further investigate this possibility, we fit alternative models excluding all land-use predictors. The results show that, at least in the case of N, removing these predictors e caused model variance to be apportioned from watershed and buffer land-use predictors to N input and P fertilizer predictors (Figure A4). However, this non-land-use N model had a relatively poor fit (R2 = 0.40) compared to the top-ranked model that included land-use as a predictor (R2 = 0.58).
 
-Here we use a standard knitr bloc with explicit options for
+### Regional variation in agriculture sensitivity
 
-- figure width and height (`fig.width`, `fig.height`), both set to three inches;
-- whether the code is shown (`echo=TRUE`); and
-- the caption (`fig.cap`) as shown above.
+Both TN and TP concentrations were sensitive to measures of watershed land-use as well as near-stream agriculture (Figure 2, Table 1). Despite these similarities, we found differences in both the magnitude of these effects and the extent to which we observed regional variation in watershed land-use sensitivity for N and P models (Figure 4). For P, there was little evidence that sensitivity to watershed land-use was regionally variable. More specifically, the credible intervals for the slope of each individual region overlapped the global slope estimate (Figure 4). In contrast, for N we found evidence for regional variation in sensitivity to watershed land-use. For this nutrient, the credible intervals for 2 of the 37 regions did not overlap the global estimate (Figure 4). These regions were found in parts of Iowa, Minnesota, and Illinois and appear to be more sensitive to watershed land-use – i.e., lake N increases at a faster rate per unit increase in agricultural land-use compared to other regions (Figure 5). The median soil clay content of watersheds in these regions was higher than the median across watersheds in all other regions (Figure 6). Furthermore, these two regions had a unique combination of both high soil clay content and extensive tile drainage (Figure S6).
 
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.49\textwidth, height=3.5in,keepaspectratio]{../figures/re-1}
+  \end{center}
+  \caption{Effect of watershed land-use ($\gamma_j$) for individual regions in the top-ranked lake N and P models. Values shown are posterior medians (filled circles) and 95\% credible intervals (solid lines) for individual hydrologic units (HUC4s) ordered from top to bottom according to longitude (west to east). Also shown is a comparison to a zero effect (solid vertical line). Values that are different from the population level effect are shaded in red.}\label{fig4}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.36\textwidth, height=3.5in,keepaspectratio]{../figures/tn_re_hu4-1}
+  \end{center}
+  \caption{Location of hydrologic regions sensitive to watershed land-use cover corresponding to highlighted credible intervals in Figure 4.}\label{fig5}
+\end{figure}
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.38\textwidth, height=3.5in,keepaspectratio]{../figures/tn_re_compare-1}
+  \end{center}
+  \caption{Histograms showing the distribution of soil clay content for watersheds in regions sensitive to watershed land-use (see highlighted credible intervals in Figure 4) relative to watersheds all other regions. Medians for each group are shown as vertical dashed lines.}\label{fig6}
+\end{figure}
+
+## Discussion
+
+### Effects of granular measures of agriculture on lake nitrogen and phosphorus
+
+There is substantial unexplained variation around simple linear relationships between aggregate representations of watershed land-use in agriculture and both lake N and P (Figure S2). Our study was designed to examine these relationships in greater detail by testing whether more granular measures of agriculture could help explain some of this uncertainty for both N and P, and whether there were regional differences in these relationships. In sum, all models for TN and TP concentrations included at least one granular measure of agriculture, but there were also important differences between N and P related to the type of measures that were important to each. For example, we found little benefit of increased granularity of description (i.e., where measures are recorded in all the same locations as their aggregate equivalents) but consistent benefit of granular representation of the spatial configuration of land-use in near-stream buffers. 
+
+### Spatial configuration
+
+The result showing that lake TN and TP concentrations are sensitive to the spatial configuration of land-use in near-stream buffers is consistent with our expectation and prior research. Specifically, our finding that model coefficients on near-stream agriculture (i.e., agricultural land-use in stream buffers) in all N and P models were significant and positive indicates a nutrient-delivery effect of stream buffer agriculture and suggests that the spatial configuration of agriculture with respect to stream buffers has a detectable influence on both lake N and P at macroscales. This is consistent with prior studies conducted over more limited spatial extents which examined relationships between lake or stream nutrient concentrations and agricultural land-use in stream buffers (Diebel et al. 2007, Baker et al. 2006, Gemesi et al. 2011, Soranno et al. 2015). In contrast to near-stream agriculture, we found that near-stream “natural” land-use was not significant in either N or P models. While we cannot definitively answer why, it may be related to the role that natural buffers play in nutrient cycling for N and P (Alexander et al. 2008, Canham et al. 2012). In the case of N, natural buffers may reduce stream loading by facilitating denitrification, whereas, in the case of P, natural buffers may trap particulate bound material without necessarily removing it (Mayer et al. 2007, Naiman 2010). An alternative possibility is that we are observing a scale effect whereby the delivery effect of near-stream agriculture is spatially consistent whereas the trapping and removal effects of N and P by natural buffers is more spatially variable (Parn et al. 2012). Finally, we may not have observed a protective effect of natural buffers because natural land-use in buffers is too coarse of a proxy for “riparian buffers” composed of forest or herbaceous vegetation (Mayer et al. 2007).
+
+### Crop type
+
+We found that for N models, land-use of specific crops was significant, although it was not found in the top-ranked model. Specifically, we found that watershed land-use in corn production was a significant predictor in the second-ranked N model (Table 2). In the case of P by contrast, neither aggregate nor granular measures of watershed land-use were significant in any models (Figure 2). This can be explained by our finding that all watershed land-use metrics had weak relationships with lake P, especially relative to the strong relationships we observed between P and other factors like lake depth, hydrology, and near-stream agricultural land-use. Here, our finding is consistent with prior studies in stream ecosystems showing that the influence of hydrology exceeds that of agricultural land-use or anthropogenic P inputs (Metson et al. 2017).
+
+### Nutrient inputs
+
+None of the nutrient input variables were significant for either N or P models. On the surface, this would seem to contradict the findings of prior research such as that of Bellmore et al. (2018), who found that stream TN concentrations were more strongly controlled by N input predictors relative to measures of either watershed or near-stream land-use. However, our finding has several alternative explanations. First, differences between our lake study and the Bellmore et al. (2018) stream study may simply point to differences in the controls on stream nitrogen concentrations relative to lake nitrogen concentrations (Allan 2004, Canham et al. 2012). Second, our finding that N and P were insensitive to nutrient input variables may be a result of shared variance between nutrient input variables and watershed land-use. This makes sense given that agricultural land-uses and corn land-use in particular are associated with high rates of fertilizer and manure application (Powers 2007). To test this explanation, we formulated N models without a watershed land-use term and observed that model variance was transferred from watershed land-use to the nutrient input terms total N input and P fertilizer (Figure S4). While the positive coefficient on total N input has a straightforward interpretation, the negative coefficient on P fertilizer is unclear. Rather than evidence of a true inverse relationship between P fertilizer and N (or evidence for stoichiometric interaction sensu Paerl et al. 2016), we interpret the negative coefficient on P fertilizer as evidence of either model misspecification (i.e., model fit was poor compared to the model with land-use because N was very sensitive to land-use) or as evidence of multicollinearity among nutrient input variables (Figure S5). Thus, we think that it is likely that the removal of one of the key drivers of N (being land-use) caused model variance to be transferred to nutrient input predictors generally such that the specific highlighting of P fertilizer is a result of noise rather than a true relationship.
+
+### Nutrient transport
+
+An important category of predictors in our models was nutrient transport. For example, we found that baseflow was a significant predictor in all N but especially all P models. This is consistent with prior research at macroscales showing the sensitivity of lake nutrients to this metric (Collins et al. 2017). In contrast to baseflow, we found that watershed soil clay content was a significant predictor in all N models but not in any P models. Furthermore, we found that the coefficient on soil clay content was negative, which was contrary to our expectation, and prior research. It seems to suggest a negative correlation between clay content and N. However, upon closer inspection, we did not find evidence for such a relationship. Instead, we found evidence for a non-linear relationship, which may explain the negative coefficient on clay, whereby clay and TN were positively correlated over most of the range of watershed clay content but were negatively correlated in watersheds with very high soil clay content (> 20%; Figure S7). This non-linear relationship may be an artifact of the specific non-random sampling of our lakes whereby the lakes with extremely high soil clay content watersheds happen to have extremely long water residence times leading to extensive removal of N loads due to denitrification (Groffman et al. 2009).
+Overall, granular measures of agriculture were significant in both N and P models. However, the contribution of such measures relative to other non-agricultural predictors was greater for N models (Figure 2, Figure 3). One reason why granular measures of agricultural activity had a greater effect on N models may be that variation in N is less effectively captured solely by lake and watershed characteristics owing in part to the more complex nature of transformations in the nitrogen cycle. This finding is consistent with that of Collins et al. (2017) and Wagner and Schliep (2018) who found that lake depth coefficients were of a much higher magnitude for P relative to N. This is expected since depth strongly controls internal P loading (i.e., recycling), which is a dominant control on lake phosphorus dynamics (Sondergaard et al. 2013).
+
+### Regional variation in agriculture--nutrient relationships
+
+The macroscale nature of our study motivated our second research question examining how relationships between agricultural activities and lake nutrients vary regionally. This is because recent research has shown that analyzing macroscale lake datasets without considering the possibility of regionally varying relationships runs the risk of drawing imprecise or incorrect conclusions because it can lump together lakes with fundamentally different responses to a given predictor variable (Qian et al. 2019). Additionally, we looked at this question because prior studies have shown regional variation in the relationship of lake nutrient concentrations to aggregate measures of agriculture (Wagner and Schliep 2018).
+In our study, we found mixed evidence for regional variation in relationships with watershed land-use, depending on the lake nutrient response variable. For N, we found evidence for regional variation whereby lakes in two of the 37 regions were more sensitive to changes in agricultural land-use relative to other regions. The reasons for this elevated sensitivity are unclear, but one possible reason may be that watersheds in these more sensitive regions had higher median soil clay content than the median soil clay content of watersheds in less sensitive regions (Figure 6). Higher soil clay content in particular may ultimately control the nitrogen content of field runoff because it is associated with more direct (i.e., tile) drainage. For example, maps produced by Capel et al. (2018a) suggest that our more sensitive regions correspond roughly with areas where field exports of nutrients are likely to bypass trapping by riparian buffers. As evidence of this association, data from Nakagaki and Wieczorek (2016) indicate that watersheds in these two sensitive regions had a unique combination of high soil clay content and extensive tile drainage (Figure S6).
+For P, we found no evidence for regional variation in its relationship with watershed land-use. This finding, that watershed land-use can be modelled as a global (fixed) effect, is consistent with that of Taranu and Gregory-Eaves (2008), who found no statistically significant differences in region-specific relationships between lake P and agricultural land-use. However, it is inconsistent with that of Wagner et al. (2011), who found regionally variable relationships between lake P and agricultural land-use using a multilevel modelling framework. One reason that both our analysis and the Taranu and Gregory-Eaves (2008) study did not observe regional variation in the watershed land-use versus P relationship may be that P is so strongly controlled by lake depth that there is little additional explanatory power offered by including a watershed land-use term. In addition, if lake P is controlled primarily by lake depth, which we can assume does not change with time, then our results may explain the finding of Oliver et al. (2017) that lake P trends are spatially consistent whereas lake N trends have distinct regional variability.
+
+### Management implications
+
+Knowledge of differences in the drivers of lake N and P can support the design of effective and efficient policy approaches to maintain or improve water quality. For instance, our finding of regional variation in the relationship between lake TN concentrations and watershed land-use in agriculture suggests spatial targeting of best management practices (BMPs) to specific regions known to be highly sensitive (Holmes et al. 2016). In addition, our finding of strong relationships between lake TP concentrations and lake characteristic predictors contrasts with the strong relationships we observed between watershed land-use and lake TN. Given that watershed land-use, rather than lake characteristics, is a more feasible management target, our results suggest that the cost-effectiveness of BMPs could differ depending on whether the goal is to protect against excess N, P, or both (Paerl et al. 2016). For P, our analysis suggests that nutrient control policies are likely to be especially effective in shallow lakes and lakes with low baseflow (i.e., those with flashier hydrology). Conversely, phosphorus control in deeper lakes and reservoirs with long residence times will likely require recovery efforts in addition to prevention efforts due to the long time-scales of stored (i.e., legacy) P (Powers et al. 2015). In contrast to P, our results show that lake TN concentrations are more sensitive to watershed land-use. This suggests that policies to enhance the use of BMPs to reduce N inputs to lakes are likely to require a greater degree of stakeholder involvement, possibly through consideration of tradeoffs between land retirement and working lands programs (Capel et al. 2018a, NRC 2010).
+
+### Future research priorities
+
+Due to a lack of temporally resolved data, our study focused on spatial patterns in sensitivity of lake TN and TP concentrations to measures of agricultural activity and did not examine the possibility that such relationships could be temporally variable. A consequence of this was that we assumed that relationships between lake N and P relative to agricultural drivers did not change over our data collection window (2000 - 2010). However, there are several instances where time may be important, and these would likely be fruitful areas for future research. For example, Lark et al. (2015) showed marked conversion of conservation reserve program (CRP) lands to cropland throughout the footprint of our study from 2008 to 2012. Such changes in land-use could make it more difficult to quantify lake sensitivity to agriculture if relationships vary through time especially if relationships are subject to threshold effects (Renwick et al. 2008). A more subtle illustration of when time may be important is when field-scale nutrient export is highly dependent on episodic hydrology. For example, a number of previous studies have shown that field-scale nutrient export of N is greatest when a series of dry years is followed by a wet spring (Motew et al. 2017, Strickling and Obenour 2018). It might make sense then to organize modeling around whether lake watersheds are generally subject to slowflow, fastflow, or drainflow (Capel et al. 2018a) nutrient transport rather than solely taking a spatial regionalization approach (i.e., using HUCs). Barriers to more detailed temporal approaches include greater demands of spatio-temporally resolved data products. Overall, our results point to hydrology predictors like baseflow as an instance where we only have spatially coarse information and development of more granular estimates of watershed hydrology, possibly using the output of hydrology models, would likely improve future research efforts.
+
+## Conclusion
+
+We show that granular measures of agricultural activity are related to both lake N and P and that these relationships are regionally variable for lake N. Taken together, our results suggest that lake TP concentrations are more strongly driven by lake characteristics; whereas, lake TN concentrations are more strongly driven by watershed land-use. A consequence of our finding is that lake TP concentrations are largely predictable from lake-specific measures such as near-stream land-use, lake depth, and transport metrics like baseflow; whereas, accurate predictions of lake N likely requires not only lake specific information (including granular measures of agriculture) but also consideration of regional context due to complex regional variation of soil characteristics. Such differences in lake nutrient model sensitivity to measures of agricultural activity may affect the outcome of policies to enhance water quality depending on whether they focus on lake N or P.
 
 ## Digital Figures 
 
@@ -182,39 +303,6 @@ One (roundabout) way of doing this is to _not_ actually plot a figure, but to
 save it in a file as the following segment shows:
 
 This file is then included via standard LaTeX commands.
-
-
-## Typeset Code (But Do Not Run It) 
-
-We can also just show code.
-
-```r
-xx <- faithful[,"eruptions"]
-fit <- density(xx)
-plot(fit)
-```
-
-This simply used a pandoc bloc started and ended by three backticks,
-with `r` as the language choice.  Similarly, _many_ other languages
-can be typeset directly simply by relying on pandoc.
-
-
-## Single column equations 
-
-Authors may use 1- or 2-column equations in their article, according to
-their preference.
-
-To allow an equation to span both columns, options are to use the
-`\begin{figure*}...\end{figure*}` environment mentioned above for
-figures. The `\begin{widetext}...\end{widetext}` environment as shown
-in equation \ref{eqn:example} below is deprecated, but \LaTeX commands
-`\onecolumn` and `\twocolumn` work fine.
-
-Please note that this option may run into problems with floats and
-footnotes, as mentioned in the [cuted package
-documentation](http://texdoc.net/pkg/cuted). In the case of problems
-with footnotes, it may be possible to correct the situation using
-commands `\footnotemark` and `\footnotetext`.
 
 \begin{equation}
   \begin{aligned}
