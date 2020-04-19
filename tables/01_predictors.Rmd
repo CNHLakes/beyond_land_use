@@ -85,6 +85,7 @@ dt$Granularity <- unfill_vec(as.character(dt$Granularity))
 
 options(knitr.kable.NA = " - ")
 knitr::kable(dt, digits = 0, format = "markdown") 
+# knitr::kable(dt, format = 'latex', align = c("lllll"))
 #%>%
  # add_header_above(c(" ", " ", Ranges = 3, " ", " "))
 ```
