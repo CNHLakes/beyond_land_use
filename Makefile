@@ -3,7 +3,7 @@ VARLLIDS := $(shell cat ${RAWLLIDS})
 
 .PHONY: data all figures
 
-all: data tables manuscript/figures.pdf data/dt.rds manuscript/combined.pdf
+all: tables manuscript/figures.pdf data/dt.rds manuscript/combined.pdf
 
 data: data/ep.rds \
 data/usgs/usgs.rds \
@@ -11,8 +11,6 @@ data/cdl/cdl.csv \
 data/cdl/cdl_summary.csv \
 data/gssurgo/gssurgo.rds \
 data/census/census.rds \
-data/macroag/tillage.gpkg \
-data/macroag/crp.rds \
 data/gis.gpkg \
 data/llids.txt \
 data/buffer_lulc.csv \
@@ -216,4 +214,23 @@ manuscript/pinp.cls \
 manuscript/lagosag.bib \
 manuscript/jsta.bst
 	cd manuscript && make manuscript.pdf
+	
+docker: Dockerfile
+	docker build -f Dockerfile.debug -t jsta/beyond_land_use:test .
+
+check: 
+	rm manuscript/appendix.pdf \
+		manuscript/figures.pdf \
+		tables/03_model_summary.pdf \
+		tables/01_predictors.pdf \
+		figures/11_map-1.pdf \
+		figures/re-comparison-1.pdf \
+		figures/fe-1.pdf \
+		figures/re-1.pdf \
+		figures/tn_re_hu4-1.pdf \
+		figures/tn_re_compare-1.pdf \
+		tables/02_cdl_key.pdf \
+		figures/fe_nolulc-1.pdf \
+		figures/08_exploratory_dotplot-1.pdf 
+	make all
 	
