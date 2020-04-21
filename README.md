@@ -1,4 +1,4 @@
-[![Paper DOI](https://img.shields.io/badge/Paper-DOI-blue.svg)](https://doi.org) [![Code DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3754916.svg)](https://doi.org/10.5281/zenodo.3754916)
+[![Paper DOI](https://img.shields.io/badge/Paper-DOI-blue.svg)](https://doi.org) [![Code DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3754916.svg)](https://doi.org/10.5281/zenodo.3754916) [![Docker Build](https://img.shields.io/badge/Docker%20Image-jsta/beyond_land_use-green.svg)](https://cloud.docker.com/repository/docker/jsta/beyond_land_use)
 
 Code and data
 for:
@@ -82,3 +82,15 @@ Appendix: [manuscript/appendix.pdf](manuscript/figures.pdf)
 ### Dependencies
 
 Primary dependencies include the `dplyr`, `sf`, `LAGOSNE`, `nhdR`, and `brms` R packages. See [scripts/99_utils.R](scripts/99_utils.R) for a full list.
+
+### Reproducibility
+
+  * Requires linking to LAGOSNE-GIS as a Docker volume. Get data with the `LAGOSNEgis` package [![DOI](https://zenodo.org/badge/106293356.svg)](https://zenodo.org/badge/latestdoi/106293356)
+
+```
+docker pull jsta/beyond_land_use
+docker run -e PASSWORD=<PASSWORD> --rm -v ~/.local/share/LAGOS-GIS:/root/.local/share/LAGOS-GIS jsta/stachelek_soranno_2019
+docker ps # note container "code name"
+docker exec -ti <NAME> /bin/bash
+make all
+```
