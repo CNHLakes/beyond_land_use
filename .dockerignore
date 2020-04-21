@@ -1,0 +1,5 @@
+# Ignore everything
+**
+
+# Allow files and directories
+!/data/mcmc/re_brms.rds
