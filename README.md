@@ -89,7 +89,7 @@ Primary dependencies include the `dplyr`, `sf`, `LAGOSNE`, `nhdR`, and `brms` R 
 
 ```
 docker pull jsta/beyond_land_use
-docker run -e PASSWORD=<PASSWORD> --rm -v ~/.local/share/LAGOS-GIS:/root/.local/share/LAGOS-GIS jsta/stachelek_soranno_2019
+docker run -e PASSWORD=<PASSWORD> --rm -v ~/.local/share/LAGOS-GIS:/root/.local/share/LAGOS-GIS jsta/beyond_land_use
 docker ps # note container "code name"
 docker exec -ti <NAME> /bin/bash
 make all
