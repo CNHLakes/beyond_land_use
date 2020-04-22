@@ -43,6 +43,11 @@ RUN Rscript -e "LAGOSNE::lagosne_get('1.087.1', dest_folder = LAGOSNE:::lagos_pa
 
 RUN Rscript -e "install.packages(c('ggsn'), repos = 'https://cran.rstudio.com')"
 
+RUN tlmgr install xcolor mdwtools multirow wrapfig colortbl tabu varwidth threeparttable threeparttablex environ trimspaces ulem makecell
+
+RUN apt-get install -y --no-install-recommends \
+  pdftk
+
 RUN cd beyond_land_use && git pull
 
 COPY data/mcmc/re_brms.rds /~/beyond_land_use/data/mcmc/
