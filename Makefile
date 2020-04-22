@@ -102,6 +102,10 @@ data/mcmc/re_brms.rds: scripts/03_model.R
 data/mcmc/fe_brms_nolulc.rds: scripts/03_model_nolulc.R
 	Rscript $<
 
+data/tile_drainage.rds: scripts/00_get_tile_drainage.R \
+data/gis.gpkg
+	Rscript $<
+
 manuscript/combined.pdf: manuscript/figures.pdf manuscript/appendix.pdf
 	pdftk manuscript/figures.pdf manuscript/appendix.pdf cat output manuscript/combined.pdf
 
@@ -121,6 +125,7 @@ figures/tn_re_compare-1.pdf
 #cd figures && make pnglatest
 
 manuscript/appendix.pdf: manuscript/appendix.Rmd \
+data/tile_drainage.rds \
 figures/cdl_vs_nlcd-1.pdf \
 tables/02_cdl_key.pdf \
 figures/fe_nolulc-1.pdf \
