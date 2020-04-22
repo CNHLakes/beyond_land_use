@@ -102,8 +102,7 @@ data/mcmc/re_brms.rds: scripts/03_model.R
 data/mcmc/fe_brms_nolulc.rds: scripts/03_model_nolulc.R
 	Rscript $<
 
-data/tile_drainage.rds: scripts/00_get_tile_drainage.R \
-data/gis.gpkg
+data/tile_drainage.rds: scripts/00_get_tile_drainage.R 
 	Rscript $<
 
 manuscript/combined.pdf: manuscript/figures.pdf manuscript/appendix.pdf
