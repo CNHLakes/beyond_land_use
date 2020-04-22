@@ -35,9 +35,12 @@ library(snakecase)
 suppressMessages(library(brms))
 suppressMessages(library(tidybayes))
 library(rnaturalearth)
+library(rnaturalearthhires)
 library(gghighlight)
 suppressMessages(library(dplyr))
 library(ggplotify)
+library(mgcViz)
+library(rmapshaper)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
