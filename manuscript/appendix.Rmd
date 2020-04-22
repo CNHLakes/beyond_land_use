@@ -282,18 +282,7 @@ dt <- readRDS("../data/dt.rds") %>%
   mutate(median = median(clay_pct, na.rm = TRUE)) %>%
   distinct(hu4_zoneid, median, signif_hu4)
 
-# compute per huc tile drainage
-# load huc4s
-# study_bbox    <- st_read("data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
-# hu4_focal     <- st_read("data/gis.gpkg", "hu4s_focal_simple", quiet = TRUE)
-# hu4_focal     <- st_crop(st_transform(hu4_focal, st_crs(study_bbox)), study_bbox)
-# http://dx.doi.org/10.5066/F7W37TDP
-# library(exactextractr)
-# r <- raster("data/SubsurfaceDrainExtentMW_2012.tif")
-# test <- st_cast(hu4_focal, "MULTIPOLYGON")
-# test$tile_drainage <- exact_extract(r, test, "sum")
-# saveRDS(test, "data/tile_drainage.rds")
-test <- readRDS("../data/tile_drainage.rds")
+test  <- readRDS("../data/tile_drainage.rds")
 test2 <- left_join(test, dt, by = c("ZoneID" = "hu4_zoneid"))
 
 # scatter plot clay versus tile drainage highlighting sensitve hucs

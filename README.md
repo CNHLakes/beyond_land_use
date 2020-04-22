@@ -85,7 +85,7 @@ Primary dependencies include the `dplyr`, `sf`, `LAGOSNE`, `nhdR`, and `brms` R 
 
 ### Reproducibility
 
-  * Requires linking to LAGOSNE-GIS as a Docker volume. Get data with the `LAGOSNEgis` package [![DOI](https://zenodo.org/badge/106293356.svg)](https://zenodo.org/badge/latestdoi/106293356)
+  * Requires linking to LAGOSNE-GIS as a Docker volume. Get data with the `LAGOSNEgis` package [![DOI](https://zenodo.org/badge/106293356.svg)](https://zenodo.org/badge/latestdoi/106293356). Beware that the path to `LAGOSNEgis::lagosnegis_path()` cannot point to a symlink!
 
 ```
 docker pull jsta/beyond_land_use
