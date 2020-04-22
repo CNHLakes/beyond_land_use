@@ -184,7 +184,6 @@ figures/09_stream_buffer-1.pdf: figures/09_stream_buffer.Rmd data/dt.rds
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 
 tables: manuscript/tables.pdf manuscript/appendix.pdf
-	cd tables && make pnglatest
 
 manuscript/tables.pdf: tables/01_predictors.pdf \
 tables/02_cdl_key.pdf \
