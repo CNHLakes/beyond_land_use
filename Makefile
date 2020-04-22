@@ -106,10 +106,10 @@ manuscript/combined.pdf: manuscript/figures.pdf manuscript/appendix.pdf
 	pdftk manuscript/figures.pdf manuscript/appendix.pdf cat output manuscript/combined.pdf
 
 manuscript/figures.pdf: manuscript/figures.Rmd \
-figures/11_map-1.pdf \
 tables/01_predictors.pdf \
-figures/re-comparison-1.pdf \
 tables/03_model_summary.pdf \
+figures/11_map-1.pdf \
+figures/re-comparison-1.pdf \
 figures/fe-1.pdf \
 figures/re-1.pdf \
 figures/tn_re_hu4-1.pdf \
@@ -121,13 +121,10 @@ figures/tn_re_compare-1.pdf
 #cd figures && make pnglatest
 
 manuscript/appendix.pdf: manuscript/appendix.Rmd \
-figures/tptn_maps-1.pdf \
-figures/dotplot-1.pdf \
-figures/08_exploratory_dotplot-1.pdf \
-figures/04_nlcd-versus-cdl-1.pdf \
 figures/cdl_vs_nlcd-1.pdf \
-figures/satellite-1.pdf \
-figures/fe_nolulc-1.pdf
+tables/02_cdl_key.pdf \
+figures/fe_nolulc-1.pdf \
+figures/08_exploratory_dotplot-1.pdf
 	Rscript -e "rmarkdown::render('$<', output_format = 'pdf_document')"
 	-pdftk manuscript/appendix.pdf cat 2-end output manuscript/appendix2.pdf
 	-mv manuscript/appendix2.pdf manuscript/appendix.pdf
