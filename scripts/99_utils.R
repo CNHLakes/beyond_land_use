@@ -41,6 +41,7 @@ suppressMessages(library(dplyr))
 library(ggplotify)
 library(mgcViz)
 library(rmapshaper)
+library(spind)
 
 theme_opts <- theme(axis.text = element_blank(),
                     axis.ticks = element_blank(),
