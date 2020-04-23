@@ -208,7 +208,7 @@ dt <- dplyr::filter(dt, hu4vzoneid %in% good_hu4s$hu4_zoneid)
                       nitrogenvfertilizervuse + nitrogenvlivestockvmanure +
                       hu4vnitrogenvatmosphericvdeposition +
                       phosphorusvfertilizervuse + phosphorusvlivestockvmanure +
-                      buffervcultivatedvcrops + buffervnatural + soybeans
+                      buffervcultivatedvcrops + buffervnatural + soybeans +
                       (1 + soybeans | hu4vzoneid))
 ))
 
