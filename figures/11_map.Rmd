@@ -16,7 +16,7 @@ source("../scripts/99_utils.R")
 # states        <- cl$states
 # states_shaded <- cl$states_shaded
 # study_bbox    <- cl$study_bbox
-study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
+study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[1,]
 ep            <- st_read("../data/gis.gpkg", "ep", quiet = TRUE)
 states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
 states_focal  <- st_read("../data/gis.gpkg", "states_focal", quiet = TRUE)

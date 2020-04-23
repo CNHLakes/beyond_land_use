@@ -265,10 +265,10 @@ gg_tp_re
 
 ```{r tn_re_hu4, fig.width = 3.77, fig.height = 4.5}
 # setwd("figures")
-study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[3,]
+study_bbox    <- st_read("../data/gis.gpkg", "study_bbox", quiet = TRUE)[1,]
 states_all    <- st_read("../data/gis.gpkg", "states_all", quiet = TRUE)
 hu4_all       <- st_read("../data/gis.gpkg", "hu4s_focal_simple", quiet = TRUE)
-hu4_all     <- st_crop(st_transform(hu4_all, st_crs(study_bbox)), study_bbox)
+hu4_all       <- st_crop(st_transform(hu4_all, st_crs(study_bbox)), study_bbox)
 
 # map significant random effects hu4s
 gg_hu4 <- 
