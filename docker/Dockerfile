@@ -43,11 +43,35 @@ RUN Rscript -e "LAGOSNE::lagosne_get('1.087.1', dest_folder = LAGOSNE:::lagos_pa
 
 RUN Rscript -e "install.packages(c('ggsn'), repos = 'https://cran.rstudio.com')"
 
-RUN tlmgr install xcolor mdwtools multirow wrapfig colortbl tabu varwidth threeparttable threeparttablex environ trimspaces ulem makecell
+RUN tlmgr install xcolor mdwtools multirow wrapfig colortbl tabu varwidth threeparttable threeparttablex environ trimspaces ulem makecell setspace psnfss
 
 RUN apt-get install -y --no-install-recommends \
   pdftk
 
-RUN cd beyond_land_use && git pull
+RUN Rscript -e "dir.create(rappdirs::user_data_dir(), recursive = TRUE)"
 
-COPY data/mcmc/re_brms.rds /~/beyond_land_use/data/mcmc/
+RUN Rscript -e "devtools::install_github('cont-limno/LAGOSNEgis')"
+
+ENV LAGOSNEGIS_PATH=/root/.local/share/LAGOS-GIS/LAGOS_NE_GIS_Data_v1.0.gdb
+
+RUN Rscript -e "install.packages(c('ggplotify', 'mgcViz'), repos = 'https://cran.rstudio.com')"
+
+RUN Rscript -e "install.packages('rnaturalearthhires', repos = 'http://packages.ropensci.org', type = 'source')"
+
+RUN Rscript -e "install.packages(c('rmapshaper', 'spind'), repos = 'https://cran.rstudio.com')"
+
+# uncomment to copy-in component models
+# COPY data/mcmc/re/tn_* data/mcmc/re/tp_* /~/beyond_land_use/data/mcmc/re/
+
+# comment to avoid copy-in of model results list
+COPY \
+  data/mcmc/re_brms.rds \
+  data/mcmc/fe_brms_nolulc.rds \
+  /~/beyond_land_use/data/mcmc/
+
+# comment to rebuild model results list
+RUN touch /~/beyond_land_use/data/mcmc/re_brms.rds
+
+RUN touch /~/beyond_land_use/data/mcmc/fe_brms_nolulc.rds
+
+RUN cd beyond_land_use && git pull

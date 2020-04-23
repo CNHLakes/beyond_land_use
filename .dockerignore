@@ -3,3 +3,7 @@
 
 # Allow files and directories
 !/data/mcmc/re_brms.rds
+!/data/mcmc/fe_brms_nolulc.rds
+!/data/mcmc/re/tn_*
+!/data/mcmc/re/tp_*
+
