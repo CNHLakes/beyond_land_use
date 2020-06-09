@@ -1,9 +1,9 @@
-[![Paper DOI](https://img.shields.io/badge/Paper-DOI-blue.svg)](https://doi.org) [![Code DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3754916.svg)](https://doi.org/10.5281/zenodo.3754916) [![Docker Build](https://img.shields.io/badge/Docker%20Image-jsta/beyond_land_use-green.svg)](https://cloud.docker.com/repository/docker/jsta/beyond_land_use)
+[![Paper DOI](https://img.shields.io/badge/Paper-10.1002/eap.2187-blue.svg)](https://doi.org/10.1002/eap.2187) [![Code DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3754916.svg)](https://doi.org/10.5281/zenodo.3754916) [![Docker Build](https://img.shields.io/badge/Docker%20Image-jsta/beyond_land_use-green.svg)](https://cloud.docker.com/repository/docker/jsta/beyond_land_use)
 
 Code and data
 for:
 
-**Stachelek et al. In press**. Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales. _Ecological Applications_.
+**Stachelek et al. 2020**. Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales. _Ecological Applications_. [doi:10.1002/eap.2187](https://doi.org/10.1002/eap.2187)
 
 ### Products
 
