@@ -7,9 +7,7 @@ for:
 
 ### Products
 
-Figures: [manuscript/figures.pdf](manuscript/figures.pdf)
-
-Appendix: [manuscript/appendix.pdf](manuscript/figures.pdf)
+Manuscript: [manuscript/manuscript.pdf](manuscript/manuscript.pdf)
 
 ### Contents
 
