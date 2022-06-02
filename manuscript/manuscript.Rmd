@@ -3,7 +3,7 @@ title: Granular measures of agricultural land-use influence lake nitrogen and ph
 
 # Use letters for affiliations
 author:
-  - name: Joseph Stachelek
+  - name: Jemma Stachelek
     affiliation: a
   - name: Weizhe Weng
     affiliation: b

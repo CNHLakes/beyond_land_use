@@ -40,7 +40,7 @@ source("../scripts/99_utils.R")
 \begin{flushleft}
 Title: Granular measures of agricultural land-use influence lake nitrogen and phosphorus differently at macroscales.
 
-Authors: Joseph Stachelek, W. Weng, C.C. Carey, A.R. Kemanian, K.M. Cobourn, T. Wagner, K.C. Weathers, P.A. Soranno
+Authors: Jemma Stachelek, W. Weng, C.C. Carey, A.R. Kemanian, K.M. Cobourn, T. Wagner, K.C. Weathers, P.A. Soranno
 
 Journal: Ecological Applications
 \end{flushleft}
