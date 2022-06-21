@@ -17,8 +17,8 @@ test2 <- left_join(test, dt, by = c("ZoneID" = "hu4_zoneid"))
 # scatter plot clay versus tile drainage highlighting sensitve hucs
 gg_hist <- ggplot(data = test2, aes(tile_drainage/900 * 100 # grid cells are 30x30 = 900
     )) + 
-  geom_histogram(binwidth=5, aes(fill=signif_hu4)) +  
-  scale_fill_manual(values = c("FALSE" = "grey", "TRUE" = "red")) +
+  geom_histogram(binwidth=5, aes(fill=signif_hu4), size=0.5, color="black") +  
+  scale_fill_manual(values = c("FALSE" = "white", "TRUE" = "red")) +
   xlab("Tile drainage (percent)") + ylab("Count (n)") +
   cowplot::theme_cowplot() +
   theme(legend.position = "none", 
